@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses;
+using HelpDesk.src.Shared.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Tickets.GetById;
@@ -21,16 +21,7 @@ public sealed class GetByIdTicketHandler
     {
         var ticket = await _dbContext.Tickets
             .Where(t => t.Id == query.TicketId)
-            .Select(t => new TicketData
-            {
-                TicketId = t.Id,
-                TicketNumber = t.Number,
-                TicketTitle = t.Title,
-                TicketSubject = t.Subject,
-                TicketStatus = t.Status.Name,
-                TicketPriority = t.Priority.Name,
-                TicketRowVersion = t.RowVersion
-            })
+            .SelectTicketData()
             .SingleAsync(cancellationToken);
 
         return new GetByIdTicketResponse(

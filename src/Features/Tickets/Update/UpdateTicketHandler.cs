@@ -1,62 +1,59 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Tickets.Update;
 
 public sealed class UpdateTicketHandler :
     ICommandHandler<UpdateTicketCommand, UpdateTicketResponse>
 {
-    private readonly IUserProvider _userProvider;
+    private readonly IUserContext _userContext;
     private readonly AppDbContext _dbContext;
-    private readonly ILookupService _lookup;
+    private readonly ITicketLookupService _ticketLookup;
     private readonly IDateTimeService _dateTimeService;
     private readonly ILogger<UpdateTicketHandler> _logger;
 
     public UpdateTicketHandler(
-
-        IUserProvider userProvider,
+        IUserContext userContext,
         AppDbContext dbContext,
-        ILookupService lookup,
+        ITicketLookupService ticketLookup,
         IDateTimeService dateTimeService,
         ILogger<UpdateTicketHandler> logger)
     {
-        _userProvider = userProvider;
+        _userContext = userContext;
         _dbContext = dbContext;
+        _ticketLookup = ticketLookup;
         _dateTimeService = dateTimeService;
         _logger = logger;
-        _lookup = lookup;
     }
 
     public async Task<UpdateTicketResponse> HandleAsync(
         UpdateTicketCommand command,
         CancellationToken cancellationToken)
     {
-        // Get the authenticated user
-        var user = await _userProvider.GetUserAsync(cancellationToken)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
+        var userId = _userContext.GuidUserId;
+
+        var now = _dateTimeService.UtcNow;
 
         // Ticket priority
-        var priority = _lookup.GetPriority(command.PriorityId);
+        var priority = _ticketLookup.GetPriority(command.TicketPriorityId);
 
         // Ticket status
-        var status = _lookup.GetStatus(command.StatusId);
-
-        var nowUtc = _dateTimeService.UtcNow;
+        var status = _ticketLookup.GetStatus(command.TicketStatusId);
 
         // Update instantly
         var rows = await _dbContext.Tickets
             .Where(t => t.Id == command.TicketId
-                 && t.RowVersion == command.ExpectedRowVersion
-                 && t.CreatedById == user.Id)
+                 && t.RowVersion == command.TicketRowVersion
+                 && t.CreatedById == userId)
             .ExecuteUpdateAsync(setters => setters
-            .SetProperty(t => t.Title, command.Title)
-            .SetProperty(t => t.Subject, command.Subject)
-            .SetProperty(t => t.PriorityId, priority.Id)
-            .SetProperty(t => t.StatusId, status.Id)
-            .SetProperty(t => t.UpdatedById, user.Id)
-            .SetProperty(t => t.UpdatedAt, _dateTimeService.UtcNow),
+                .SetProperty(t => t.Title, command.TicketTitle)
+                .SetProperty(t => t.Subject, command.TicketSubject)
+                .SetProperty(t => t.PriorityId, priority.Id)
+                .SetProperty(t => t.StatusId, status.Id)
+                .SetProperty(t => t.UpdatedById, userId)
+                .SetProperty(t => t.UpdatedAt, now),
             cancellationToken);
 
         if (rows == 0)
@@ -70,6 +67,9 @@ public sealed class UpdateTicketHandler :
             .Select(t => t.RowVersion)
             .SingleAsync(cancellationToken);
 
-        return new UpdateTicketResponse(newRowVersion);
+        _logger.LogInformation("Ticket {TicketId} was updated successfully", command.TicketId);
+
+        return new UpdateTicketResponse(
+            NewRowVersion: newRowVersion);
     }
 }

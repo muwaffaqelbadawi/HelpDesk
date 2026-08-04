@@ -16,25 +16,12 @@ public sealed class ApplicationRefreshToken
     public string Token { get; set; } = null!;
 
 
-
     // Creation
     public string? CreatedByIp { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-
-
-    // Expiration
-    public bool IsExpired(DateTimeOffset now) => now >= ExpiresAt; // Computed property
     public DateTimeOffset? ExpiresAt { get; set; }
-
 
     // Revocation
     public string? RevokedByIp { get; set; }
-    public bool IsRevoked => RevokedAt is not null; // Computed property
     public DateTimeOffset? RevokedAt { get; set; }
-
-
-
-    // Later
-    //public string? RevocationReason { get; set; }
-    //public Guid? ReplacedByTokenId { get; set; }
 }

@@ -3,7 +3,7 @@ using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketPriorities;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketStatuses;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses;
+using HelpDesk.src.Shared.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Tickets.Create;
@@ -45,10 +45,10 @@ public sealed class CreateTicketHandler :
         {
             Id = Guid.NewGuid(),
             Number = ticketNumber,
-            Subject = command.Subject,
-            Title = command.Title,
+            Subject = command.TicketSubject,
+            Title = command.TicketTitle,
             StatusId = TicketStatusIds.Open,
-            PriorityId = command.PriorityId ?? TicketPriorityIds.Medium,
+            PriorityId = command.TicketPriorityId ?? TicketPriorityIds.Medium,
             CreatedById = userId,
             CreatedAt = _dateTimeService.UtcNow,
         };
@@ -59,16 +59,7 @@ public sealed class CreateTicketHandler :
         var newTicket = await _dbContext.Tickets
             .AsNoTracking()
             .Where(t => t.Id == ticket.Id)
-            .Select(t => new TicketData
-            {
-                TicketId = t.Id,
-                TicketNumber = t.Number,
-                TicketTitle = t.Title,
-                TicketSubject = t.Subject,
-                TicketStatus = t.Status.Name,
-                TicketPriority = t.Priority.Name,
-                TicketRowVersion = t.RowVersion
-            })
+            .SelectTicketData()
             .SingleAsync(cancellationToken);
 
         return new CreateTicketResponse(

@@ -1,13 +1,13 @@
-﻿using HelpDesk.src.Shared.Exceptions;
-using HelpDesk.src.Infrastructure.Services.Seeders.Dtos;
+﻿using HelpDesk.src.Infrastructure.Services.Seeders.Dtos;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.UserStatuses;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Services.Seeders.Lookup;
 
-public sealed class UserLookupService : ILookupService
+public sealed class UserLookupService : IUserLookupService
 {
-    private static readonly IReadOnlyDictionary<Guid, LookupSeed> _statuses =
+    private static readonly Dictionary<Guid, LookupSeed> Statuses =
         UserStatusLookup.Statuses.ToDictionary(p => p.Id);
 
     public LookupSeed GetPriority(Guid id)
@@ -17,10 +17,9 @@ public sealed class UserLookupService : ILookupService
 
     public LookupSeed GetStatus(Guid id)
     {
-        if (!_statuses.TryGetValue(id, out var status))
-            throw new InvalidUserStatusException(id);
-
-        return status;
+        return !Statuses.TryGetValue(id, out var status)
+            ? throw new InvalidUserStatusException(id)
+            : status;
     }
 
     public bool TryGetPriority(Guid id, out LookupSeed priority)

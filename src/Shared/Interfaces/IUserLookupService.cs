@@ -2,7 +2,7 @@
 
 namespace HelpDesk.src.Shared.Interfaces;
 
-public interface ILookupService
+public interface IUserLookupService
 {
     LookupSeed GetPriority(Guid id);
 

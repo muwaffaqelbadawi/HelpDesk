@@ -52,6 +52,7 @@ public sealed class Ticket
     public Guid? DeletedById { get; set; }
     public ApplicationUser? DeletedBy { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
+    public bool IsDeleted { get; set; } // soft-delete flag
 
 
 
@@ -60,13 +61,6 @@ public sealed class Ticket
     public Guid? ClosedById { get; set; }
     public ApplicationUser? ClosedBy { get; set; }
     public DateTimeOffset? ClosedAt { get; set; }
-
-
-
-    // IsDeleted (flag)
-    // soft-delete flag
-    public bool IsDeleted { get; set; }
-
 
     // Concurrency
     public byte[] RowVersion { get; set; } = null!;

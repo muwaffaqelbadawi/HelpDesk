@@ -17,10 +17,6 @@ public sealed class ApplicationUserRole : IdentityUserRole<Guid>
     public ApplicationUser? RemovedBy { get; set; }
     public DateTimeOffset? RemovedAt { get; set; }
 
-    public bool IsActive => RemovedAt == null; // Computed property
-
-
-
 
     // Navigation properties (not in base class)
     public ApplicationUser User { get; set; } = null!;

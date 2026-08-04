@@ -8,7 +8,7 @@ public static class TicketStatusesLookup
     [
         new(
             Id: TicketStatusIds.Open,
-            Name: "open",
+            Name: "Open",
             Code: "OPEN",
             SortOrder: 0),
 

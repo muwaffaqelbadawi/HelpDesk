@@ -2,8 +2,8 @@
 
 public sealed record UpdateTicketCommand(
     Guid TicketId,
-    string Title,
-    string Subject,
-    Guid PriorityId,
-    Guid StatusId,
-    byte[] ExpectedRowVersion);
+    string TicketTitle,
+    string TicketSubject,
+    Guid TicketPriorityId,
+    Guid TicketStatusId,
+    byte[] TicketRowVersion);

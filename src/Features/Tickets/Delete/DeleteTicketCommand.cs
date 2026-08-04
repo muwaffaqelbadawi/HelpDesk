@@ -1,3 +1,5 @@
 ﻿namespace HelpDesk.src.Features.Tickets.Delete;
 
-public sealed record DeleteTicketCommand(string TicketId);
+public sealed record DeleteTicketCommand(
+    Guid TicketId,
+    byte[] TicketRowVersion);

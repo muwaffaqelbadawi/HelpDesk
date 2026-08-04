@@ -1,4 +1,5 @@
-﻿using HelpDesk.src.Infrastructure.Services.Seeders.Runner;
+﻿using HelpDesk.src.Infrastructure.Services.Seeders.Lookup;
+using HelpDesk.src.Infrastructure.Services.Seeders.Runner;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Branches;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Departments;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Modules;
@@ -32,6 +33,13 @@ public static class SeedersServicesExtension
 
         // Runner
         builder.Services.AddScoped<ILookupSeederRunner, LookupSeederRunner>();
+
+
+        // Register TicketLookupService as a scoped service
+        builder.Services.AddScoped<ITicketLookupService, TicketLookupService>();
+
+        // Register UserLookupService as a scoped service
+        builder.Services.AddScoped<IUserLookupService, UserLookupService>();
 
         return builder;
     }

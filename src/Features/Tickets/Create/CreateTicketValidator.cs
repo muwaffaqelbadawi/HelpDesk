@@ -8,11 +8,11 @@ public sealed class CreateTicketValidator : AbstractValidator<CreateTicketComman
 {
     public CreateTicketValidator()
     {
-        RuleFor(x => x.Title)
+        RuleFor(x => x.TicketTitle)
             .NotEmpty()
             .MaximumLength(TicketPolicy.TitleMaxLength);
 
-        RuleFor(x => x.Subject)
+        RuleFor(x => x.TicketSubject)
             .NotEmpty()
             .MaximumLength(TicketPolicy.SubjectMaxLength);
     }

@@ -1,10 +1,10 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
+using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Roles.Assign;
 
@@ -55,19 +55,19 @@ public sealed class AssignRoleHandler
 
         // 4. Check for an existing assignment (including soft-deleted)
         var existingAssignment = await _dbContext.UserRoles
-            .IgnoreQueryFilters()    // include RemovedAt != null
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x =>
                 x.UserId == user.Id &&
                 x.RoleId == role.Id,
                 cancellationToken);
 
         // Reactivate or create
-        if (existingAssignment is not null && existingAssignment.IsActive)
+        if (existingAssignment is not null)
         {
             throw new DomainException($"User already has role '{command.RoleName}'.");
         }
 
-        if (existingAssignment is not null && !existingAssignment.IsActive)
+        if (existingAssignment is not null)
         {
             // Reactivate the role
             existingAssignment.RemovedAt = null;

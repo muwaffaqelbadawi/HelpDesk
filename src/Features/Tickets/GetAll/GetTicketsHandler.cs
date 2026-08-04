@@ -1,6 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
+using HelpDesk.src.Shared.Queries;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,16 +30,7 @@ public sealed class GetTicketsHandler :
             .OrderByDescending(t => t.CreatedAt)
             .Skip((query.PageNumber - 1) * query.PageSize)
             .Take(query.PageSize)
-            .Select(t => new TicketData
-            {
-                TicketId = t.Id,
-                TicketNumber = t.Number,
-                TicketTitle = t.Title,
-                TicketSubject = t.Subject,
-                TicketStatus = t.Status.Name,
-                TicketPriority = t.Priority.Name,
-                TicketRowVersion = t.RowVersion
-            })
+            .SelectTicketData()
             .ToListAsync(cancellationToken);
 
         var totalPages = TotalPages.Calculate(totalCount, query.PageSize);
