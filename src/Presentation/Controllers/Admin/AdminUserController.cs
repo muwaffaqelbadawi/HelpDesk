@@ -1,7 +1,6 @@
-﻿using HelpDesk.src.Features.Users.Create;
-using HelpDesk.src.Features.Users.Delete;
-using HelpDesk.src.Features.Users.GetAll;
-using HelpDesk.src.Features.Users.GetById;
+﻿using HelpDesk.src.Features.Users.UserAccount.Create;
+using HelpDesk.src.Features.Users.UserAccount.Delete;
+using HelpDesk.src.Features.Users.UserAccount.GetById;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Responses;
@@ -26,87 +25,82 @@ public sealed class AdminUserController : ControllerBase
         _dateTimeService = dateTimeService;
     }
 
-    // Get all users
+    // GetAll (Get users list)
     [HttpGet]
-    [Authorize(Policy = "Permission:Users.Get")]
-    public async Task<IActionResult> GetUsers(
-        [FromServices] IQueryHandler<PagedQuery, PagedResult<GetUsersResponse>> handler,
+    [Authorize(Policy = "Permission:Users.View")]
+    public async Task<IActionResult> GetUsersAccount(
+        [FromServices] IQueryHandler<PagedQuery, PagedResult<UserAccountData>> handler,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(
-            new PagedQuery(),
-            cancellationToken);
+        var query = new PagedQuery();
 
-        return Ok(new ApiResponse<PagedResult<GetUsersResponse>>(
-            message: "Users fetched successfully.",
+        var result = await handler.HandleAsync(query, cancellationToken);
+
+        return Ok(new ApiResponse<PagedResult<UserAccountData>>(
+            message: ApiMessages.UsersRetrieved,
             time: _dateTimeService.UtcNow,
             data: result));
     }
 
-
-
-
-
-
-    // GET By ID User (Get user details)
-    [HttpGet("{userId}", Name = "GetByIdUser")]
-    [Authorize(Policy = "Permission:Users.Get")]
-    public async Task<IActionResult> GetByIdUser(
-        [FromServices] IQueryHandler<GetByIdUserQuery, GetByIdUserResponse> handler,
+    // GetById (Get user details)
+    [HttpGet("{userId:guid}", Name = nameof(GetByIdUserAccount))]
+    [Authorize(Policy = "Permission:Users.View")]
+    public async Task<IActionResult> GetByIdUserAccount(
+        [FromServices] IQueryHandler<GetByIdUserAccountQuery, GetByIdUserAccountResponse> handler,
         [FromServices] IDateTimeService dateTimeService,
-        [FromRoute] string userId,
+        [FromRoute] Guid userId,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(
-            new GetByIdUserQuery(userId),
-            cancellationToken);
+        var query = new GetByIdUserAccountQuery(userId);
 
-        return Ok(new ApiResponse<UserData>(
-            message: "User created successfully.",
+        var result = await handler.HandleAsync(query, cancellationToken);
+
+        return Ok(new ApiResponse<UserAccountData>(
+            message: ApiMessages.UserRetrieved,
             time: dateTimeService.UtcNow,
-            data: result.UserData));
+            data: result.UserAccountData));
     }
 
-
-
-
-    // Create User
+    // Create
     [HttpPost]
     [Authorize(Policy = "Permission:Users.Create")]
-    public async Task<IActionResult> CreateUser(
-        [FromServices] ICommandHandler<CreateUserCommand, CreateUserResponse> handler,
-        [FromBody] CreateUserBody body,
+    public async Task<IActionResult> CreateUserAccount(
+        [FromServices] ICommandHandler<CreateUserAccountCommand, CreateUserAccountResponse> handler,
+        [FromBody] CreateUserAccountBody body,
         CancellationToken cancellationToken)
     {
-        var command = new CreateUserCommand(body.UserName, body.Email);
+        var command = new CreateUserAccountCommand(
+            UserName: body.UserName,
+            Email: body.Email,
+            FullEnName: body.FullEnName,
+            FullArName: body.FullArName);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        var value = new ApiResponse<CreateUserResponse>(
-            message: "User created successfully.",
+        var value = new ApiResponse<CreateUserAccountResponse>(
+            message: ApiMessages.UsersCreated,
             time: _dateTimeService.UtcNow,
             data: result);
 
         return CreatedAtRoute(
-            routeName: "GetByIdUser", // must match the name property in the GetByIdUser endpoint
-            routeValues: new { userId = result.UserData.UserId },
+            routeName: nameof(GetByIdUserAccount),
+            routeValues: new { userId = result.UserAccountData.UserId },
             value: value);
     }
 
-
-
-
-
-    // Delete User
+    // Delete
     [HttpDelete("{userId:guid}")]
     [Authorize(Policy = "Permission:Users.Delete")]
-    public async Task<IActionResult> DeleteUser(
-        [FromServices] ICommandHandler<DeleteUserCommand> handler,
-        [FromBody] DeleteUserBody body,
+    public async Task<IActionResult> DeleteUserAccount(
+        [FromServices] ICommandHandler<DeleteUserAccountCommand> handler,
+        [FromBody] DeleteUserAccountBody body,
         [FromRoute] Guid userId,
         CancellationToken cancellationToken)
     {
-        var command = new DeleteUserCommand(userId, body.ExpectedRowVersion);
+        var command = new DeleteUserAccountCommand(
+            UserId: userId,
+            UserRowVersion: body.UserRowVersion,
+            EmployeeRowVersion: body.EmployeeRowVersion);
 
         await handler.HandleAsync(command, cancellationToken);
 

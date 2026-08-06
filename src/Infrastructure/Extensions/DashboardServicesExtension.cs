@@ -1,10 +1,17 @@
-﻿namespace HelpDesk.src.Infrastructure.Extensions;
+﻿using HelpDesk.src.Features.Dashboard;
+using HelpDesk.src.Shared.Interfaces;
+using HelpDesk.src.Shared.Pagination;
+
+namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class DashboardServicesExtension
 {
     public static IServiceCollection AddDashboardServices(
-        this IServiceCollection service)
+        this IServiceCollection services)
     {
-        return service;
+        // Create (POST)
+        services.AddScoped<IQueryHandler<PagedQuery, PagedResult<DashboardResponse>>, DashboardHandler>();
+
+        return services;
     }
 }

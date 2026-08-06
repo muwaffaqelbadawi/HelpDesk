@@ -2,5 +2,5 @@
 
 public sealed record SeederIdentity(
     string Key,
-    string Version,
-    string Scope);
+    string Scope,
+    string Version);

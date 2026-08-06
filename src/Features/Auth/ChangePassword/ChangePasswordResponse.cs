@@ -4,5 +4,5 @@ using HelpDesk.src.Shared.Responses;
 namespace HelpDesk.src.Features.Auth.ChangePassword;
 
 public sealed record ChangePasswordResponse(
-   UserData UserData,
+   UserAccountData UserAccountData,
    TokenResult Token);

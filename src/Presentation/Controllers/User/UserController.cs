@@ -1,5 +1,5 @@
-﻿using HelpDesk.src.Features.Users.GetCurrent;
-using HelpDesk.src.Features.Users.UpdateUserProfile;
+﻿using HelpDesk.src.Features.Users.UserAccount.GetCurrent;
+using HelpDesk.src.Features.Users.UserAccount.UpdateCurrent;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -25,34 +25,35 @@ public sealed class UserController : ControllerBase
         _dateTimeService = dateTimeService;
     }
 
-    // Get Current User
+    // GetCurrent
     [HttpGet("me")]
-    public async Task<IActionResult> GetCurrentUser(
-        [FromServices] IQueryHandler<CurrentUserResponse> handler,
+    public async Task<IActionResult> GetCurrentUserAccount(
+        [FromServices] IQueryHandler<CurrentUserAccountResponse> handler,
         [FromServices] IDateTimeService dateTimeService,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(cancellationToken);
 
-        return Ok(new ApiResponse<CurrentUserResponse>(
+        return Ok(new ApiResponse<CurrentUserAccountResponse>(
             message: "User fetched successfully.",
             time: dateTimeService.UtcNow,
             data: result));
     }
 
-    // Update User Profile
+    // Update
     [HttpPut("me")]
-    public async Task<IActionResult> UpdateUserProfile(
-        [FromServices] ICommandHandler<UpdateUseProfilerCommand, UpdateUserProfileResponse> handler,
-        [FromBody] UpdateUserProfileBody body,
+    public async Task<IActionResult> UpdateCurrentUserAccount(
+        [FromServices] ICommandHandler<UpdateCurrentUserAccountCommand, UpdateCurrentUserAccountResponse> handler,
+        [FromBody] UpdateCurrentUserAccountBody body,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateUseProfilerCommand(
+        var command = new UpdateCurrentUserAccountCommand(
             body.FullEnName,
             body.FullArName,
             body.UserName,
             body.Email,
-            body.ExpectedRowVersion);
+            body.UserRowVersion,
+            body.EmployeeRowVersion);
 
         await handler.HandleAsync(command, cancellationToken);
 

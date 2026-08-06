@@ -1,4 +1,5 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketStatuses;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,7 @@ public sealed class DeleteTicketHandler :
                  && t.CreatedById == userId)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(t => t.DeletedById, userId)
+                .SetProperty(t => t.StatusId, TicketStatusIds.Deleted)
                 .SetProperty(t => t.DeletedAt, now)
                 .SetProperty(t => t.IsDeleted, true),
             cancellationToken);

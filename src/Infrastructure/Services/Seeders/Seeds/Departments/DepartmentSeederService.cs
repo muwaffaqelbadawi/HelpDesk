@@ -47,13 +47,13 @@ public sealed class DepartmentSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, version, scope);
+            _logger.SeedAlreadyApplied(key, scope, version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, version, scope);
+        _logger.ApplyingSeed(key, scope, version);
 
         // AddRange(new Departments)
         foreach (var seed in DepartmentsLookup.Departments)
@@ -100,7 +100,7 @@ public sealed class DepartmentSeederService : IDataSeeder
             });
 
         // Log (3)
-        _logger.SeedApplied(key, version, scope);
+        _logger.SeedApplied(key, scope, version);
 
         // SaveChanges once
         await _dbContext.SaveChangesAsync(cancellationToken);

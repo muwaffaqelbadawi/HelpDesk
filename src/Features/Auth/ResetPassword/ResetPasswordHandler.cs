@@ -1,29 +1,34 @@
-﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses;
+using HelpDesk.src.Shared.Projections;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Auth.ResetPassword;
 
 public sealed class ResetPasswordHandler :
     ICommandHandler<ResetPasswordCommand, ResetPasswordResponse>
 {
-    private readonly IUserProvider _userProvider;
+    private readonly IUserContext _userContext;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AppDbContext _dbContext;
     private readonly ITokenService _tokenService;
     private readonly IDateTimeService _dateTimeService;
     private readonly ILogger<ResetPasswordHandler> _logger;
 
     public ResetPasswordHandler(
-        IUserProvider userProvider,
+        IUserContext userContext,
         UserManager<ApplicationUser> userManager,
+        AppDbContext dbContext,
         ITokenService tokenService,
         IDateTimeService dateTimeService,
         ILogger<ResetPasswordHandler> logger)
     {
-        _userProvider = userProvider;
+        _userContext = userContext;
         _userManager = userManager;
+        _dbContext = dbContext;
         _tokenService = tokenService;
         _dateTimeService = dateTimeService;
         _logger = logger;
@@ -35,9 +40,7 @@ public sealed class ResetPasswordHandler :
     {
         // Admin-initiated
 
-        // Resolve admin/superadmin performing the reset
-        var currentUser = await _userProvider.GetUserAsync(cancellationToken)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
+        var currentUserId = _userContext.GuidUserId;
 
         // Find target user
         var user = await _userManager.FindByIdAsync(command.UserId)
@@ -57,7 +60,7 @@ public sealed class ResetPasswordHandler :
         {
             _logger.LogWarning(
                 "Admin {AdminId} failed to reset password for user {UserId}. Errors: {Errors}",
-                currentUser.Id,
+                currentUserId,
                 user.Id,
                 string.Join(", ", result.Errors.Select(e => e.Description)));
 
@@ -77,7 +80,7 @@ public sealed class ResetPasswordHandler :
         }
 
         user.LastPasswordChangedAt = _dateTimeService.UtcNow;
-        user.LastPasswordChangedById = currentUser.Id;
+        user.LastPasswordChangedById = currentUserId;
         user.MustChangePassword = true;
 
         await _userManager.UpdateAsync(user);
@@ -89,7 +92,7 @@ public sealed class ResetPasswordHandler :
 
         _logger.LogInformation(
             "Admin {AdminId} reset password for user {UserId}",
-            currentUser.Id,
+            currentUserId,
             user.Id);
 
         // Defensive check
@@ -99,13 +102,14 @@ public sealed class ResetPasswordHandler :
                 $"User {user.Id} is missing required profile information.");
         }
 
+        var userAccountData = await _dbContext.Users
+            .AsNoTracking()
+            .Where(u => u.Id == user.Id)
+            .SelectUserAccount()
+            .SingleAsync(cancellationToken);
+
         return new ResetPasswordResponse(
-            UserData: new UserData(
-                UserId: user.Id,
-                UserName: user.UserName,
-                Email: user.Email,
-                FullEnName: user.Employee?.FullEnName,
-                FullArName: user.Employee?.FullArName,
-                EmployeeRowVersion: user.Employee?.RowVersion));
+            UserAccountData: userAccountData,
+            Token: token);
     }
 }

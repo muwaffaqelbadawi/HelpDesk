@@ -49,13 +49,13 @@ public sealed class PermissionSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, version, scope);
+            _logger.SeedAlreadyApplied(key, scope, version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, version, scope);
+        _logger.ApplyingSeed(key, scope, version);
 
         // Load existing entities into Dictionary
         var existingPermissions = await _dbContext.Permissions
@@ -103,7 +103,7 @@ public sealed class PermissionSeederService : IDataSeeder
             });
 
         // Log (3)
-        _logger.SeedApplied(key, version, scope);
+        _logger.SeedApplied(key, scope, version);
 
         // SaveChanges once
         await _dbContext.SaveChangesAsync(cancellationToken);

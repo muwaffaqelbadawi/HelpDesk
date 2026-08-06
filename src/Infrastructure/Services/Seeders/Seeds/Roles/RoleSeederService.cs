@@ -47,13 +47,13 @@ public sealed class RoleSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, version, scope);
+            _logger.SeedAlreadyApplied(key, scope, version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, version, scope);
+        _logger.ApplyingSeed(key, scope, version);
 
         // Load existing entities into Dictionary 
         var existingRoles = await _dbContext.Roles
@@ -101,7 +101,7 @@ public sealed class RoleSeederService : IDataSeeder
             });
 
         // Log (3)
-        _logger.SeedApplied(key, version, scope);
+        _logger.SeedApplied(key, scope, version);
 
         // SaveChanges once
         await _dbContext.SaveChangesAsync(cancellationToken);

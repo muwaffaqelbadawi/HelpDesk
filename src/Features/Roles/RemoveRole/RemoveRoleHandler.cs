@@ -1,16 +1,17 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
-using HelpDesk.src.Shared.Responses;
-using Microsoft.AspNetCore.Identity;
 using HelpDesk.src.Shared.Interfaces;
+using HelpDesk.src.Shared.Projections;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Roles.RemoveRole;
 
 public sealed class RemoveRoleHandler
     : ICommandHandler<RemoveRoleCommand, RemoveRoleResponse>
 {
-    private readonly IUserProvider _userProvider;
+    private readonly IUserContext _userContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly AppDbContext _dbContext;
@@ -18,14 +19,14 @@ public sealed class RemoveRoleHandler
     private readonly ILogger<RemoveRoleHandler> _logger;
 
     public RemoveRoleHandler(
-        IUserProvider userProvider,
+        IUserContext userContext,
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         AppDbContext dbContext,
         IDateTimeService dateTimeService,
         ILogger<RemoveRoleHandler> logger)
     {
-        _userProvider = userProvider;
+        _userContext = userContext;
         _userManager = userManager;
         _roleManager = roleManager;
         _dbContext = dbContext;
@@ -38,25 +39,23 @@ public sealed class RemoveRoleHandler
         CancellationToken cancellationToken)
     {
         // Resolve admin performing the action
-        var currentUser = await _userProvider.GetUserAsync(cancellationToken)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
+
+        var currentUserId = _userContext.GuidUserId;
+
+        var roleId = command.RoleId.ToString();
 
         // Find target user
         var user = await _userManager.FindByIdAsync(command.UserId)
             ?? throw new UserNotFoundException(command.UserId);
 
-        // Resolve the role by name (you don't have its Id yet)
-        var role = await _roleManager.FindByNameAsync(command.RoleName)
-            ?? throw new RoleNotFoundException(command.RoleName);
+        var role = await _roleManager.FindByIdAsync(roleId)
+            ?? throw new RoleNotFoundException(roleId);
 
         var now = _dateTimeService.UtcNow;
 
-
-
-
         _logger.LogInformation("Admin {AdminId} removed role {Role} from user {UserId}",
-            currentUser.Id,
-            command.RoleName,
+            currentUserId,
+            command.RoleId,
             user.Id);
 
         // Defensive check
@@ -66,13 +65,12 @@ public sealed class RemoveRoleHandler
                 $"User {user.Id} is missing required profile information.");
         }
 
-        return new RemoveRoleResponse(
-            UserData: new UserData(
-                UserId: user.Id,
-                UserName: user.UserName,
-                Email: user.Email,
-                FullEnName: user.Employee?.FullEnName,
-                FullArName: user.Employee?.FullArName,
-                EmployeeRowVersion: user.Employee?.RowVersion));
+        var userAccountData = await _dbContext.Users
+            .AsNoTracking()
+            .Where(u => u.Id == user.Id)
+            .SelectUserAccount()
+            .SingleAsync(cancellationToken);
+
+        return new RemoveRoleResponse(userAccountData);
     }
 }

@@ -63,7 +63,7 @@ public sealed class LoginHandler :
         // Get user roles (if found)
         var roles = await _dbContext.UserRoles
             .Where(ur => ur.UserId == user.Id && ur.RemovedAt == null)
-            .Select(ur => ur.Role.Name)
+            .Select(ur => ur.Role.Name ?? string.Empty)
             .ToListAsync(cancellationToken);
 
         // Defensive check
@@ -73,15 +73,18 @@ public sealed class LoginHandler :
                 $"User {user.Id} is missing required profile information.");
         }
 
+        var employee = UserResponseFactory.CreateEmployee(user.Employee);
+
         return new LoginResponse(
-            UserData: new UserData(
-                UserId: user.Id,
-                UserName: user.UserName,
-                Email: user.Email,
-                FullEnName: user.Employee?.FullEnName,
-                FullArName: user.Employee?.FullArName,
-                EmployeeRowVersion: user.Employee?.RowVersion),
-            Roles: roles!,
+            UserAccountData: new UserAccountData
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                RowVersion = user.RowVersion,
+                Employee = employee,
+            },
+            Roles: roles,
             Token: token);
     }
 }

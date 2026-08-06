@@ -38,9 +38,9 @@ public sealed class AdminAuthController : ControllerBase
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserData>(
-            message: "Password reset successfully.",
+        return Ok(new ApiResponse<UserAccountData>(
+            message: ApiMessages.PasswordReset,
             time: dateTimeService.UtcNow,
-            data: result.UserData));
+            data: result.UserAccountData));
     }
 }

@@ -2,4 +2,4 @@
 
 public sealed record AssignRoleCommand(
     string UserId,
-    string RoleName);
+    string Role);

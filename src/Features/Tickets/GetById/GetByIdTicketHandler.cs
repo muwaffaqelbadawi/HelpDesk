@@ -1,6 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.Projections;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Tickets.GetById;
@@ -22,9 +23,9 @@ public sealed class GetByIdTicketHandler
         var ticket = await _dbContext.Tickets
             .Where(t => t.Id == query.TicketId)
             .SelectTicketData()
-            .SingleAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken)
+                ?? throw new TicketNotFoundException($"Ticket {query.TicketId} was not found.");
 
-        return new GetByIdTicketResponse(
-            TicketData: ticket);
+        return new GetByIdTicketResponse(ticket);
     }
 }

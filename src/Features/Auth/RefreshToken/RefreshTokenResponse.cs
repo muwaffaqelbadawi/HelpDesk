@@ -4,6 +4,5 @@ using HelpDesk.src.Shared.Responses;
 namespace HelpDesk.src.Features.Auth.RefreshToken;
 
 public sealed record RefreshTokenResponse(
-    UserData UserData,
-    IReadOnlyCollection<string> Roles,
+    UserAccountData UserAccountData,
     TokenResult Token);

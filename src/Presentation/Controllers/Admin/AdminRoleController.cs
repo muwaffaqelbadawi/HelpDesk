@@ -1,5 +1,6 @@
 ﻿using HelpDesk.src.Features.Roles.Assign;
 using HelpDesk.src.Features.Roles.GetAll;
+using HelpDesk.src.Features.Roles.GetById;
 using HelpDesk.src.Features.Roles.RemoveRole;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
@@ -13,7 +14,6 @@ namespace HelpDesk.src.Presentation.Controllers.Admin;
 public sealed class AdminRoleController : ControllerBase
 {
     // Admin-initiated
-
 
     private readonly IWebHostEnvironment _environment;
     private readonly IDateTimeService _dateTimeService;
@@ -36,24 +36,30 @@ public sealed class AdminRoleController : ControllerBase
         var result = await handler.HandleAsync(cancellationToken);
 
         return Ok(new ApiResponse<IReadOnlyCollection<RoleData>>(
-            message: "Roles retrieved successfully.",
+            message: ApiMessages.RolesRetrieved,
             time: _dateTimeService.UtcNow,
             data: result.Roles));
     }
 
-
-
-    // GET /api/admin/roles/{roleId}
+    // GetById role
     [HttpGet("{roleId}")]
-    public Task<IActionResult> GetRole()
+    [Authorize(Policy = "Permission:Roles.View")]
+    public async Task<IActionResult> GetRole(
+        [FromServices] IQueryHandler<GetByIdRoleQuery, GetByIdRoleResponse> handler,
+        [FromRoute] Guid roleId,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var query = new GetByIdRoleQuery(roleId);
+
+        var result = await handler.HandleAsync(query, cancellationToken);
+
+        return Ok(new ApiResponse<GetByIdRoleResponse>(
+            message: ApiMessages.RoleRetrieved,
+            time: _dateTimeService.UtcNow,
+            data: result));
     }
 
-
-
-
-    // Assign Role to a specified user (POST)
+    // AssignRole
     [Authorize(Policy = "Permission:Users.Assign-Role")]
     [HttpPost("users/{userId}/roles")]
     public async Task<IActionResult> AssignRole(
@@ -66,31 +72,28 @@ public sealed class AdminRoleController : ControllerBase
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserData>(
-            message: "Role Assigned successfully.",
+        return Ok(new ApiResponse<AssignRoleResponse>(
+            message: ApiMessages.RoleAssigned,
             time: _dateTimeService.UtcNow,
-            data: result.UserData));
+            data: result));
     }
 
-
-
-
-    // (DELETE) Remove Role from a user
+    // RemoveRole from user
     [Authorize(Policy = "Permission:Users.Remove-Role")]
-    [HttpDelete("users/{userId}/roles{roleName}")]
+    [HttpDelete("users/{userId}/roles/{roleId}")]
     public async Task<IActionResult> RemoveRole(
          [FromServices] ICommandHandler<RemoveRoleCommand, RemoveRoleResponse> handler,
          [FromRoute] string userId,
-         [FromRoute] string roleName,
+         [FromRoute] Guid roleId,
          CancellationToken cancellationToken)
     {
-        var command = new RemoveRoleCommand(userId, roleName);
+        var command = new RemoveRoleCommand(userId, roleId);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserData>(
-            message: "Role removed successfully.",
+        return Ok(new ApiResponse<RemoveRoleResponse>(
+            message: ApiMessages.RoleRemoved,
             time: _dateTimeService.UtcNow,
-            data: result.UserData));
+            data: result));
     }
 }

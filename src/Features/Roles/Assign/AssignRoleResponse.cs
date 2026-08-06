@@ -3,5 +3,4 @@
 namespace HelpDesk.src.Features.Roles.Assign;
 
 public sealed record AssignRoleResponse(
-    string RoleName,
-    UserData UserData);
+    UserAccountData UserAccountData);

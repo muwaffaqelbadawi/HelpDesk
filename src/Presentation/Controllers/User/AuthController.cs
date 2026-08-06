@@ -148,10 +148,10 @@ public sealed class AuthController : ControllerBase
         // Overwrite cookies with fresh tokens (keep session alive)
         Response.SetTokenCookies(result.Token, _environment);
 
-        return Ok(new ApiResponse<UserData>(
+        return Ok(new ApiResponse<UserAccountData>(
            message: "Password changed successfully.",
            time: _dateTimeService.UtcNow,
-           data: result.UserData));
+           data: result.UserAccountData));
     }
 
 
@@ -169,7 +169,7 @@ public sealed class AuthController : ControllerBase
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserData>(
+        return Ok(new ApiResponse<UserAccountData>(
            message: result.Message,
            time: _dateTimeService.UtcNow,
            data: null));
@@ -195,10 +195,10 @@ public sealed class AuthController : ControllerBase
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserData>(
+        return Ok(new ApiResponse<UserAccountData>(
            message: "Password has been reset successfully.",
            time: _dateTimeService.UtcNow,
-           data: result.UserData));
+           data: result.UserAccountData));
     }
 
 

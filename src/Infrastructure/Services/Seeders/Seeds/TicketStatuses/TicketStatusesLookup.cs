@@ -46,7 +46,13 @@ public static class TicketStatusesLookup
             Id: TicketStatusIds.Cancelled,
             Name: "Cancelled",
             Code: "CANCELLED",
-            SortOrder: 6)
+            SortOrder: 6),
+
+        new(
+            Id: TicketStatusIds.Deleted,
+            Name: "Deleted",
+            Code: "DELETED",
+            SortOrder: 7)
     ];
 
     public static LookupSeed Open =>
@@ -69,5 +75,4 @@ public static class TicketStatusesLookup
 
     public static LookupSeed Cancelled =>
         Statuses.Single(x => x.Id == TicketStatusIds.Cancelled);
-
 }

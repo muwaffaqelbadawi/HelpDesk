@@ -48,13 +48,13 @@ public sealed class ModuleSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, version, scope);
+            _logger.SeedAlreadyApplied(key, scope, version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, version, scope);
+        _logger.ApplyingSeed(key, scope, version);
 
         // Load existing modules into Dictionary
         var existingModules = await _dbContext.Modules
@@ -101,7 +101,7 @@ public sealed class ModuleSeederService : IDataSeeder
             });
 
         // Log (3)
-        _logger.SeedApplied(key, version, scope);
+        _logger.SeedApplied(key, scope, version);
 
         // SaveChanges once
         await _dbContext.SaveChangesAsync(cancellationToken);

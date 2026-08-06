@@ -7,28 +7,20 @@ namespace HelpDesk.src.Features.Permissions.GetCurrent;
 public sealed class GetCurrentPermissionsHandler
     : IQueryHandler<CurrentPermissionsResponse>
 {
-    private readonly IUserProvider _userProvider;
     private readonly IUserContext _userContext;
     private readonly AppDbContext _dbContext;
-    private readonly ILogger<GetCurrentPermissionsHandler> _logger;
 
     public GetCurrentPermissionsHandler(
-        IUserProvider userProvider,
         IUserContext userContext,
-        AppDbContext dbContext,
-        ILogger<GetCurrentPermissionsHandler> logger)
+        AppDbContext dbContext)
     {
-        _userProvider = userProvider;
         _userContext = userContext;
         _dbContext = dbContext;
-        _logger = logger;
     }
 
     public async Task<CurrentPermissionsResponse> HandleAsync(
         CancellationToken cancellationToken)
     {
-        // Self-service
-
         var userId = _userContext.GuidUserId;
 
         var permissions = await _dbContext.UserRoles
@@ -38,7 +30,6 @@ public sealed class GetCurrentPermissionsHandler
             .Distinct()
             .ToListAsync(cancellationToken);
 
-        return new CurrentPermissionsResponse(
-            Permissions: permissions);
+        return new CurrentPermissionsResponse(permissions);
     }
 }

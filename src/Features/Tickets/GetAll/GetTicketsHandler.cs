@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.Projections;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.EntityFrameworkCore;
 

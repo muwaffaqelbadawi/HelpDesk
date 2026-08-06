@@ -10,7 +10,7 @@ public sealed class AssignRoleValidator : AbstractValidator<AssignRoleCommand>
         RuleFor(x => x.UserId)
             .NotEmpty();
 
-        RuleFor(x => x.RoleName)
+        RuleFor(x => x.Role)
             .NotEmpty()
             .MaximumLength(RolePolicy.NameMaxLength);
     }

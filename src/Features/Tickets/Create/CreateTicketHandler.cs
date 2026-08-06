@@ -1,9 +1,10 @@
-﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.Data.Business.BusinessSchemas;
+using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketPriorities;
 using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketStatuses;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.Projections;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Tickets.Create;
@@ -35,11 +36,11 @@ public sealed class CreateTicketHandler :
         CreateTicketCommand command,
         CancellationToken cancellationToken)
     {
-        // Generate ticket number
-        var ticketNumber = await _numberingService
-            .GetNextTicketNumberValueAsync(cancellationToken);
-
         var userId = _userContext.GuidUserId;
+
+        var ticketNumber = await _numberingService.GetNextNumberAsync(
+            NumberType.Ticket,
+            cancellationToken);
 
         var ticket = new Ticket
         {
@@ -56,13 +57,12 @@ public sealed class CreateTicketHandler :
         _dbContext.Tickets.Add(ticket);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        var newTicket = await _dbContext.Tickets
+        var ticketData = await _dbContext.Tickets
             .AsNoTracking()
             .Where(t => t.Id == ticket.Id)
             .SelectTicketData()
             .SingleAsync(cancellationToken);
 
-        return new CreateTicketResponse(
-            TicketData: newTicket);
+        return new CreateTicketResponse(ticketData);
     }
 }

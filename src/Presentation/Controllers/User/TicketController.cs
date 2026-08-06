@@ -40,7 +40,7 @@ public sealed class TicketController : ControllerBase
     }
 
     // GetByIdTicket
-    [HttpGet("{ticketId:guid}")]
+    [HttpGet("{ticketId:guid}", Name = nameof(GetByIdTicket))]
     public async Task<IActionResult> GetByIdTicket(
         [FromServices] IQueryHandler<GetByIdTicketQuery, GetByIdTicketResponse> handler,
         [FromRoute] Guid ticketId,
@@ -70,10 +70,15 @@ public sealed class TicketController : ControllerBase
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<CreateTicketResponse>(
+        var value = new ApiResponse<CreateTicketResponse>(
             message: ApiMessages.TicketCreated,
             time: _dateTimeService.UtcNow,
-            data: result));
+            data: result);
+
+        return CreatedAtRoute(
+            routeName: nameof(GetByIdTicket),
+            routeValues: new { ticketId = result.TicketData.TicketId },
+            value: value);
     }
 
     // UpdateTicket
@@ -101,7 +106,6 @@ public sealed class TicketController : ControllerBase
     }
 
     // Delete Ticket
-
     [HttpDelete("{ticketId:guid}")]
     public async Task<IActionResult> DeleteTicket(
         [FromServices] ICommandHandler<DeleteTicketCommand> handler,

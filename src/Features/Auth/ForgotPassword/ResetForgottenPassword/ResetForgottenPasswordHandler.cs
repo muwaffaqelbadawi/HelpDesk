@@ -84,13 +84,16 @@ public sealed class ResetForgottenPasswordHandler :
                 $"User {user.Id} is missing required profile information.");
         }
 
+        var employee = UserResponseFactory.CreateEmployee(user.Employee);
+
         return new ResetForgottenPasswordResponse(
-            UserData: new UserData(
-                UserId: user.Id,
-                UserName: user.UserName,
-                Email: user.Email,
-                FullEnName: user.Employee?.FullEnName,
-                FullArName: user.Employee?.FullArName,
-                EmployeeRowVersion: user.Employee?.RowVersion));
+            UserAccountData: new UserAccountData
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                RowVersion = user.RowVersion,
+                Employee = employee,
+            });
     }
 }

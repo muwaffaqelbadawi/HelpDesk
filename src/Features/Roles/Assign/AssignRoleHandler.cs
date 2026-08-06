@@ -2,7 +2,7 @@
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses;
+using HelpDesk.src.Shared.Projections;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +11,7 @@ namespace HelpDesk.src.Features.Roles.Assign;
 public sealed class AssignRoleHandler
     : ICommandHandler<AssignRoleCommand, AssignRoleResponse>
 {
-    private readonly IUserProvider _userProvider;
+    private readonly IUserContext _userContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly AppDbContext _dbContext;
@@ -19,14 +19,14 @@ public sealed class AssignRoleHandler
     private readonly ILogger<AssignRoleHandler> _logger;
 
     public AssignRoleHandler(
-        IUserProvider userProvider,
+        IUserContext userContext,
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         AppDbContext dbContext,
         IDateTimeService dateTimeService,
         ILogger<AssignRoleHandler> logger)
     {
-        _userProvider = userProvider;
+        _userContext = userContext;
         _userManager = userManager;
         _roleManager = roleManager;
         _dbContext = dbContext;
@@ -38,17 +38,15 @@ public sealed class AssignRoleHandler
         AssignRoleCommand command,
         CancellationToken cancellationToken)
     {
-        // Resolve admin performing the action
-        var currentUser = await _userProvider.GetUserAsync(cancellationToken)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
+        var currentUserId = _userContext.GuidUserId;
 
         // Find target user
         var user = await _userManager.FindByIdAsync(command.UserId)
             ?? throw new UserNotFoundException(command.UserId);
 
         // Resolve the role by name (you don't have its Id yet)
-        var role = await _roleManager.FindByNameAsync(command.RoleName)
-            ?? throw new RoleNotFoundException(command.RoleName);
+        var role = await _roleManager.FindByNameAsync(command.Role)
+            ?? throw new RoleNotFoundException(command.Role);
 
         // now
         var now = _dateTimeService.UtcNow;
@@ -64,7 +62,7 @@ public sealed class AssignRoleHandler
         // Reactivate or create
         if (existingAssignment is not null)
         {
-            throw new DomainException($"User already has role '{command.RoleName}'.");
+            throw new DomainException($"User already has role '{command.Role}'.");
         }
 
         if (existingAssignment is not null)
@@ -73,7 +71,7 @@ public sealed class AssignRoleHandler
             existingAssignment.RemovedAt = null;
             existingAssignment.RemovedById = null;
             existingAssignment.AssignedAt = now;
-            existingAssignment.AssignedById = currentUser.Id;
+            existingAssignment.AssignedById = currentUserId;
         }
         else
         {
@@ -83,7 +81,7 @@ public sealed class AssignRoleHandler
                 UserId = user.Id,
                 RoleId = role.Id,
                 AssignedAt = now,
-                AssignedById = currentUser.Id
+                AssignedById = currentUserId
             });
         }
 
@@ -91,8 +89,8 @@ public sealed class AssignRoleHandler
 
         _logger.LogInformation(
             "Admin {AdminId} assigned role {Role} to user {UserId}",
-            currentUser.Id,
-            command.RoleName,
+            currentUserId,
+            command.Role,
             user.Id);
 
         // Defensive check
@@ -102,14 +100,12 @@ public sealed class AssignRoleHandler
                 $"User {user.Id} is missing required profile information.");
         }
 
-        return new AssignRoleResponse(
-            RoleName: command.RoleName,
-            UserData: new UserData(
-                UserId: user.Id,
-                UserName: user.UserName,
-                Email: user.Email,
-                FullEnName: user.Employee?.FullEnName,
-                FullArName: user.Employee?.FullArName,
-                EmployeeRowVersion: user.Employee?.RowVersion));
+        var userAccountData = await _dbContext.Users
+            .AsNoTracking()
+            .Where(u => u.Id == user.Id)
+            .SelectUserAccount()
+            .SingleAsync(cancellationToken);
+
+        return new AssignRoleResponse(userAccountData);
     }
 }

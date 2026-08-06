@@ -2,4 +2,4 @@
 
 public sealed record class RemoveRoleCommand(
     string UserId,
-    string RoleName);
+    Guid RoleId);

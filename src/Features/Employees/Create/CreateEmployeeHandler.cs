@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Users.Create;
+﻿using HelpDesk.src.Infrastructure.Database.Data.Business.BusinessSchemas;
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Shared.Interfaces;
 
@@ -9,12 +9,12 @@ public sealed class CreateEmployeeHandler :
 {
     private readonly IDateTimeService _dateTimeService;
     private readonly INumberingService _numberingService;
-    private readonly ILogger<CreateUserHandler> _logger;
+    private readonly ILogger<CreateEmployeeHandler> _logger;
 
     public CreateEmployeeHandler(
         INumberingService numberingService,
         IDateTimeService dateTimeService,
-        ILogger<CreateUserHandler> logger)
+        ILogger<CreateEmployeeHandler> logger)
     {
         _numberingService = numberingService;
         _dateTimeService = dateTimeService;
@@ -25,9 +25,9 @@ public sealed class CreateEmployeeHandler :
         CreateEmployeeCommand request,
         CancellationToken cancellationToken)
     {
-        // Generate employee number
-        var employeeNumber = await _numberingService
-            .GetNextEmployeeNumberValueAsync(cancellationToken);
+        var employeeNumber = await _numberingService.GetNextNumberAsync(
+            NumberType.Employee,
+            cancellationToken);
 
         // Create a new employee
         var employee = new Employee

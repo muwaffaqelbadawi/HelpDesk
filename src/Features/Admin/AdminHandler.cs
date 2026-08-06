@@ -117,16 +117,6 @@ public sealed class AdminHandler :
             roles: [command.RoleName],
             tempPassword: tempPassword);
 
-        //var log = new AdminCreatedLog(
-        //    Event: "SuperAdminCreated",
-        //    AdminData: adminData,
-        //    Roles: [command.RoleName],
-        //    TempPassword: tempPassword);
-
-        //_logger.LogInformation(
-        //    "{@Log}",
-        //    log);
-
         return new AdminResponse(
             AdminData: adminData,
             TempPassword: tempPassword);

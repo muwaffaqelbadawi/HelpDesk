@@ -1,5 +1,3 @@
 ﻿namespace HelpDesk.src.Features.Employees.GetById;
 
-internal class GetByIdEmployeeResponse
-{
-}
+public sealed record GetByIdEmployeeResponse();

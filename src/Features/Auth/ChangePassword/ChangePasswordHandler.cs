@@ -1,8 +1,10 @@
-﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses;
+using HelpDesk.src.Shared.Projections;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Auth.ChangePassword;
 
@@ -12,6 +14,7 @@ public sealed class ChangePasswordHandler :
     private readonly IDateTimeService _dateTimeService;
     private readonly IUserProvider _userProvider;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AppDbContext _dbContext;
     private readonly ITokenService _tokenService;
     private readonly ILogger<ChangePasswordHandler> _logger;
 
@@ -19,11 +22,13 @@ public sealed class ChangePasswordHandler :
         IDateTimeService dateTimeService,
         IUserProvider userProvider,
         UserManager<ApplicationUser> userManager,
+        AppDbContext dbContext,
         ITokenService tokenService,
         ILogger<ChangePasswordHandler> logger)
     {
         _dateTimeService = dateTimeService;
         _userProvider = userProvider;
+        _dbContext = dbContext;
         _userManager = userManager;
         _tokenService = tokenService;
         _logger = logger;
@@ -83,15 +88,14 @@ public sealed class ChangePasswordHandler :
                 $"User {user.Id} is missing required profile information.");
         }
 
-        // Consider display time in user local time in the UI
+        var userAccountData = await _dbContext.Users
+            .AsNoTracking()
+            .Where(u => u.Id == user.Id)
+            .SelectUserAccount()
+            .SingleAsync(cancellationToken);
+
         return new ChangePasswordResponse(
-            UserData: new UserData(
-                UserId: user.Id,
-                UserName: user.UserName,
-                Email: user.Email,
-                FullEnName: user.Employee?.FullEnName,
-                FullArName: user.Employee?.FullArName,
-                EmployeeRowVersion: user.Employee?.RowVersion),
+            UserAccountData: userAccountData,
             Token: token);
     }
 }

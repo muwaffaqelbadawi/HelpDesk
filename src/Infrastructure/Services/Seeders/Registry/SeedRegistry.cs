@@ -1,56 +1,75 @@
-﻿namespace HelpDesk.src.Infrastructure.Services.Seeders.Registry;
+﻿using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Branches;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Departments;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.EmployeeStatuses;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Modules;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Permissions;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.RolePermissionModules;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Roles;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketPriorities;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketStatuses;
+using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.UserStatuses;
+
+namespace HelpDesk.src.Infrastructure.Services.Seeders.Registry;
 
 public static class SeedRegistry
 {
-    // Auth/RBAC
     public static readonly SeederIdentity Permissions =
-        new("Auth.Permissions",
-            "PermissionsSeeder",
-            "v1");
+        new(
+            Key: "Auth.Permissions",
+            Scope: nameof(PermissionSeederService),
+            Version: "v1");
 
     public static readonly SeederIdentity Roles =
-        new("Auth.Roles",
-            "RolesSeeder",
-            "v1");
+        new(
+            Key: "Auth.Roles",
+            Scope: nameof(RoleSeederService),
+            Version: "v1");
 
     public static readonly SeederIdentity Modules =
-       new("Auth.Modules",
-           "ModulesSeeder",
-           "v1");
+       new(
+           Key: "Auth.Modules",
+           Scope: nameof(ModuleSeederService),
+           Version: "v1");
 
     public static readonly SeederIdentity RolePermissionModules =
-        new("Auth.RolePermissionModules",
-            "RolePermissionModulesSeeder",
-            "v1");
+        new(
+            Key: "Auth.RolePermissionModules",
+            Scope: nameof(RolePermissionModulesSeederService),
+            Version: "v1");
 
     public static readonly SeederIdentity UserStatuses =
-        new("Auth.UserStatuses",
-            "UserStatusesSeeder",
-            "v1");
+        new(
+            Key: "Auth.UserStatuses",
+            Scope: nameof(UserStatusSeederService),
+            Version: "v1");
 
-    // Business
     public static readonly SeederIdentity Departments =
-        new("Business.Departments",
-            "DepartmentsSeederService",
-            "v1");
+        new(
+            Key: "Business.Departments",
+            Scope: nameof(DepartmentSeederService),
+            Version: "v1");
 
     public static readonly SeederIdentity Branches =
-        new("Business.Branches",
-            "BranchesSeederService",
-            "v1");
+        new(
+            Key: "Business.Branches",
+            Scope: nameof(BranchSeederService),
+            Version: "v1");
 
     public static readonly SeederIdentity EmployeeStatuses =
-        new("Business.EmployeeStatuses",
-            "EmployeeStatusesSeeder",
-            "v1");
+        new(
+            Key: "Business.EmployeeStatuses",
+            Scope: nameof(EmployeeStatusSeederService),
+            Version: "v1");
 
     public static readonly SeederIdentity TicketStatuses =
-        new("Business.TicketStatuses",
-            "TicketStatusesSeeder",
-            "v1");
+        new(
+            Key: "Business.TicketStatuses",
+            Scope: nameof(TicketStatusSeederService),
+            Version: "v1");
 
     public static readonly SeederIdentity TicketPriorities =
-        new("Business.TicketPriorities",
-            "TicketPrioritiesSeeder",
-            "v1");
+        new(
+            Key: "Business.TicketPriorities",
+            Scope: nameof(TicketPrioritySeederService),
+            Version: "v1");
 }
