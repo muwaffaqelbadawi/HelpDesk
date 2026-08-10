@@ -1,0 +1,6 @@
+﻿using HelpDesk.src.Shared.Responses.Data;
+
+namespace HelpDesk.src.Features.Tickets.GetAssigned;
+
+public sealed record AssignedTicketsResponse(
+    IReadOnlyCollection<TicketData> TicketData);
