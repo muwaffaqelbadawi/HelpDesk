@@ -15,16 +15,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
       - name: Restore dependencies
-        working-directory: HelpDesk.Backend
-        run: dotnet restore
+        working-directory: Backend
+        run: dotnet restore HelpDesk.slnx
+
       - name: Build
-        working-directory: HelpDesk.Backend
-        run: dotnet build --no-restore
+        working-directory: Backend
+        run: dotnet build HelpDesk.slnx --no-restore
+
       - name: Test
-        working-directory: HelpDesk.Backend
-        run: dotnet test --no-build --verbosity normal
+        working-directory: Backend
+        run: dotnet test HelpDesk.slnx --no-build --verbosity normal
