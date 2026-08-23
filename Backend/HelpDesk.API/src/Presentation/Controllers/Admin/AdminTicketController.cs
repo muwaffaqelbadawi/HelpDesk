@@ -30,11 +30,10 @@ public sealed class AdminTicketController : ControllerBase
     [Authorize(Policy = "Permission:Tickets.View")]
     [HttpGet]
     public async Task<IActionResult> GetTickets(
-       [FromServices] IQueryHandler<PagedQuery, PagedResult<TicketData>> handler,
+        [FromQuery] PagedQuery query,
+        [FromServices] IQueryHandler<PagedQuery, PagedResult<TicketData>> handler,
        CancellationToken cancellationToken)
     {
-        var query = new PagedQuery();
-
         var result = await handler.HandleAsync(query, cancellationToken);
 
         return Ok(new ApiResponse<PagedResult<TicketData>>(
@@ -42,9 +41,6 @@ public sealed class AdminTicketController : ControllerBase
             time: _dateTimeService.UtcNow,
             data: result));
     }
-
-
-
 
     // GetById
     [Authorize(Policy = "Permission:Tickets.View")]
@@ -63,9 +59,6 @@ public sealed class AdminTicketController : ControllerBase
             time: _dateTimeService.UtcNow,
             data: result));
     }
-
-
-
 
     // AssignTicket
     [Authorize(Policy = "Permission:Tickets.Assign")]

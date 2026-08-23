@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
-using HelpDesk.src.Shared.Filters;
+using HelpDesk.src.Shared.IdentityBuilders;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Projections;
 using Microsoft.AspNetCore.Identity;
@@ -55,21 +55,16 @@ public sealed class LoginHandler :
             throw new AuthenticationFailedException("Invalid username or password.");
         }
 
-
-
         // Issue new token
         var token = await _tokenService.IssueAfterLoginAsync(
             user,
             cancellationToken);
-
 
         var userAccountData = await _dbContext.Users
             .AsNoTracking()
             .Where(u => u.Id == user.Id)
             .SelectUserAccount()
             .SingleAsync(cancellationToken);
-
-
 
         return new LoginResponse(
             UserAccountData: userAccountData,

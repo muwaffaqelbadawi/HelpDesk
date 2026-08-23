@@ -1,0 +1,40 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'primeflex/primeflex.css';
+@import 'primeicons/primeicons.css';
+
+html,
+body,
+app-root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  outline: none;
+}
+
+/* Dark mode styles (if using dark mode) */
+.dark-mode {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+/* Custom utility classes */
+.card-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}

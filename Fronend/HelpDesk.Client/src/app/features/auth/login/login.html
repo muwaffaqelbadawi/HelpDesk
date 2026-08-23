@@ -1,0 +1,47 @@
+<form [formGroup]="loginForm">
+  <p-card header="Login" [style]="{ width: '360px' }">
+    <div class="field">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        pInputText
+        formControlName="email"
+        class="w-full"
+        name="email"
+        placeholder="Type your email"
+        autocomplete="email"
+      />
+      @if (showEmailError) {
+        @if (requiredEmailError) {
+          <small class="block login-error"> Email is required. </small>
+        } @else if (emailError) {
+          <small class="block login-error"> Email should be valid. </small>
+        }
+      }
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        pInputText
+        formControlName="password"
+        class="w-full"
+        name="password"
+        placeholder="Type your password"
+      />
+      @if (showPasswordError) {
+        @if (requiredPasswordError) {
+          <small class="block login-error"> Password is required. </small>
+        } @else if (passwordMinLengthError) {
+          <small class="block login-error"> Password must be at least 6 characters. </small>
+        }
+      }
+    </div>
+  </p-card>
+  <div class="login-button">
+    <p-button label="SIGN IN" severity="info" styleClass="w-full" [disabled]="loginForm.invalid" />
+  </div>
+  <div class="mt-2">Not a member? <a routerLink="/auth/register">Register</a></div>
+</form>

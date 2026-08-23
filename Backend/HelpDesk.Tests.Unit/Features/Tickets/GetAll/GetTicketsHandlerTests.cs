@@ -1,48 +1,59 @@
 ﻿using HelpDesk.src.Features.Tickets.GetAll;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
+using HelpDesk.src.Shared.Queries;
 using HelpDesk.src.Shared.Responses.Data;
 using NSubstitute;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.GetAll;
 
-public class GetTicketsHandlerTests
+public sealed class GetTicketsHandlerTests
 {
     [Fact]
     public async Task Should_get_tickets()
     {
         // Arrange
+
+        // Mock dependencies (substitutes)
         var ticketReader = Substitute.For<ITicketReader>();
+
+        // SUT (System Under Test)
+        // Real handler instance with mocked dependencies
         var handler = new GetTicketsHandler(ticketReader);
 
-        var query = new PagedQuery
-        {
-            PageNumber = 1,
-            PageSize = 20
-        };
+        // Query parameters
+        var query = new GetTicketsQuery();
 
-        var expected = new PagedResult<TicketData>(
+        // Prepare expected ticket data for assertion
+        var expectedTicketData = new PagedResult<TicketData>(
             Items: [],
-            PageNumber: 1,
-            PageSize: 20,
+            PageNumber: query.PageNumber,
+            PageSize: query.PageSize,
             TotalCount: 1,
             TotalPages: 1);
 
+        // Mock ticket reader to return the expected ticket data
         ticketReader
             .GetAllAsync(
                 query,
                 Arg.Any<CancellationToken>())
-            .Returns(expected);
+            .Returns(expectedTicketData);
 
         // Act
+        // One specific action
         var result = await handler.HandleAsync(
             query,
             CancellationToken.None);
 
         // Assert
-        Assert.Equal(expected, result);
+        // Verify that the result is not null
+        Assert.NotNull(result);
 
+        // Verify the output
+        Assert.Equal(expectedTicketData, result);
+
+        // Test the dependencies were called as expected
         await ticketReader.Received(1).GetAllAsync(
             query,
             Arg.Any<CancellationToken>());

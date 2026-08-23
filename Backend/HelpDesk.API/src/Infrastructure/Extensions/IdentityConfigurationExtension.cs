@@ -10,29 +10,26 @@ public static class IdentityConfigurationExtension
         this IServiceCollection services)
     {
         services
-            .AddIdentityCore<ApplicationUser>()
-            .AddEntityFrameworkStores<AppDbContext>()
+            .AddIdentityCore<ApplicationUser>(options =>
+            {
+                // Password options
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
+
+                // Lockout
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+
+                // User
+                options.User.RequireUniqueEmail = true;
+            })
             .AddRoles<ApplicationRole>()
+            .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
         return services;
     }
 }
-
-
-//options =>
-//            {
-//                // Password options
-//                options.Password.RequireDigit = true;
-//                options.Password.RequireUppercase = true;
-//                options.Password.RequireLowercase = true;
-//                options.Password.RequireNonAlphanumeric = true;
-//                options.Password.RequiredLength = 8;
-
-//                // Lockout
-//                options.Lockout.MaxFailedAccessAttempts = 5;
-//                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-
-//                // User
-//                options.User.RequireUniqueEmail = true;
-//            }

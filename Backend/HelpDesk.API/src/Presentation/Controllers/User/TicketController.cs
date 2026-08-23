@@ -5,6 +5,7 @@ using HelpDesk.src.Features.Tickets.GetByIdOwned;
 using HelpDesk.src.Features.Tickets.GetOwned;
 using HelpDesk.src.Features.Tickets.Update;
 using HelpDesk.src.Shared.Interfaces;
+using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,9 @@ public sealed class TicketController : ControllerBase
 
     // GetCurrent (self-tickets)
     [HttpGet("me/tickets")]
+    [Authorize]
     public async Task<IActionResult> GetCurrentTickets(
+        [FromQuery] PagedQuery query,
         [FromServices] IQueryHandler<OwnedTicketResponse> handler,
         CancellationToken cancellationToken)
     {
@@ -41,7 +44,7 @@ public sealed class TicketController : ControllerBase
     }
 
     // GetByIdOwned
-    [Authorize(Policy = "Permission:Tickets.View")]
+    [Authorize]
     [HttpGet("me/tickets{ticketId:guid}", Name = nameof(GetByIdOwnedTicket))]
     public async Task<IActionResult> GetByIdOwnedTicket(
         [FromServices] IQueryHandler<GetByIdOwnedTicketQuery, GetByIdOwnedTicketResponse> handler,

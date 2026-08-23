@@ -31,7 +31,7 @@ public sealed class GetEmployeesHandler :
 
         var employees = await queryable
             .OrderByDescending(e => e.CreatedAt)
-            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Skip(query.Offset)
             .Take(query.PageSize)
             .SelectEmployeeData()
             .ToListAsync(cancellationToken);

@@ -491,7 +491,7 @@ public partial class AppDbContext
                 .HasMaxLength(200);
 
             // CreatedAt (Property)
-            entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.OccurredAt)
                 .IsRequired()
                 .HasColumnType("datetimeoffset")
                 .HasDefaultValueSql("SYSUTCDATETIME()");

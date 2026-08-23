@@ -49,6 +49,7 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="src\Features\Modules\GetAssigned\" />
+    <Folder Include="src\Features\Dashboard\" />
     <Folder Include="src\Features\Permissions\GetAssigned\" />
     <Folder Include="src\Features\Roles\GetAssigned\" />
     <Folder Include="src\Features\Users\User\" />

@@ -19,7 +19,8 @@ public static class ApplicationServicesExtension
             .AddTimeProviderServices()
             .AddHttpResilienceServices()
             .AddRateLimitServices()
-            .AddFeatures();
+            .AddFeatures()
+            .AddEvents();
 
         return builder;
     }

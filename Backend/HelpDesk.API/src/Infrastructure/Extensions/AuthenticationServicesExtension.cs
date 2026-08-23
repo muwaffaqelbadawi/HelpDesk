@@ -3,7 +3,7 @@ using HelpDesk.src.Infrastructure.HttpContexts;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Infrastructure.Services.Security;
 using HelpDesk.src.Infrastructure.Services.UserProviders;
-using HelpDesk.src.Shared.Filters;
+using HelpDesk.src.Shared.IdentityBuilders;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
 

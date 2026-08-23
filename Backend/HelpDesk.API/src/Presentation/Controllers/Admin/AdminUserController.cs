@@ -9,6 +9,7 @@ using HelpDesk.src.Features.Users.UserAccount.GetById;
 using HelpDesk.src.Features.Users.UserAccount.Update;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
+using HelpDesk.src.Shared.Queries;
 using HelpDesk.src.Shared.Responses;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -39,11 +40,10 @@ public sealed class AdminUserController : ControllerBase
     [HttpGet]
     [Authorize(Policy = "Permission:Users.View")]
     public async Task<IActionResult> GetUsersAccount(
-        [FromServices] IQueryHandler<PagedQuery, PagedResult<UserAccountData>> handler,
+        [FromQuery] GetUsersQuery query,
+        [FromServices] IQueryHandler<GetUsersQuery, PagedResult<UserAccountData>> handler,
         CancellationToken cancellationToken)
     {
-        var query = new PagedQuery();
-
         var result = await handler.HandleAsync(query, cancellationToken);
 
         return Ok(new ApiResponse<PagedResult<UserAccountData>>(

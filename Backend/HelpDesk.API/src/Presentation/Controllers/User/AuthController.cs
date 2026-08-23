@@ -4,6 +4,7 @@ using HelpDesk.src.Features.Auth.ForgotPassword.ResetForgottenPassword;
 using HelpDesk.src.Features.Auth.Login;
 using HelpDesk.src.Features.Auth.Logout;
 using HelpDesk.src.Features.Auth.RefreshToken;
+using HelpDesk.src.Features.Auth.Register;
 using HelpDesk.src.Features.Auth.RevokeToken;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.Interfaces;
@@ -24,7 +25,6 @@ public sealed class AuthController : ControllerBase
 
     private readonly IWebHostEnvironment _environment;
     private readonly IDateTimeService _dateTimeService;
-
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
@@ -37,13 +37,24 @@ public sealed class AuthController : ControllerBase
         _logger = logger;
     }
 
+    // Register
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Register(
+        [FromServices] ICommandHandler<RegisterCommand, RegisterResponse> handler,
+        [FromBody] RegisterBody body,
+        CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     // Login
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login(
-        [FromServices] ICommandHandler<LoginCommand, LoginResponse> handler,
-        [FromBody] LoginBody body,
-        CancellationToken cancellationToken)
+    [FromServices] ICommandHandler<LoginCommand, LoginResponse> handler,
+    [FromBody] LoginBody body,
+    CancellationToken cancellationToken)
     {
         var command = new LoginCommand(
             body.Identity,
@@ -53,9 +64,6 @@ public sealed class AuthController : ControllerBase
 
         // Set a new token cookies
         Response.SetTokenCookies(result.Token, _environment);
-
-        // Return metadata only (no tokens in body)
-
 
         return Ok(new ApiResponse<LoginResponse>(
             message: "User logged successfully.",

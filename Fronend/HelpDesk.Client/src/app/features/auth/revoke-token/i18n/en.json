@@ -1,0 +1,6 @@
+{
+  "title": "Revoke token",
+  "revoking": "Revoking token...",
+  "success": "Token revoked successfully",
+  "error": "Failed to revoke token"
+}

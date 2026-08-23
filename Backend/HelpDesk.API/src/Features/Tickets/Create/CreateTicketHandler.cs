@@ -9,11 +9,14 @@ namespace HelpDesk.src.Features.Tickets.Create;
 public sealed class CreateTicketHandler :
     ICommandHandler<CreateTicketCommand, CreateTicketResponse>
 {
+    // Performs ticket creation and publishes the event
+
     private readonly IUserContext _userContext;
     private readonly ITicketRepository _ticketRepository;
     private readonly ITicketReader _ticketReader;
     private readonly INumberingService _numberingService;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<CreateTicketHandler> _logger;
 
     public CreateTicketHandler(
@@ -22,6 +25,7 @@ public sealed class CreateTicketHandler :
         ITicketReader ticketReader,
         INumberingService numberingService,
         IDateTimeService dateTimeService,
+        IDomainEventDispatcher dispatcher,
         ILogger<CreateTicketHandler> logger)
     {
         _userContext = userContext;
@@ -29,6 +33,7 @@ public sealed class CreateTicketHandler :
         _ticketReader = ticketReader;
         _numberingService = numberingService;
         _dateTimeService = dateTimeService;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -70,9 +75,15 @@ public sealed class CreateTicketHandler :
             ticket.Id,
             cancellationToken);
 
-
-
         _logger.LogInformation("Ticket created successfully.");
+
+        // Dispatch event
+        await _dispatcher.DispatchAsync(
+            @event: new TicketCreated(
+                UserId: userId,
+                TicketId: ticket.Id,
+                OccurredAt: now),
+            cancellationToken: cancellationToken);
 
         return new CreateTicketResponse(ticketData);
     }

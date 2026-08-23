@@ -1,0 +1,18 @@
+{
+  "title": "لوحة التحكم",
+  "welcome": "مرحباً بعودتك",
+  "overview": "نظرة عامة",
+  "totalUsers": "إجمالي المستخدمين",
+  "activeUsers": "المستخدمون النشطون",
+  "newUsers": "المستخدمون الجدد",
+  "totalRevenue": "إجمالي الإيرادات",
+  "recentActivity": "النشاط الأخير",
+  "viewAll": "عرض الكل",
+  "noData": "لا توجد بيانات متاحة",
+  "lastUpdated": "آخر تحديث",
+  "manageUsers": "إدارة المستخدمين",
+  "settings": "الإعدادات",
+  "reports": "التقارير",
+  "analytics": "التحليلات",
+  "logout": "تسجيل الخروج"
+}

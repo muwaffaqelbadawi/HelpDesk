@@ -93,6 +93,16 @@ public sealed class CreateUserAccountHandler :
         // Success log
         _logger.LogInformation("User {user} created successfully with temporary password", user.Id);
 
+
+
+
+
+
+
+
+
+        // Domain events and subscribers
+
         var userId = userAccountData.UserId;
         var userName = userAccountData.UserName;
         var email = userAccountData.Email;

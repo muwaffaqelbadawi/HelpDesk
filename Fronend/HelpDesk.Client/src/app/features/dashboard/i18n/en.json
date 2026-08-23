@@ -1,0 +1,18 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome back",
+  "overview": "Overview",
+  "totalUsers": "Total users",
+  "activeUsers": "Active users",
+  "newUsers": "New users",
+  "totalRevenue": "Total revenue",
+  "recentActivity": "Recent activity",
+  "viewAll": "View all",
+  "noData": "No data available",
+  "lastUpdated": "Last updated",
+  "manageUsers": "Manage users",
+  "settings": "Settings",
+  "reports": "Reports",
+  "analytics": "Analytics",
+  "logout": "Logout"
+}

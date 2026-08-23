@@ -7,6 +7,7 @@ using HelpDesk.src.Features.Users.UserAccount.Update;
 using HelpDesk.src.Features.Users.UserAccount.UpdateCurrent;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
+using HelpDesk.src.Shared.Queries;
 using HelpDesk.src.Shared.Repositories;
 using HelpDesk.src.Shared.Responses.Data;
 using HelpDesk.src.Shared.Responses.Readers;
@@ -19,7 +20,7 @@ public static class UserAccountServicesExtension
         this IServiceCollection services)
     {
         // GetAll
-        services.AddScoped<IQueryHandler<PagedQuery, PagedResult<UserAccountData>>, GetUsersAccountHandler>();
+        services.AddScoped<IQueryHandler<GetUsersQuery, PagedResult<UserAccountData>>, GetUsersAccountHandler>();
 
         // GetById
         services.AddScoped<IQueryHandler<GetByIdUserAccountQuery, GetByIdUserAccountResponse>, GetByIdUserAccountHandler>();

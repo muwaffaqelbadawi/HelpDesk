@@ -7,8 +7,10 @@ using HelpDesk.src.Features.Tickets.GetById;
 using HelpDesk.src.Features.Tickets.GetByIdOwned;
 using HelpDesk.src.Features.Tickets.GetOwned;
 using HelpDesk.src.Features.Tickets.Update;
+using HelpDesk.src.Shared.Histories;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
+using HelpDesk.src.Shared.Queries;
 using HelpDesk.src.Shared.Repositories;
 using HelpDesk.src.Shared.Responses.Data;
 using HelpDesk.src.Shared.Responses.Readers;
@@ -21,7 +23,7 @@ public static class TicketServicesExtension
         this IServiceCollection services)
     {
         // GetAll (Admin)
-        services.AddScoped<IQueryHandler<PagedQuery, PagedResult<TicketData>>, GetTicketsHandler>();
+        services.AddScoped<IQueryHandler<GetTicketsQuery, PagedResult<TicketData>>, GetTicketsHandler>();
 
         // GetById
         services.AddScoped<IQueryHandler<GetByIdTicketQuery, GetByIdTicketResponse>, GetByIdTicketHandler>();
@@ -52,6 +54,12 @@ public static class TicketServicesExtension
 
         // TicketReader
         services.AddScoped<ITicketReader, TicketReader>();
+
+        // TicketCreatedHandler (DomainEventHandler)
+        services.AddScoped<IDomainEventHandler<TicketCreated>, TicketCreatedHandler>();
+
+        // TicketWriter
+        services.AddScoped<ITicketHistoryWriter, TicketHistoryWriter>();
 
         return services;
     }

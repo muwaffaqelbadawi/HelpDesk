@@ -18,12 +18,13 @@ public sealed class CreateTicketHandlerTests
     {
         // Arrange
 
-        // Mock dependencies (substitutes) 
+        // Mock dependencies (substitutes)
         var userContext = Substitute.For<IUserContext>();
         var ticketRepository = Substitute.For<ITicketRepository>();
         var ticketReader = Substitute.For<ITicketReader>();
         var numberingService = Substitute.For<INumberingService>();
         var dateTimeService = Substitute.For<IDateTimeService>();
+        var dispatcher = Substitute.For<IDomainEventDispatcher>();
         var logger = Substitute.For<ILogger<CreateTicketHandler>>();
 
         // SUT (System Under Test)
@@ -34,6 +35,7 @@ public sealed class CreateTicketHandlerTests
             ticketReader,
             numberingService,
             dateTimeService,
+            dispatcher,
             logger);
 
         // Mock user context to return a specific user ID
@@ -109,13 +111,20 @@ public sealed class CreateTicketHandlerTests
         // Verify the output
         Assert.Equal(expectedTicketData, result.TicketData);
 
-        // Test the dependencies were called as expected
+        // Verify the ticketRepository was called once.
         await ticketRepository.Received(1).AddAsync(
             Arg.Any<Ticket>(),
             Arg.Any<CancellationToken>());
 
+        // Verify the ticketReader was called once.
         await ticketReader.Received(1).GetByIdAsync(
             createdTicket.Id,
+            Arg.Any<CancellationToken>());
+
+        // Verify the dispatcher was called once.
+        await dispatcher.Received(1).DispatchAsync(
+            Arg.Is<TicketCreated>(e =>
+                e.TicketId == createdTicket.Id),
             Arg.Any<CancellationToken>());
     }
 }
