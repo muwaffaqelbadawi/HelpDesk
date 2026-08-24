@@ -1,6 +1,0 @@
-{
-  "title": "Refresh token",
-  "refreshing": "Refreshing token...",
-  "success": "Token refreshed successfully",
-  "error": "Failed to refresh token"
-}

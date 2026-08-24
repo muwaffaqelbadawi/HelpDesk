@@ -1,7 +1,0 @@
-{
-  "title": "Forgot password",
-  "email": "Email",
-  "submit": "Send reset link",
-  "emailNotFound": "Email not found",
-  "resetLinkSent": "If this email exists, a reset link will be sent"
-}

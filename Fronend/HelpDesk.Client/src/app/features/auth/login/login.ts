@@ -4,15 +4,25 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { LanguageService } from '../../../infrastructure/localization/language.service';
 
 @Component({
   selector: 'app-login',
-  imports: [CardModule, InputTextModule, ReactiveFormsModule, ButtonModule, RouterLink],
+  imports: [
+    CardModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    RouterLink,
+    TranslatePipe,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
+  readonly languageService = inject(LanguageService);
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -49,5 +59,13 @@ export class LoginComponent {
 
   get passwordMinLengthError(): boolean {
     return this.password.hasError('minlength');
+  }
+
+  get currentLanguage(): string | null {
+    return this.languageService.currentLanguage;
+  }
+
+  toggleLanguage(): void {
+    this.languageService.setLanguage(this.currentLanguage === 'ar' ? 'en' : 'ar');
   }
 }

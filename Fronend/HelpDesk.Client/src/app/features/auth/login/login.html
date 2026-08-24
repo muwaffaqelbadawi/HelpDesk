@@ -1,7 +1,14 @@
+<button type="button" (click)="toggleLanguage()">
+  {{ languageService.currentLanguage === 'ar' ? 'English' : 'العربية' }}
+</button>
+
 <form [formGroup]="loginForm">
-  <p-card header="Login" [style]="{ width: '360px' }">
+  <p-card [header]="'AUTH.LOGIN.TITLE' | translate" [style]="{ width: '360px' }">
     <div class="field">
-      <label for="email">Email</label>
+      <label for="email">
+        {{ 'AUTH.LOGIN.EMAIL' | translate }}
+      </label>
+
       <input
         id="email"
         type="email"
@@ -9,9 +16,10 @@
         formControlName="email"
         class="w-full"
         name="email"
-        placeholder="Type your email"
+        [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate"
         autocomplete="email"
       />
+
       @if (showEmailError) {
         @if (requiredEmailError) {
           <small class="block login-error"> Email is required. </small>
@@ -20,8 +28,11 @@
         }
       }
     </div>
+
     <div class="field">
-      <label for="password">Password</label>
+      <label for="password">
+        {{ 'AUTH.LOGIN.PASSWORD' | translate }}
+      </label>
       <input
         id="password"
         type="password"
@@ -29,7 +40,7 @@
         formControlName="password"
         class="w-full"
         name="password"
-        placeholder="Type your password"
+        [placeholder]="'AUTH.LOGIN.PASSWORD' | translate"
       />
       @if (showPasswordError) {
         @if (requiredPasswordError) {
@@ -39,9 +50,20 @@
         }
       }
     </div>
+
+    <div class="login-button">
+      <p-button
+        [label]="'AUTH.LOGIN.SUBMIT' | translate"
+        styleClass="w-full"
+        [disabled]="loginForm.invalid"
+      />
+    </div>
   </p-card>
-  <div class="login-button">
-    <p-button label="SIGN IN" severity="info" styleClass="w-full" [disabled]="loginForm.invalid" />
+
+  <div class="mt-2">
+    {{ 'AUTH.LOGIN.NOT_A_MEMBER' | translate }}
+    <a routerLink="/auth/register">
+      {{ 'AUTH.LOGIN.REGISTER' | translate }}
+    </a>
   </div>
-  <div class="mt-2">Not a member? <a routerLink="/auth/register">Register</a></div>
 </form>

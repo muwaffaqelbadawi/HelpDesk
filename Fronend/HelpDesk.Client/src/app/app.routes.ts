@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login';
 import { DashboardComponent } from './features/dashboard/dashboard';
 import { LogoutComponent } from './features/auth/logout/logout';
-import { RefreshPasswordComponent } from './features/auth/refresh-password/refresh-password';
+import { RefreshTokenComponent } from './features/auth/refresh-token/refresh-token';
 import { ChangePasswordComponent } from './features/auth/change-password/change-password';
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password';
 import { RegisterComponent } from './features/auth/register/register';
@@ -36,8 +36,8 @@ export const routes: Routes = [
     component: LogoutComponent,
   },
   {
-    path: 'auth/refresh-password',
-    component: RefreshPasswordComponent,
+    path: 'auth/refresh-token',
+    component: RefreshTokenComponent,
   },
   {
     path: 'auth/change-password',

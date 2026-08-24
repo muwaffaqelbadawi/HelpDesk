@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RefreshPassword } from './refresh-password';
+import { RefreshPassword } from './refresh-token';
 
 describe('RefreshPassword', () => {
   let component: RefreshPassword;

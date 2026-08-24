@@ -1,9 +1,0 @@
-{
-  "title": "Logout",
-  "confirmationMessage": "Are you sure you want to log out?",
-  "confirm": "Confirm",
-  "cancel": "Cancel",
-  "successMessage": "Successfully logged out",
-  "loggingOut": "Logging out...",
-  "error": "An error occurred while logging out"
-}
