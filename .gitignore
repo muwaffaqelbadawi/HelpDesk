@@ -453,7 +453,7 @@ FodyWeavers.xsd
 # Environment files
 /.env
 
-# Angular CLI and build artefacts
+# Angular CLI and build artifacts
 /.angular-cli.json
 /.ng/
 
@@ -464,3 +464,11 @@ FodyWeavers.xsd
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+
+# Local development certificates
+/DevCertificate/
+*.pfx
+*.pem
+*.key

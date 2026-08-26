@@ -7,26 +7,30 @@ public static class TokenCookie
         TokenResult tokenResult,
         IWebHostEnvironment environment)
     {
-        var isDevelopment = environment.IsDevelopment();
-
         // Access token cookie
-        response.Cookies.Append("access_token", tokenResult.AccessToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = !isDevelopment, // Allow HTTP in development
-            SameSite = SameSiteMode.Strict,
-            Expires = tokenResult.AccessTokenExpiresAt
-        });
+        response.Cookies.Append(
+            "access_token",
+            tokenResult.AccessToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = tokenResult.AccessTokenExpiresAt
+            });
 
         // Refresh token cookie
-        response.Cookies.Append("refresh_token", tokenResult.RefreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = !isDevelopment,
-            SameSite = SameSiteMode.Strict,
-            Expires = tokenResult.RefreshTokenExpiresAt,
-            Path = "/api/auth/refresh-token" // Only sent to refresh endpoint
-        });
+        response.Cookies.Append(
+            "refresh_token",
+            tokenResult.RefreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = tokenResult.RefreshTokenExpiresAt,
+                Path = "/api/auth/refresh-token"
+            });
     }
 
     public static void ClearTokenCookies(this HttpResponse response)
@@ -35,9 +39,11 @@ public static class TokenCookie
         response.Cookies.Delete("access_token");
 
         // refresh token
-        response.Cookies.Delete("refresh_token", new CookieOptions
-        {
-            Path = "/api/auth/refresh-token" // Must match the Path used when setting
-        });
+        response.Cookies.Delete(
+            "refresh_token",
+            new CookieOptions
+            {
+                Path = "/api/auth/refresh-token"
+            });
     }
 }

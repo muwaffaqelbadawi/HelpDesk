@@ -38,8 +38,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1MB",
-                  "maximumError": "2MB"
+                  "maximumWarning": "500KB",
+                  "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -65,6 +65,11 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "ssl": true,
+            "sslCert": "../../DevCertificate/localhost+1.pem",
+            "sslKey": "../../DevCertificate/localhost+1-key.pem"
+          },
           "configurations": {
             "production": {
               "buildTarget": "HelpDesk.Frontend:build:production"

@@ -1,6 +1,4 @@
 ﻿using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,17 +25,19 @@ public sealed class AdminDashboardController : ControllerBase
     // Dashboard
     [HttpGet]
     [Authorize(Policy = "Permission:Dashboard.View")]
-    public async Task<IActionResult> ViewDashboard(
+    public Task<IActionResult> ViewDashboard(
         //[FromServices] IQueryHandler<, >> handler,
         CancellationToken cancellationToken)
     {
         //var result = await handler.HandleAsync(query, cancellationToken);
 
-        var result = new DashboardData();
+        //var result = new DashboardData();
 
-        return Ok(new ApiResponse<DashboardData>(
-            message: ApiMessages.UsersRetrieved,
-            time: _dateTimeService.UtcNow,
-            data: result));
+        //return Ok(new ApiResponse<DashboardData>(
+        //    message: ApiMessages.UsersRetrieved,
+        //    time: _dateTimeService.UtcNow,
+        //    data: result));
+
+        throw new NotImplementedException();
     }
 }

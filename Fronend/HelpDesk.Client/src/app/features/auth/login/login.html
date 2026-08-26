@@ -2,9 +2,11 @@
   {{ languageService.currentLanguage === 'ar' ? 'English' : 'العربية' }}
 </button>
 
-<form [formGroup]="loginForm">
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
   <p-card [header]="'AUTH.LOGIN.TITLE' | translate" [style]="{ width: '360px' }">
     <div class="field">
+      <!-- Email -->
+
       <label for="email">
         {{ 'AUTH.LOGIN.EMAIL' | translate }}
       </label>
@@ -30,6 +32,8 @@
     </div>
 
     <div class="field">
+      <!-- Password -->
+
       <label for="password">
         {{ 'AUTH.LOGIN.PASSWORD' | translate }}
       </label>
@@ -53,6 +57,7 @@
 
     <div class="login-button">
       <p-button
+        type="submit"
         [label]="'AUTH.LOGIN.SUBMIT' | translate"
         styleClass="w-full"
         [disabled]="loginForm.invalid"

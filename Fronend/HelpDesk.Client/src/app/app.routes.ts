@@ -8,7 +8,7 @@ import { ResetPasswordComponent } from './features/auth/reset-password/reset-pas
 import { RegisterComponent } from './features/auth/register/register';
 import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password';
 import { RevokeTokenComponent } from './features/auth/revoke-token/revoke-token';
-import { HomeComponent } from './home/home';
+import { HomeComponent } from './features/home/home';
 
 export const routes: Routes = [
   {

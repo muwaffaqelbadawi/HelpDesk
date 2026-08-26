@@ -15,6 +15,7 @@ public static class FeaturesExtension
         builder.Services.AddRolesServices();
         builder.Services.AddTicketServices();
         builder.Services.AddUserServices();
+        builder.Services.AddFrontendCors(builder);
 
         return builder;
     }

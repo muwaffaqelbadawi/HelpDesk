@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -13,6 +13,7 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
+import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,8 +23,8 @@ export const appConfig: ApplicationConfig = {
     // Router (only once!)
     provideRouter(routes),
 
-    // HTTP Client with DI interceptors
-    provideHttpClient(withInterceptorsFromDi()),
+    // HTTP Client with auth interceptors
+    provideHttpClient(withInterceptors([authInterceptor])),
 
     // Translation Service
     provideTranslateService({

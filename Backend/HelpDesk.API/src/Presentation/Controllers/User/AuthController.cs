@@ -40,7 +40,7 @@ public sealed class AuthController : ControllerBase
     // Register
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<IActionResult> Register(
+    public Task<IActionResult> Register(
         [FromServices] ICommandHandler<RegisterCommand, RegisterResponse> handler,
         [FromBody] RegisterBody body,
         CancellationToken cancellationToken)

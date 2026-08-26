@@ -6,6 +6,6 @@ builder.AddApplicationServices();
 
 var app = builder.Build();
 
-await app.UseApplication();
+await app.UseApplication(builder);
 
 app.Run();

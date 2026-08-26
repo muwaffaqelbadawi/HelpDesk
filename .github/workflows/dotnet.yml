@@ -19,15 +19,15 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 9.0.317
       - name: Restore dependencies
         working-directory: Backend
         run: dotnet restore HelpDesk.slnx
 
       - name: Build
         working-directory: Backend
-        run: dotnet build HelpDesk.slnx --no-restore
+        run: dotnet build HelpDesk.slnx --no-restore --configuration Release --verbosity normal
 
       - name: Test
         working-directory: Backend
-        run: dotnet test HelpDesk.slnx --no-build --verbosity normal
+        run: dotnet test HelpDesk.slnx --no-build --configuration Release --verbosity normal

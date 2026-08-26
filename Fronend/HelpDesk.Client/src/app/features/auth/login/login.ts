@@ -3,9 +3,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { LanguageService } from '../../../infrastructure/localization/language.service';
+import { LanguageService } from '../../../core/localization/language.service';
+import { AuthService } from '../../../core/auth/services/auth.service';
+import { AuthStateService } from '../../../core/auth/services/auth-state.service';
 
 @Component({
   selector: 'app-login',
@@ -23,11 +25,37 @@ import { LanguageService } from '../../../infrastructure/localization/language.s
 export class LoginComponent {
   private fb = inject(FormBuilder);
   readonly languageService = inject(LanguageService);
+  private readonly authService = inject(AuthService);
+  private readonly authState = inject(AuthStateService);
+  private readonly router = inject(Router);
 
-  loginForm = this.fb.group({
+  loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
   });
+
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    const { email, password } = this.loginForm.getRawValue();
+
+    this.authService
+      .login({
+        identity: email,
+        password,
+      })
+      .subscribe({
+        next: (response) => {
+          this.authState.setSession(response.userAccountData);
+
+          this.router.navigate(['/']);
+        },
+        error: (error) => this.handleLoginError(error),
+      });
+  }
 
   get email() {
     return this.loginForm.controls.email;
@@ -67,5 +95,9 @@ export class LoginComponent {
 
   toggleLanguage(): void {
     this.languageService.setLanguage(this.currentLanguage === 'ar' ? 'en' : 'ar');
+  }
+
+  private handleLoginError(error: unknown): void {
+    console.error('Login failed', error);
   }
 }
