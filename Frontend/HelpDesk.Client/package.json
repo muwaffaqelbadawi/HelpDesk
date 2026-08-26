@@ -36,8 +36,6 @@
     "@ngx-translate/core": "^18.0.0",
     "@ngx-translate/http-loader": "^18.0.0",
     "@primeuix/themes": "^1.2.5",
-    "primeflex": "^3.3.1",
-    "primeicons": "^7.0.0",
     "primeng": "^20.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

@@ -1,58 +1,58 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/auth/login/login';
-import { DashboardComponent } from './features/dashboard/dashboard';
-import { LogoutComponent } from './features/auth/logout/logout';
-import { RefreshTokenComponent } from './features/auth/refresh-token/refresh-token';
-import { ChangePasswordComponent } from './features/auth/change-password/change-password';
-import { ResetPasswordComponent } from './features/auth/reset-password/reset-password';
-import { RegisterComponent } from './features/auth/register/register';
-import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password';
-import { RevokeTokenComponent } from './features/auth/revoke-token/revoke-token';
-import { HomeComponent } from './features/home/home';
 
 export const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
+    loadComponent: () => import('./features/home/home').then((m) => m.HomeComponent),
   },
   {
     path: 'home',
-    component: HomeComponent,
+    loadComponent: () => import('./features/home/home').then((m) => m.HomeComponent),
   },
   {
     path: 'auth/register',
-    component: RegisterComponent,
+    loadComponent: () =>
+      import('./features/auth/register/register').then((m) => m.RegisterComponent),
   },
   {
     path: 'auth/login',
-    component: LoginComponent,
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent),
   },
   {
     path: 'auth/forgot-password',
-    component: ForgotPasswordComponent,
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password').then(
+        (m) => m.ForgotPasswordComponent,
+      ),
   },
   {
     path: 'auth/logout',
-    component: LogoutComponent,
+    loadComponent: () => import('./features/auth/logout/logout').then((m) => m.LogoutComponent),
   },
   {
     path: 'auth/refresh-token',
-    component: RefreshTokenComponent,
+    loadComponent: () =>
+      import('./features/auth/refresh-token/refresh-token').then((m) => m.RefreshTokenComponent),
   },
   {
     path: 'auth/change-password',
-    component: ChangePasswordComponent,
+    loadComponent: () =>
+      import('./features/auth/change-password/change-password').then(
+        (m) => m.ChangePasswordComponent,
+      ),
   },
   {
     path: 'auth/reset-password',
-    component: ResetPasswordComponent,
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password').then((m) => m.ResetPasswordComponent),
   },
   {
     path: 'auth/revoke-token',
-    component: RevokeTokenComponent,
+    loadComponent: () =>
+      import('./features/auth/revoke-token/revoke-token').then((m) => m.RevokeTokenComponent),
   },
   {
     path: 'dashboard',
-    component: DashboardComponent,
+    loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
 ];

@@ -1,0 +1,1 @@
+import{Ga as t,Za as a,_a as o,pb as s}from"./chunk-WRXRUGP5.js";var p=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-change-password"]],decls:2,vars:0,template:function(e,i){e&1&&(a(0,"p"),s(1,"change-password works!"),o())},encapsulation:2})};export{p as ChangePasswordComponent};

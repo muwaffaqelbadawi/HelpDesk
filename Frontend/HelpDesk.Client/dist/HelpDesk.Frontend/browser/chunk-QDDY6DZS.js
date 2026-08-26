@@ -1,0 +1,1 @@
+import{Ga as e}from"./chunk-WRXRUGP5.js";var n=class o{static \u0275fac=function(t){return new(t||o)};static \u0275cmp=e({type:o,selectors:[["app-logout"]],decls:0,vars:0,template:function(t,p){},encapsulation:2})};export{n as LogoutComponent};
