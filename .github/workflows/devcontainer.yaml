@@ -16,4 +16,4 @@ jobs:
 
       - name: Build Docker image
         working-directory: Backend
-        run: docker build -t .devcontainer/Dockerfile helpdesk-api:ci .
+        run: docker build -f .devcontainer/Dockerfile -t helpdesk-api:ci .
