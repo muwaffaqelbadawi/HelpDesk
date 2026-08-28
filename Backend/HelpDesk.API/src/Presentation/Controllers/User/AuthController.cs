@@ -66,7 +66,7 @@ public sealed class AuthController : ControllerBase
         Response.SetTokenCookies(result.Token, _environment);
 
         return Ok(new ApiResponse<LoginResponse>(
-            message: "User logged successfully.",
+            message: ApiMessages.Login,
             time: _dateTimeService.UtcNow,
             data: result));
     }
@@ -85,10 +85,8 @@ public sealed class AuthController : ControllerBase
         // Clear cookies
         Response.ClearTokenCookies();
 
-        //_logger.LogInformation("logout Ref");
-
         return Ok(new ApiResponse<LogoutResponse>(
-            message: "User logged out successfully.",
+            message: ApiMessages.Logout,
             time: _dateTimeService.UtcNow,
             data: result));
     }
@@ -118,7 +116,7 @@ public sealed class AuthController : ControllerBase
         Response.SetTokenCookies(result.Token, _environment);
 
         return Ok(new ApiResponse<RefreshTokenResponse>(
-           message: "Token refreshed successfully.",
+           message: ApiMessages.TokenRefreshed,
            time: _dateTimeService.UtcNow,
            data: result));
     }
@@ -141,7 +139,7 @@ public sealed class AuthController : ControllerBase
         Response.SetTokenCookies(result.Token, _environment);
 
         return Ok(new ApiResponse<UserAccountData>(
-           message: "Password changed successfully.",
+           message: ApiMessages.PasswordChanged,
            time: _dateTimeService.UtcNow,
            data: result.UserAccountData));
     }
@@ -150,16 +148,16 @@ public sealed class AuthController : ControllerBase
     [HttpPost("forgot-password")]
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPassword(
-        [FromServices] ICommandHandler<ForgotPasswordCommand, ForgotPasswordResponse> handler,
+        [FromServices] ICommandHandler<ForgotPasswordCommand> handler,
         [FromBody] ForgotPasswordBody body,
         CancellationToken cancellationToken)
     {
         var command = new ForgotPasswordCommand(body.Email);
 
-        var result = await handler.HandleAsync(command, cancellationToken);
+        await handler.HandleAsync(command, cancellationToken);
 
         return Ok(new ApiResponse<UserAccountData>(
-           message: result.Message,
+           message: ApiMessages.ForgotPassword,
            time: _dateTimeService.UtcNow,
            data: null));
     }
@@ -179,7 +177,7 @@ public sealed class AuthController : ControllerBase
         var result = await handler.HandleAsync(command, cancellationToken);
 
         return Ok(new ApiResponse<UserAccountData>(
-           message: "Password has been reset successfully.",
+           message: ApiMessages.ForgottenPasswordReset,
            time: _dateTimeService.UtcNow,
            data: result.UserAccountData));
     }
@@ -196,7 +194,7 @@ public sealed class AuthController : ControllerBase
         var result = await handler.HandleAsync(command, cancellationToken);
 
         return Ok(new ApiResponse<RevokeTokenResponse>(
-            message: "All tokens revoked successfully.",
+            message: ApiMessages.RevokedTokens,
             time: _dateTimeService.UtcNow,
             data: result));
     }

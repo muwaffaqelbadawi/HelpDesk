@@ -1,6 +1,9 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Infrastructure.Services.Cors;
 using HelpDesk.src.Shared.Interfaces;
+using HelpDesk.src.Shared.Links;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace HelpDesk.src.Features.Auth.ForgotPassword;
 
@@ -8,16 +11,19 @@ public sealed class ForgotPasswordHandler :
     ICommandHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IBackgroundTaskQueue _taskQueue;
+    private readonly IQueueEmailService _queueEmailService;
+    private readonly CorsOptions _frontendOptions;
     private readonly ILogger<ForgotPasswordHandler> _logger;
 
     public ForgotPasswordHandler(
         UserManager<ApplicationUser> userManager,
-        IBackgroundTaskQueue taskQueue,
+        IQueueEmailService queueEmailService,
+        IOptions<CorsOptions> frontendOptions,
         ILogger<ForgotPasswordHandler> logger)
     {
         _userManager = userManager;
-        _taskQueue = taskQueue;
+        _queueEmailService = queueEmailService;
+        _frontendOptions = frontendOptions.Value;
         _logger = logger;
     }
 
@@ -25,49 +31,45 @@ public sealed class ForgotPasswordHandler :
         ForgotPasswordCommand command,
         CancellationToken cancellationToken)
     {
-        //self - service ForgotPassword
-
-        // The user is anonymous
-
-        // Find user by email (normalized)
         var user = await _userManager.FindByEmailAsync(command.Email);
 
-        // Always return success to prevent email enumeration
         if (user is null)
         {
             _logger.LogInformation(
                 "Password reset requested for non-existent email: {Email}", command.Email);
 
-            return new ForgotPasswordResponse("If the email exists, a reset link has been sent.");
+            return new ForgotPasswordResponse(
+                Message: "If the email is associated with an account, a password reset email has been sent.");
         }
 
-        var userId = user.Id;
-        var email = user.Email!;
-        var userName = user.UserName;
-
-        // Generate password reset token
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-        // Build reset link
-        var resetLink = $"https://your-app.com/reset-password?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+        var resetLink = PasswordResetLink.Build(
+            baseUrl: _frontendOptions.Origin,
+            userId: user.Id,
+            token: token);
 
-        await _taskQueue.QueueBackgroundWorkItemAsync(async (services, cancellationToken) =>
+        if (string.IsNullOrWhiteSpace(user.UserName)
+            || string.IsNullOrWhiteSpace(user.Email))
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            _logger.LogWarning(
+                "Password reset requested but user has missing username or email for user {UserId}",
+                user.Id);
 
-            var emailSender = services.GetRequiredService<IEmailService>();
+            return new ForgotPasswordResponse(
+                Message: "If the email is associated with an account, a password reset email has been sent.");
+        }
 
-            await emailSender.SendPasswordResetLinkAsync(
-                userId,
-                userName,
-                email,
-                resetLink,
-                cancellationToken);
-        }, cancellationToken);
+        await _queueEmailService.ResetPasswordEmail(
+            userName: user.UserName,
+            recipientEmail: user.Email,
+            resetLink: resetLink,
+            cancellationToken: cancellationToken);
 
         // Successful log
         _logger.LogInformation("Password reset email queued for user {UserId}", user.Id);
 
-        return new ForgotPasswordResponse("If the email exists, a reset link has been sent.");
+        return new ForgotPasswordResponse(
+            Message: "If the email is associated with an account, a password reset email has been sent.");
     }
 }

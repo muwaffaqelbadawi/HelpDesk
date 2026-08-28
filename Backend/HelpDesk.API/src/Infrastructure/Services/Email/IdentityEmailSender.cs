@@ -1,26 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace HelpDesk.src.Infrastructure.Services.Email;
 
-public sealed class IdentityEmailSender : IEmailSender<ApplicationUser>
+public sealed class IdentityEmailSender(IEmailService emailSender) : IEmailSender<ApplicationUser>
 {
-    private readonly IEmailService _emailSender;
-
-    public IdentityEmailSender(IEmailService emailSender)
-    {
-        _emailSender = emailSender;
-    }
-
     public Task SendPasswordResetLinkAsync(
         ApplicationUser user,
         string email,
         string resetLink)
     {
-        return _emailSender.SendPasswordResetLinkAsync(
-            user.Id,
-            user.UserName,
+        return emailSender.SendPasswordResetLinkAsync(
+            user.UserName ?? "User",
             email,
             resetLink,
             CancellationToken.None);
@@ -31,9 +23,8 @@ public sealed class IdentityEmailSender : IEmailSender<ApplicationUser>
         string email,
         string confirmationLink)
     {
-        return _emailSender.SendConfirmationLinkAsync(
-            user.Id,
-            user.UserName,
+        return emailSender.SendConfirmationLinkAsync(
+            user.UserName ?? "User",
             email,
             confirmationLink,
             CancellationToken.None);
@@ -44,9 +35,8 @@ public sealed class IdentityEmailSender : IEmailSender<ApplicationUser>
         string email,
         string resetCode)
     {
-        return _emailSender.SendPasswordResetCodeAsync(
-            user.Id,
-            user.UserName,
+        return emailSender.SendPasswordResetCodeAsync(
+            user.UserName ?? "User",
             email,
             resetCode,
             CancellationToken.None);

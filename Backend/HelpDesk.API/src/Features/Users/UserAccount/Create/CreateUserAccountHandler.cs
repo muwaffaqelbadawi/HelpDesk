@@ -16,7 +16,7 @@ public sealed class CreateUserAccountHandler :
     private readonly ITemporaryPasswordGenerator _passwordGenerator;
     private readonly INumberingService _numberingService;
     private readonly IDateTimeService _dateTimeService;
-    private readonly IBackgroundTaskQueue _taskQueue;
+    private readonly IQueueEmailService _queueEmailService;
     private readonly ILogger<CreateUserAccountHandler> _logger;
 
     public CreateUserAccountHandler(
@@ -26,7 +26,7 @@ public sealed class CreateUserAccountHandler :
         ITemporaryPasswordGenerator passwordGenerator,
         INumberingService numberingService,
         IDateTimeService dateTimeService,
-        IBackgroundTaskQueue taskQueue,
+        IQueueEmailService queueEmailService,
         ILogger<CreateUserAccountHandler> logger)
     {
         _userContext = userContext;
@@ -35,7 +35,7 @@ public sealed class CreateUserAccountHandler :
         _userReader = userReader;
         _numberingService = numberingService;
         _dateTimeService = dateTimeService;
-        _taskQueue = taskQueue;
+        _queueEmailService = queueEmailService;
         _logger = logger;
     }
 
@@ -80,47 +80,25 @@ public sealed class CreateUserAccountHandler :
 
         // User repo
         await _userRepository.AddAsync(
-            user,
-            employee,
-            tempPassword,
-            cancellationToken);
+            user: user,
+            employee: employee,
+            tempPassword: tempPassword,
+            cancellationToken: cancellationToken);
 
         // User reader
         var userAccountData = await _userReader.GetByIdAsync(
-            user.Id,
-            cancellationToken);
+            userId: user.Id,
+            cancellationToken: cancellationToken);
 
         // Success log
         _logger.LogInformation("User {user} created successfully with temporary password", user.Id);
 
-
-
-
-
-
-
-
-
-        // Domain events and subscribers
-
-        var userId = userAccountData.UserId;
-        var userName = userAccountData.UserName;
-        var email = userAccountData.Email;
-        var fullEnName = userAccountData.Employee!.FullEnName;
-
-        await _taskQueue.QueueBackgroundWorkItemAsync(async (services, cancellationToken) =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var emailSender = services.GetRequiredService<IEmailService>();
-
-            await emailSender.SendWelcomeEmailAsync(
-                userName,
-                fullEnName,
-                email,
-                tempPassword,
-                cancellationToken);
-        }, cancellationToken);
+        await _queueEmailService.WelcomeEmail(
+            userName: user.UserName,
+            recipientEmail: user.Email,
+            fullName: userAccountData.Employee!.FullEnName,
+            tempPassword: tempPassword,
+            cancellationToken: cancellationToken);
 
         return new CreateUserAccountResponse(userAccountData);
     }

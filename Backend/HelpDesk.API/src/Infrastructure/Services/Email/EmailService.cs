@@ -1,5 +1,4 @@
-﻿using HelpDesk.src.Infrastructure.Services.Email.EmailTypes;
-using HelpDesk.src.Shared.Interfaces;
+﻿using HelpDesk.src.Shared.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
@@ -11,104 +10,115 @@ namespace HelpDesk.src.Infrastructure.Services.Email;
 public sealed class EmailService : IEmailService
 {
     private readonly SmtpSettings _smtpSettings;
+    private readonly IEmailTemplateRenderer _templateRenderer;
     private readonly ILogger<EmailService> _logger;
 
     public EmailService(
         IOptions<SmtpSettings> smtpOptions,
+        IEmailTemplateRenderer templateRenderer,
         ILogger<EmailService> logger)
     {
         _smtpSettings = smtpOptions.Value;
+        _templateRenderer = templateRenderer;
         _logger = logger;
     }
 
     public async Task SendWelcomeEmailAsync(
         string userName,
-        string fullEnName,
-        string email,
+        string fullName,
+        string recipientEmail,
         string tempPassword,
         CancellationToken cancellationToken)
     {
-        var emailBody = EmailBody.RenderWelcomeEmail(
-            new WelcomeEmailData(
-                UserName: userName,
-                FullName: fullEnName,
-                TempPassword: tempPassword));
+        var body = await _templateRenderer.RenderAsync(
+            "WelcomeEmail.html",
+            new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["fullName"] = fullName,
+                ["tempPassword"] = tempPassword
+            });
 
         await SendEmailAsync(
-            recipientEmail: email,
+            recipientEmail: recipientEmail,
             subject: EmailSubject.WelcomeEmail,
-            htmlBody: emailBody,
+            htmlBody: body,
             cancellationToken: cancellationToken);
     }
 
     public async Task SendConfirmationLinkAsync(
-        Guid userId,
-        string? userName,
-        string email,
+        string userName,
+        string recipientEmail,
         string confirmationLink,
         CancellationToken cancellationToken = default)
     {
-        var subject = "Confirm your email";
+        var body = await _templateRenderer.RenderAsync(
+            "ConfirmationEmail.html",
+            new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["confirmationLink"] = confirmationLink
+            });
 
-        var body = $"""
-            <p>Hello {userName ?? "User"},</p>
-            <p>Please confirm your account by clicking the link below:</p>
-            <p><a href='{confirmationLink}'>Confirm Email</a></p>
-            <p>If you didn't request this, you can safely ignore this email.</p>
-            """;
-
-        await SendEmailAsync(email, subject, body, cancellationToken);
+        await SendEmailAsync(
+            recipientEmail: recipientEmail,
+            subject: EmailSubject.ConfirmationEmail,
+            htmlBody: body,
+            cancellationToken: cancellationToken);
     }
 
     public async Task SendPasswordResetCodeAsync(
-        Guid userId,
-        string? userName,
-        string email,
+        string userName,
+        string recipientEmail,
         string resetCode,
         CancellationToken cancellationToken = default)
     {
-        var subject = "Your password reset code";
+        var body = await _templateRenderer.RenderAsync(
+            "PasswordResetCode.html",
+            new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["resetCode"] = resetCode
+            });
 
-        var body = $"""
-            <p>Hello {userName ?? "User"},</p>
-            <p>Your password reset code is:</p>
-            <h2>{resetCode}</h2>
-            <p>Use this code to reset your password. It will expire soon.</p>
-            """;
-
-        await SendEmailAsync(email, subject, body, cancellationToken);
+        await SendEmailAsync(
+            recipientEmail: recipientEmail,
+            subject: EmailSubject.PasswordResetCode,
+            htmlBody: body,
+            cancellationToken: cancellationToken);
     }
 
     public async Task SendPasswordResetLinkAsync(
-        Guid userId,
-        string? userName,
-        string email,
+        string userName,
+        string recipientEmail,
         string resetLink,
         CancellationToken cancellationToken = default)
     {
-        var subject = "Reset your password";
+        var body = await _templateRenderer.RenderAsync(
+            "PasswordResetLink.html",
+            new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["resetLink"] = resetLink
+            });
 
-        var body = $"""
-            <p>Hello {userName ?? "User"},</p>
-            <p>Click the link below to reset your password:</p>
-            <p><a href='{resetLink}'>Reset Password</a></p>
-            <p>If you didn't request a password reset, you can ignore this email.</p>
-            """;
-
-        await SendEmailAsync(email, subject, body, cancellationToken);
+        await SendEmailAsync(
+            recipientEmail: recipientEmail,
+            subject: EmailSubject.PasswordResetLink,
+            htmlBody: body,
+            cancellationToken: cancellationToken);
     }
 
-    // Template for testing purposes
     public async Task SendTestEmailAsync(
     string recipientEmail,
     CancellationToken cancellationToken = default)
     {
-        const string subject = "Mailpit HelpDesk";
+        var body = await _templateRenderer.RenderAsync("TestEmail.html");
 
         await SendEmailAsync(
             recipientEmail: recipientEmail,
-            subject: subject,
-            htmlBody: EmailBody.TesEmail,
+            subject: EmailSubject.TestEmailService,
+            htmlBody: body,
             cancellationToken: cancellationToken);
     }
 
@@ -156,17 +166,21 @@ public sealed class EmailService : IEmailService
             }
 
             await smtp.SendAsync(message);
+
             _logger.LogInformation("Email sent to {Recipient}", recipientEmail);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send email to {Recipient}", recipientEmail);
+
             throw;
         }
         finally
         {
             if (smtp.IsConnected)
+            {
                 await smtp.DisconnectAsync(true, cancellationToken);
+            }
         }
     }
 }

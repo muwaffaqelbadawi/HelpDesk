@@ -5,28 +5,25 @@ public interface IEmailService
     Task SendWelcomeEmailAsync(
         string userName,
         string fullEnName,
-        string email,
+        string recipientEmail,
         string tempPassword,
         CancellationToken cancellationToken = default);
 
     Task SendConfirmationLinkAsync(
-        Guid userId,
-        string? userName,
-        string email,
+        string userName,
+        string recipientEmail,
         string confirmationLink,
         CancellationToken cancellationToken = default);
 
     Task SendPasswordResetLinkAsync(
-        Guid userId,
-        string? userName,
-        string email,
+        string userName,
+        string recipientEmail,
         string resetLink,
         CancellationToken cancellationToken = default);
 
     Task SendPasswordResetCodeAsync(
-        Guid userId,
-        string? userName,
-        string email,
+        string userName,
+        string recipientEmail,
         string resetCode,
         CancellationToken cancellationToken);
 

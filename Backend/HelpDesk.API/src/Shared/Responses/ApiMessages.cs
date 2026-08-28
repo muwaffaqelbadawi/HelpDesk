@@ -2,13 +2,24 @@
 
 public static class ApiMessages
 {
+    // Api info messages
+    public const string ApiInfo = "HelpDesk API is running.";
+
+    // Api health messages
+    public const string ApiHealthy = "HelpDesk API is healthy.";
+
+
     // Authentication messages
     public const string PasswordChanged = "Password changed successfully.";
+    public const string ForgotPassword = "If the email exists, a reset link has been sent.";
+    public const string ForgottenPasswordReset = "Your password has been reset successfully.";
     public const string Login = "User logged in successfully.";
     public const string Logout = "User logged out successfully.";
     public const string TokenRefreshed = "Token refreshed successfully.";
     public const string PasswordReset = "Password reset successfully.";
     public const string TokenRevoked = "Token revoked successfully.";
+    public const string RevokedTokens = "All tokens revoked successfully.";
+
 
     // Role messages
     public const string RolesRetrieved = "Roles retrieved successfully.";
@@ -38,4 +49,7 @@ public static class ApiMessages
     public const string UserRetrieved = "User retrieved successfully.";
     public const string UsersCreated = "Users created successfully.";
     public const string UserUpdated = "User updated successfully.";
+
+    // Email messages
+    public const string TestEmail = "Test email sent successfully.";
 }
