@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../HelpDesk.API/HelpDesk.csproj" />
+    <ProjectReference Include="../HelpDesk.Api/HelpDesk.csproj" />
   </ItemGroup>
 
 </Project>

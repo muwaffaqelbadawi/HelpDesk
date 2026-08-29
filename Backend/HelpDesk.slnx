@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="HelpDesk.API/HelpDesk.csproj" />
+  <Project Path="HelpDesk.Api/HelpDesk.csproj" />
   <Project Path="HelpDesk.Tests.Integration/HelpDesk.Tests.Integration.csproj" Id="1f271bb4-3f1a-406a-a3e4-0e6b7e3290fb" />
   <Project Path="HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj" />
 </Solution>
