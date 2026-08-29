@@ -26,7 +26,7 @@ public sealed class CreateUserAccountTests
         var passwordGenerator = Substitute.For<ITemporaryPasswordGenerator>();
         var numberingService = Substitute.For<INumberingService>();
         var dateTimeService = Substitute.For<IDateTimeService>();
-        var backgroundTaskQueue = Substitute.For<IBackgroundTaskQueue>();
+        var queueEmailService = Substitute.For<IQueueEmailService>();
         var logger = Substitute.For<ILogger<CreateUserAccountHandler>>();
 
 
@@ -39,7 +39,7 @@ public sealed class CreateUserAccountTests
             passwordGenerator,
             numberingService,
             dateTimeService,
-            backgroundTaskQueue,
+            queueEmailService,
             logger);
 
         // Mock user context to return a specific user admin ID
