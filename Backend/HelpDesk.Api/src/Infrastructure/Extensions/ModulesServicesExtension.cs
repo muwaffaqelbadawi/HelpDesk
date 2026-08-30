@@ -1,7 +1,4 @@
-﻿using HelpDesk.src.Features.Modules.GetCurrent;
-using HelpDesk.src.Shared.Interfaces;
-
-namespace HelpDesk.src.Infrastructure.Extensions;
+﻿namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class ModulesServicesExtension
 {
@@ -9,7 +6,7 @@ public static class ModulesServicesExtension
     this IServiceCollection services)
     {
         // Register GetCurrentModulesHandler as Scoped
-        services.AddScoped<IQueryHandler<CurrentModulesResponse>, GetCurrentModulesHandler>();
+        //services.AddScoped<IQueryHandler<CurrentModulesResponse>, GetCurrentModulesHandler>();
 
         return services;
     }

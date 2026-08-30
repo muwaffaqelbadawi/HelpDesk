@@ -3,5 +3,5 @@
 public sealed class CorsOptions
 {
     public string Name { get; set; } = null!;
-    public string Origin { get; set; } = null!;
+    public string[] Origins { get; set; } = null!;
 }

@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.src.Features.Admin;
+﻿namespace HelpDesk.src.Infrastructure.SystemAccounts.Admin;
 
 public sealed record AdminBody(
     string UserName = "superadmin",

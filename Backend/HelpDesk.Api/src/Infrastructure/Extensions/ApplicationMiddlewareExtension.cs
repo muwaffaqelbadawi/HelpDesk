@@ -1,23 +1,21 @@
 ﻿using HelpDesk.src.Infrastructure.Services.Cors;
+using Microsoft.Extensions.Options;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class ApplicationMiddlewareExtension
 {
     public static async Task<WebApplication> UseApplication(
-        this WebApplication app,
-        WebApplicationBuilder builder)
+        this WebApplication app)
     {
-        // Bind Cors configs
-        var corsOptions = builder.Configuration
-            .GetSection("Cors")
-            .Get<CorsOptions>()
-            ?? throw new InvalidOperationException(
-                "CORS configuration section is missing or invalid.");
+        var corsOptions = app.Services
+            .GetRequiredService<IOptions<CorsOptions>>()
+            .Value;
 
         await app.InitializeDatabaseAsync();
 
         app
+            .UseScrutorTestsServices() // Test the Scrutor registration of services
             .UseApplicationLogging()
             .UseExceptionHandling()
             .UseSwaggerDocumentation()

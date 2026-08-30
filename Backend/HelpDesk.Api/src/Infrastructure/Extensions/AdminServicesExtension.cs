@@ -1,19 +1,20 @@
-﻿using HelpDesk.src.Features.Admin;
-using HelpDesk.src.Infrastructure.Services.Seeders.Runner;
+﻿using HelpDesk.src.Infrastructure.Services.Seeders.Runner;
+using HelpDesk.src.Infrastructure.SystemAccounts.Admin;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class AdminServicesExtension
 {
-    public static IServiceCollection AddAdminServices(
-        this IServiceCollection service)
+    public static WebApplicationBuilder AddAdmin(
+        this WebApplicationBuilder builder)
     {
-        service.AddScoped<ICommandHandler<AdminCommand, AdminResponse>, AdminHandler>();
+        // Register AdminHandler as a Scoped service
+        builder.Services.AddScoped<ICommandHandler<AdminCommand, AdminResponse>, AdminHandler>();
 
         // Admin seed runner (bootstrap)
-        service.AddScoped<IAdminSeedRunner, AdminSeedRunner>();
+        builder.Services.AddScoped<IAdminSeedRunner, AdminSeedRunner>();
 
-        return service;
+        return builder;
     }
 }

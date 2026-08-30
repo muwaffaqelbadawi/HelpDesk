@@ -10,7 +10,7 @@ using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelpDesk.src.Features.Admin;
+namespace HelpDesk.src.Infrastructure.SystemAccounts.Admin;
 
 public sealed class AdminHandler :
     ICommandHandler<AdminCommand, AdminResponse>

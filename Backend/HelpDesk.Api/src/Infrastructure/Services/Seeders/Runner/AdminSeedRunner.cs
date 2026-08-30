@@ -1,5 +1,5 @@
-﻿using HelpDesk.src.Features.Admin;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Roles;
+﻿using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Roles;
+using HelpDesk.src.Infrastructure.SystemAccounts.Admin;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Services.Seeders.Runner;

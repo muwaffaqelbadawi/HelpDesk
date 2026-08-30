@@ -10,9 +10,6 @@ public sealed class DashboardHandler :
         PagedQuery query,
         CancellationToken cancellationToken)
     {
-
-
-
         throw new NotImplementedException();
     }
 }

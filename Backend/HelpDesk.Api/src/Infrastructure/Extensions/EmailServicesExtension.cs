@@ -1,7 +1,5 @@
-﻿using FluentValidation;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.Email;
-using HelpDesk.src.Infrastructure.Services.Email.TestEmail;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,9 +7,8 @@ namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class EmailServicesExtension
 {
-    public static IServiceCollection AddEmailServices(
-        this IServiceCollection services,
-        WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddEmail(
+        this WebApplicationBuilder builder)
     {
         // Bind SMTP settings
         builder.Services.Configure<SmtpSettings>(
@@ -21,27 +18,43 @@ public static class EmailServicesExtension
         // Email Services
 
         // Register SmtpEmailService as Singleton
-        services.AddSingleton<IEmailService, EmailService>();
+        builder.Services.AddSingleton<IEmailService, EmailService>();
 
         // Register IdentityEmailSender as Singleton
-        services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
+        builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
 
         // Register EmailTemplateRenderer as Singleton service
-        services.AddSingleton<IEmailTemplateRenderer, EmailTemplateRenderer>();
+        builder.Services.AddSingleton<IEmailTemplateRenderer, EmailTemplateRenderer>();
 
         // Register QueueEmailService as Singleton service
-        services.AddSingleton<IQueueEmailService, QueueEmailService>();
+        builder.Services.AddSingleton<IQueueEmailService, QueueEmailService>();
 
 
 
         // TestEmail
 
-        // Register SendTestEmailHandler as Scoped service
-        services.AddScoped<ICommandHandler<TestEmailCommand, TestEmailResponse>, TestEmailHandler>();
+        // Register SendTestEmailHandler with its pipeline
+        //services.AddCommandPipeline<
+        //    TestEmailCommand,
+        //    TestEmailResponse,
+        //    TestEmailHandler>();
+
+
+        /*
+         
+        // We will test this
+        services.AddScoped<ICommandHandler<
+            TestEmailCommand,
+            TestEmailResponse>,
+            TestEmailHandler>();
+
+        */
 
         // Register TestEmailValidator from the assembly containing TestEmailValidator
-        services.AddValidatorsFromAssemblyContaining<TestEmailValidator>();
+        //services.AddValidatorsFromAssemblyContaining<TestEmailValidator>();
 
-        return services;
+        return builder;
     }
 }
+
+

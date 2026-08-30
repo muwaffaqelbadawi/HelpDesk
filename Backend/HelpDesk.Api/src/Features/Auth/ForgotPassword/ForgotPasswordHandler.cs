@@ -44,8 +44,10 @@ public sealed class ForgotPasswordHandler :
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
+        var baseUrl = _frontendOptions.Origins.Single();
+
         var resetLink = PasswordResetLink.Build(
-            baseUrl: _frontendOptions.Origin,
+            baseUrl: baseUrl,
             userId: user.Id,
             token: token);
 

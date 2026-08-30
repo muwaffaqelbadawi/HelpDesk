@@ -13,10 +13,3 @@ public interface ICommandHandler<in TCommand, TResponse>
         TCommand command,
         CancellationToken cancellationToken);
 }
-
-public interface ICurrentCommandHandler<in TCommand, TResponse>
-{
-    Task<TResponse> HandleAsync(
-        TCommand command,
-        CancellationToken cancellationToken);
-}

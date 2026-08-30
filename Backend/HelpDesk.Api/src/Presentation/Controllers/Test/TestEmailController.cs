@@ -16,7 +16,7 @@ public sealed class TestEmailController : ControllerBase
     public async Task<ActionResult<ApiResponse<TestEmailData>>> SendEmail(
         [FromServices] ICommandHandler<TestEmailCommand, TestEmailResponse> handler,
         [FromServices] IDateTimeService dateTimeService,
-        TestEmailBody body,
+        [FromBody] TestEmailBody body,
         CancellationToken cancellationToken)
     {
         var command = new TestEmailCommand(body.RecipientEmail);
