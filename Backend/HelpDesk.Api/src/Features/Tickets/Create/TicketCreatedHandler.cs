@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Shared.Histories;
+﻿using HelpDesk.src.Shared.Histories.HistoryTypes;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Tickets.Create;
@@ -6,9 +6,9 @@ namespace HelpDesk.src.Features.Tickets.Create;
 public sealed class TicketCreatedHandler
     : IDomainEventHandler<TicketCreated>
 {
-    private readonly ITicketHistoryWriter _historyWriter;
+    private readonly ITicketWriter _historyWriter;
 
-    public TicketCreatedHandler(ITicketHistoryWriter historyWriter)
+    public TicketCreatedHandler(ITicketWriter historyWriter)
     {
         _historyWriter = historyWriter;
     }

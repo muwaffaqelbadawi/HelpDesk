@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Features.Tickets.Create;
-using HelpDesk.src.Shared.Histories;
+using HelpDesk.src.Shared.Histories.HistoryTypes;
 using HelpDesk.src.Shared.Interfaces;
 using NSubstitute;
 using Xunit;
@@ -14,7 +14,7 @@ public sealed class TicketCreatedHandlerTests
         // Arrange
 
         // Mock dependencies (substitutes)
-        var historyWriter = Substitute.For<ITicketHistoryWriter>();
+        var historyWriter = Substitute.For<ITicketWriter>();
 
         // userId
         var userId = Guid.NewGuid();

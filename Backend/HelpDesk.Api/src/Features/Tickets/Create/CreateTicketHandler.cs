@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketPriorities;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketStatuses;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketPriorities;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketStatuses;
 using HelpDesk.src.Infrastructure.Services.SQLServerSequence;
 using HelpDesk.src.Shared.Interfaces;
 

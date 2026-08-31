@@ -1,15 +1,15 @@
-﻿using HelpDesk.src.Infrastructure.Services.Seeders.Lookup;
-using HelpDesk.src.Infrastructure.Services.Seeders.Runner;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Branches;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Departments;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.EmployeeStatuses;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Modules;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Permissions;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.RolePermissionModules;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.Roles;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketPriorities;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.TicketStatuses;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.UserStatuses;
+﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Lookup;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Runner;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Branches;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.EmployeeStatuses;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Modules;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Permissions;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.RolePermissionModules;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Roles;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketPriorities;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketStatuses;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Extensions;

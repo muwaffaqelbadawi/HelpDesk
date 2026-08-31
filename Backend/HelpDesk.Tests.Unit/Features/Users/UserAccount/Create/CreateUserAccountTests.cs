@@ -1,8 +1,8 @@
 ﻿using HelpDesk.src.Features.Users.UserAccount.Create;
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.EmployeeStatuses;
-using HelpDesk.src.Infrastructure.Services.Seeders.Seeds.UserStatuses;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.EmployeeStatuses;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
 using HelpDesk.src.Infrastructure.Services.SQLServerSequence;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;

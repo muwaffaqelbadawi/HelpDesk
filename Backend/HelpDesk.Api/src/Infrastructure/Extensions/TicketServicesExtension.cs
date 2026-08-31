@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Shared.Histories;
+﻿using HelpDesk.src.Shared.Histories.Writers;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Repositories;
 using HelpDesk.src.Shared.Responses.Readers;
@@ -56,7 +56,7 @@ public static class TicketServicesExtension
         services.AddScoped<ITicketReader, TicketReader>();
 
         // TicketWriter
-        services.AddScoped<ITicketHistoryWriter, TicketHistoryWriter>();
+        services.AddScoped<ITicketWriter, TicketWriter>();
 
         return services;
     }

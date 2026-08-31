@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Infrastructure.Services.Seeders.Runner;
+﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Runner;
 using HelpDesk.src.Infrastructure.SystemAccounts.Admin;
 using HelpDesk.src.Shared.Interfaces;
 
