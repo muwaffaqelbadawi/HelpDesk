@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Infrastructure.Services.Seeders.Dtos;
+﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Dtos;
 
 namespace HelpDesk.src.Shared.Interfaces;
 
