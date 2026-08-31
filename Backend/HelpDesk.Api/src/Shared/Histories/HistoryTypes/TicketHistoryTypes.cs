@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.src.Shared.Histories;
+﻿namespace HelpDesk.src.Shared.Histories.HistoryTypes;
 
 public enum TicketHistoryTypes
 {

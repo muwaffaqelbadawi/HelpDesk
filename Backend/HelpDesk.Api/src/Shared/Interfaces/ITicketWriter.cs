@@ -1,8 +1,8 @@
-﻿using HelpDesk.src.Shared.Histories;
+﻿using HelpDesk.src.Shared.Histories.HistoryTypes;
 
 namespace HelpDesk.src.Shared.Interfaces;
 
-public interface ITicketHistoryWriter
+public interface ITicketWriter
 {
     Task WriteAsync(
         Guid userId,

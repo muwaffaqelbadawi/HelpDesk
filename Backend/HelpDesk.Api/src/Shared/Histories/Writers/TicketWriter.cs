@@ -1,17 +1,12 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Shared.Histories.HistoryTypes;
 using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Shared.Histories;
+namespace HelpDesk.src.Shared.Histories.Writers;
 
-public sealed class TicketHistoryWriter : ITicketHistoryWriter
+public sealed class TicketWriter(AppDbContext dbContext) : ITicketWriter
 {
-    private readonly AppDbContext _dbContext;
-    public TicketHistoryWriter(AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task WriteAsync(
         Guid userId,
         Guid ticketId,
@@ -38,8 +33,8 @@ public sealed class TicketHistoryWriter : ITicketHistoryWriter
             OccurredAt = occurredAt
         };
 
-        _dbContext.TicketHistories.Add(ticketHistory);
+        dbContext.TicketHistories.Add(ticketHistory);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
