@@ -18,7 +18,7 @@ public sealed class BranchSeederService : IDataSeeder
     public BranchSeederService(
         AppDbContext dbContext,
         ILookupNormalizer normalizer,
-    IDateTimeService dateTimeService,
+        IDateTimeService dateTimeService,
         ILogger<BranchSeederService> logger)
     {
         _dbContext = dbContext;

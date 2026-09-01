@@ -32,6 +32,7 @@ public sealed class RoleSeederService : IDataSeeder
         CancellationToken cancellationToken = default)
     {
         var identity = SeedRegistry.Roles;
+
         var key = identity.Key;
         var version = identity.Version;
         var scope = identity.Scope;

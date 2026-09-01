@@ -106,4 +106,3 @@ public sealed class DepartmentSeederService : IDataSeeder
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
-

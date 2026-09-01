@@ -25,7 +25,6 @@ public sealed class PermissionSeederService : IDataSeeder
         _dbContext = dbContext;
         _dateTimeService = dateTimeService;
         _normalizer = normalizer;
-
         _logger = logger;
     }
 
