@@ -5,8 +5,6 @@ public static class ApplicationServicesExtension
     public static WebApplicationBuilder AddApplicationServices(
         this WebApplicationBuilder builder)
     {
-        var configuration = builder.Configuration;
-
         builder
             .AddApplicationLogging()
             .AddCustomKestrelServices()
@@ -15,24 +13,19 @@ public static class ApplicationServicesExtension
             .AddDatabase()
             .AddControllers()
             .AddBackgroundServices()
+            .AddJwtOptions()
             .AddAuthentication()
             .AddAuthorization()
             .AddTimeProviderServices()
             .AddHttpResilienceServices()
             .AddRateLimitServices()
-            .AddSeeders() // Seeders
-            .AddAdmin() // Admin
+            .AddSeeders()
+            .AddAdmin()
             .AddFeatures()
             .AddEvents()
             .AddEmail()
-            .AddCorsConfiguration(configuration)
-            .AddFrontendCors(configuration)
+            .AddCorsOptions()
             .AddScrutorRegistration();
-
-
-        //.AddCommandPipeline() // Command pipeline
-
-
 
         return builder;
     }

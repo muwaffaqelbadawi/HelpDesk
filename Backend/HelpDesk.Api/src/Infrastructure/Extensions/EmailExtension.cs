@@ -5,17 +5,23 @@ using Microsoft.AspNetCore.Identity;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
-public static class EmailServicesExtension
+public static class EmailExtension
 {
+    public static WebApplicationBuilder AddSmtpConfigs(
+       this WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddOptions<SmtpSettings>()
+            .Bind(builder.Configuration.GetSection("Smtp"))
+            .ValidateOnStart();
+
+        return builder;
+    }
+
     public static WebApplicationBuilder AddEmail(
         this WebApplicationBuilder builder)
     {
-        // Bind SMTP settings
-        builder.Services.Configure<SmtpSettings>(
-            builder.Configuration.GetSection("Smtp"));
-
-
-        // Email Services
+        builder.AddSmtpConfigs();
 
         // Register SmtpEmailService as Singleton
         builder.Services.AddSingleton<IEmailService, EmailService>();
@@ -31,7 +37,7 @@ public static class EmailServicesExtension
 
 
 
-        // TestEmail
+        // Validation pipeline
 
         // Register SendTestEmailHandler with its pipeline
         //services.AddCommandPipeline<
@@ -39,22 +45,6 @@ public static class EmailServicesExtension
         //    TestEmailResponse,
         //    TestEmailHandler>();
 
-
-        /*
-         
-        // We will test this
-        services.AddScoped<ICommandHandler<
-            TestEmailCommand,
-            TestEmailResponse>,
-            TestEmailHandler>();
-
-        */
-
-        // Register TestEmailValidator from the assembly containing TestEmailValidator
-        //services.AddValidatorsFromAssemblyContaining<TestEmailValidator>();
-
         return builder;
     }
 }
-
-

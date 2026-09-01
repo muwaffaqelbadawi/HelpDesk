@@ -55,10 +55,6 @@
     <Folder Include="src\Features\Permissions\GetAssigned\" />
     <Folder Include="src\Features\Roles\GetAssigned\" />
     <Folder Include="src\Features\Users\User\" />
-    <Folder Include="src\Infrastructure\Services\DataIngestion\Seeding\Seeders\Companies\" />
-    <Folder Include="src\Infrastructure\Services\DataIngestion\Seeding\Seeders\Cities\" />
-    <Folder Include="src\Infrastructure\Services\DataIngestion\Seeding\Seeders\Countries\" />
-    <Folder Include="src\Infrastructure\Services\DataIngestion\Seeding\Seeders\Positions\" />
   </ItemGroup>
 
 </Project>

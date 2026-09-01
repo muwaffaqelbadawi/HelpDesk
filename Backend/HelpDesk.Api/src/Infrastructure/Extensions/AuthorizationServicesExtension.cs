@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using HelpDesk.src.Infrastructure.Services.Authorization;
+﻿using HelpDesk.src.Infrastructure.Services.Authorization;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 

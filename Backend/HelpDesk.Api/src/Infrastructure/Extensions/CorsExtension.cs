@@ -4,28 +4,23 @@ namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class CorsExtension
 {
-    public static WebApplicationBuilder AddCorsConfiguration(
-       this WebApplicationBuilder builder,
-       IConfiguration configuration)
+    public static WebApplicationBuilder AddCorsConfigs(
+       this WebApplicationBuilder builder)
     {
         builder.Services
             .AddOptions<CorsOptions>()
-            .Bind(configuration.GetSection("Cors"))
+            .Bind(builder.Configuration.GetSection("Cors"))
             .ValidateOnStart();
 
         return builder;
     }
 
-    public static WebApplicationBuilder AddFrontendCors(
-        this WebApplicationBuilder builder,
-        IConfiguration configuration)
+    public static WebApplicationBuilder AddCorsOptions(
+        this WebApplicationBuilder builder)
     {
-        var corsSection = configuration.GetSection("Cors");
+        builder.AddCorsConfigs();
 
-        builder.Services
-            .AddOptions<CorsOptions>()
-            .Bind(corsSection)
-            .ValidateOnStart();
+        var corsSection = builder.Configuration.GetSection("Cors");
 
         var corsOptions = corsSection.Get<CorsOptions>()!;
 

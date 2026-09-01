@@ -6,23 +6,29 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
-public static class JwtConfigurationsExtension
+public static class JwtExtension
 {
-    public static IServiceCollection AddJwtConfigurations(
-        this IServiceCollection services,
-        WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddJwtConfigs(
+       this WebApplicationBuilder builder)
     {
-        // Register JwtOptions in DI - this makes it globally injectable
-        builder.Services.Configure<JwtOptions>(
-            builder.Configuration.GetSection("Jwt"));
+        builder.Services
+            .AddOptions<JwtOptions>()
+            .Bind(builder.Configuration.GetSection("Jwt"))
+            .ValidateOnStart();
 
-        // Local binding for immediate use in this method
-        var jwtOptions = builder.Configuration
-            .GetSection("Jwt")
-            .Get<JwtOptions>()
-            ?? throw new InvalidOperationException("JWT configuration section is missing or invalid.");
+        return builder;
+    }
 
-        services
+    public static WebApplicationBuilder AddJwtOptions(
+        this WebApplicationBuilder builder)
+    {
+        builder.AddJwtConfigs();
+
+        var jwtSection = builder.Configuration.GetSection("jwt");
+
+        var jwtOptions = jwtSection.Get<JwtOptions>()!;
+
+        builder.Services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -43,9 +49,9 @@ public static class JwtConfigurationsExtension
                 };
             });
 
-        // AddAuthorization
+        // AddAuthorization services
         builder.Services.AddAuthorization();
 
-        return services;
+        return builder;
     }
 }

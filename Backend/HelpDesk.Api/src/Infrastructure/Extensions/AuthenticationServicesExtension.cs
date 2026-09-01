@@ -40,10 +40,6 @@ public static class AuthenticationServicesExtension
         // Register the TemporaryPasswordGenerator as a singleton service
         builder.Services.AddSingleton<ITemporaryPasswordGenerator, TemporaryPasswordGenerator>();
 
-
-        // Jwt
-        builder.Services.AddJwtConfigurations(builder);
-
         // Register the ClaimProvider as a scoped service
         builder.Services.AddScoped<IClaimProvider, ClaimProvider>();
 
