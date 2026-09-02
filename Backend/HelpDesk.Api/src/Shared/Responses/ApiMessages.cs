@@ -2,6 +2,9 @@
 
 public static class ApiMessages
 {
+    // Admin messages
+    public const string AdminCreated = "SuperAdmin created successfully.";
+
     // Api info messages
     public const string ApiInfo = "HelpDesk API is running.";
 

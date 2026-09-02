@@ -6,6 +6,7 @@ using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserSta
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Projections;
+using HelpDesk.src.Shared.Responses;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -124,7 +125,7 @@ public sealed class AdminHandler :
             .SingleAsync(cancellationToken);
 
         _logger.AdminCreatedLog(
-            message: "SuperAdmin created successfully",
+            message: ApiMessages.AdminCreated,
             userId: adminAccountData.UserId,
             userName: adminAccountData.UserName,
             email: adminAccountData.Email,

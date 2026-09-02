@@ -32,13 +32,6 @@ public abstract class DataImporter<TSource, TEntity>
             Duration: stopwatch.Elapsed);
     }
 
-
-
-
-
-
-
-
     protected abstract Task<string> ReadSourceAsync(
         CancellationToken cancellationToken);
 
