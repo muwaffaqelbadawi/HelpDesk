@@ -25,7 +25,8 @@ public static class ApplicationServicesExtension
             .AddEvents()
             .AddEmail()
             .AddCorsOptions()
-            .AddScrutorRegistration();
+            .AddScrutorRegistration()
+            .AddDataImporters();
 
         return builder;
     }

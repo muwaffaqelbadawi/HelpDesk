@@ -52,4 +52,7 @@ public static class ApiMessages
 
     // Email messages
     public const string TestEmail = "Test email sent successfully.";
+
+    // Data import messages
+    public const string DataImported = "Data imported successfully.";
 }

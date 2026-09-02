@@ -17,6 +17,9 @@ public partial class AppDbContext
     // Business.Branches
     public DbSet<Branch> Branches { get; set; } = null!;
 
+    // Business.Countries
+    public DbSet<Country> Countries { get; set; } = null!;
+
     // Business.Departments
     public DbSet<Department> Departments { get; set; } = null!;
 
@@ -25,8 +28,6 @@ public partial class AppDbContext
 
     // Business.EmployeeStatuses
     public DbSet<EmployeeStatus> EmployeeStatuses { get; set; } = null!;
-
-
 
     // Business.Tickets
     public DbSet<Ticket> Tickets { get; set; } = null!;
@@ -39,8 +40,6 @@ public partial class AppDbContext
 
     // Business.Histories
     public DbSet<TicketHistory> TicketHistories { get; set; } = null!;
-
-
 
     // Business.SeedHistories
     public DbSet<SeedHistory> SeedHistories { get; set; } = null!;
@@ -85,6 +84,59 @@ public partial class AppDbContext
             entity.Property(e => e.SortOrder)
                 .HasDefaultValue(0);
         });
+
+        //Business.Countries
+        modelBuilder.Entity<Country>(entity =>
+        {
+            // Schema
+            entity.ToTable("Countries", "Business");
+
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // M49Code (Property)
+            entity.Property(e => e.M49Code)
+                .HasMaxLength(3)
+                .IsRequired();
+
+            // M49Code (Index)
+            entity.HasIndex(e => e.M49Code)
+                .IsUnique();
+
+            // Alpha2Code (Property)
+            entity.Property(e => e.Alpha2Code)
+                .HasMaxLength(2)
+                .IsRequired();
+
+            // Alpha2Code (Index)
+            entity.HasIndex(e => e.Alpha2Code)
+                .IsUnique();
+
+            // Alpha3Code (Property)
+            entity.Property(e => e.Alpha3Code)
+                .HasMaxLength(3)
+                .IsRequired();
+
+            // Alpha3Code (Index)
+            entity.HasIndex(e => e.Alpha3Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            // NameArabic (Property)
+            entity.Property(e => e.NameArabic)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
 
         // Business.Departments
         modelBuilder.Entity<Department>(entity =>
