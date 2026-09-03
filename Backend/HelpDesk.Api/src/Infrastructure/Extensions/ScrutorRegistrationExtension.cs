@@ -1,11 +1,12 @@
-﻿using HelpDesk.src.Shared.AssemblyMarker;
+﻿using HelpDesk.src.Infrastructure.PipeLines;
+using HelpDesk.src.Shared.AssemblyMarker;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class ScrutorRegistrationExtension
 {
-    public static WebApplicationBuilder AddScrutorRegistration(
+    public static WebApplicationBuilder AddScrutorScan(
         this WebApplicationBuilder builder)
     {
         // 1- Register ICommandHandler<in TCommand>
@@ -47,6 +48,24 @@ public static class ScrutorRegistrationExtension
                 .AssignableTo(typeof(IDomainEventHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddScrutorDecorate(
+        this WebApplicationBuilder builder)
+    {
+        // Decorate ICommandHandler<in TCommand>
+        // with CommandPipeline<TCommand>
+        builder.Services.Decorate(
+            typeof(ICommandHandler<>),
+            typeof(CommandPipeline<>));
+
+        // Decorate ICommandHandler<in TCommand, TResponse>
+        // with CommandPipeline<TCommand, TResponse>
+        builder.Services.Decorate(
+            typeof(ICommandHandler<,>),
+            typeof(CommandPipeline<,>));
 
         return builder;
     }

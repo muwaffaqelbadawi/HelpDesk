@@ -1,8 +1,8 @@
 ﻿namespace HelpDesk.src.Shared.Interfaces;
 
-// Behavior for handlers without response
 public interface ICommandBehavior<TCommand>
 {
+    // Behavior for handlers without response
     Task HandleAsync(
         TCommand command,
         Func<Task> next,

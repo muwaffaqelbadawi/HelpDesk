@@ -1,39 +1,29 @@
 ﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using HelpDesk.src.Shared.Exceptions;
+using Microsoft.AspNetCore.Mvc;
+using DataAnnotationsValidationException = System.ComponentModel.DataAnnotations.ValidationException;
+using FluentValidationException = FluentValidation.ValidationException;
+using HelpDeskValidationException = HelpDesk.src.Shared.Exceptions.ValidationException;
 
 namespace HelpDesk.src.Infrastructure.Middleware;
 
-public sealed class ExceptionMiddleware
+public sealed class ExceptionMiddleware(
+    RequestDelegate next,
+    IWebHostEnvironment env)
 {
-    // Please refer to RFC3986
-
-    private readonly RequestDelegate _next;
-    private readonly IWebHostEnvironment _env;
-    private readonly ILogger<ExceptionMiddleware> _logger;
-
-    public ExceptionMiddleware(RequestDelegate next,
-        IWebHostEnvironment env,
-        ILogger<ExceptionMiddleware> logger)
-    {
-        _next = next;
-        _env = env;
-        _logger = logger;
-    }
-
     public async Task Invoke(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception occurred");
-
             context.Response.StatusCode = ex switch
             {
-                ValidationException => StatusCodes.Status400BadRequest,
+                HelpDeskValidationException => StatusCodes.Status400BadRequest,
+                FluentValidationException => StatusCodes.Status400BadRequest,
+                DataAnnotationsValidationException => StatusCodes.Status400BadRequest,
                 AuthenticationFailedException => StatusCodes.Status401Unauthorized,
                 ForbiddenException => StatusCodes.Status403Forbidden,
                 NotFoundException => StatusCodes.Status404NotFound,
@@ -45,31 +35,66 @@ public sealed class ExceptionMiddleware
 
             context.Response.ContentType = "application/json";
 
-            var response = CreateErrorResponse(ex, context, _env.IsDevelopment());
+            var response = CreateErrorResponse(
+                ex,
+                context,
+                env.IsDevelopment());
 
             await context.Response.WriteAsJsonAsync(response);
         }
     }
 
     private static ProblemDetails CreateErrorResponse(
-    Exception exception,
-    HttpContext httpContext,
-    bool isDevelopment)
+        Exception exception,
+        HttpContext httpContext,
+        bool isDevelopment)
     {
         var status = httpContext.Response.StatusCode;
         var details = exception.Message;
         var path = httpContext.Request.Path;
-
-        string traceId = Activity.Current?.TraceId.ToString()
+        var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
+        var traceId = Activity.Current?.TraceId.ToString()
             ?? httpContext.TraceIdentifier;
 
         if (isDevelopment)
         {
             return exception switch
             {
-                ValidationException ex => new ValidationProblemDetails(ex.Errors)
+                HelpDeskValidationException ex => new ValidationProblemDetails(ex.Errors)
                 {
-                    Type = "https://your-api.com/errors/validation",
+                    Type = $"{baseUrl}/errors/validation",
+                    Title = "One or more validation errors occurred.",
+                    Status = status,
+                    Detail = details,
+                    Instance = path,
+                    Extensions =
+                    {
+                        ["traceId"] = traceId
+                    }
+                },
+
+                FluentValidationException ex => new ValidationProblemDetails(
+                    ex.Errors.GroupBy(
+                        error => error.PropertyName,
+                        error => error.ErrorMessage)
+                           .ToDictionary(
+                              group => group.Key,
+                              group => group.ToArray()))
+                {
+                    Type = $"{baseUrl}/errors/validation",
+                    Title = "One or more validation errors occurred.",
+                    Status = status,
+                    Detail = details,
+                    Instance = path,
+                    Extensions =
+                    {
+                        ["traceId"] = traceId
+                    }
+                },
+
+                DataAnnotationsValidationException => new ProblemDetails
+                {
+                    Type = $"{baseUrl}/errors/validation",
                     Title = "One or more validation errors occurred.",
                     Status = status,
                     Detail = details,
@@ -82,7 +107,7 @@ public sealed class ExceptionMiddleware
 
                 AuthenticationFailedException => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/unauthorized",
+                    Type = $"{baseUrl}/errors/unauthorized",
                     Title = "Unauthorized",
                     Status = status,
                     Detail = details,
@@ -95,7 +120,7 @@ public sealed class ExceptionMiddleware
 
                 ForbiddenException => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/forbidden",
+                    Type = $"{baseUrl}/errors/forbidden",
                     Title = "Forbidden",
                     Status = status,
                     Detail = details,
@@ -108,7 +133,7 @@ public sealed class ExceptionMiddleware
 
                 NotFoundException => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/not-found",
+                    Type = $"{baseUrl}/errors/not-found",
                     Title = "Not Found",
                     Status = status,
                     Detail = details,
@@ -121,7 +146,7 @@ public sealed class ExceptionMiddleware
 
                 ConcurrencyException => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/concurrency-conflict",
+                    Type = $"{baseUrl}/errors/concurrency-conflict",
                     Title = "Concurrency Conflict",
                     Status = status,
                     Detail = details,
@@ -134,7 +159,7 @@ public sealed class ExceptionMiddleware
 
                 ConflictException => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/conflict",
+                    Type = $"{baseUrl}/errors/conflict",
                     Title = "Conflict",
                     Status = status,
                     Detail = details,
@@ -147,7 +172,7 @@ public sealed class ExceptionMiddleware
 
                 BusinessRuleViolationException => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/unprocessable-entity",
+                    Type = $"{baseUrl}/errors/unprocessable-entity",
                     Title = "Unprocessable Entity",
                     Status = status,
                     Detail = details,
@@ -160,7 +185,7 @@ public sealed class ExceptionMiddleware
 
                 Exception => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/internal-server-error",
+                    Type = $"{baseUrl}/errors/internal-server-error",
                     Title = "Internal Server Error",
                     Status = status,
                     Detail = details,
@@ -173,7 +198,7 @@ public sealed class ExceptionMiddleware
 
                 _ => new ProblemDetails
                 {
-                    Type = "https://your-api.com/errors/unknown-error",
+                    Type = $"{baseUrl}/errors/unknown-error",
                     Title = "Unexpected Error",
                     Status = status,
                     Detail = details,
@@ -181,6 +206,7 @@ public sealed class ExceptionMiddleware
                     Extensions =
                     {
                         ["traceId"] = traceId
+
                     }
                 }
             };

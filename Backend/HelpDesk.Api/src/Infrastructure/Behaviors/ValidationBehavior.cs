@@ -5,7 +5,7 @@ namespace HelpDesk.src.Infrastructure.Behaviors;
 
 public sealed class ValidationBehavior<TCommand>(
     IEnumerable<IValidator<TCommand>> validators)
-    : ICommandBehavior<TCommand>
+        : ICommandBehavior<TCommand>
 {
     public async Task HandleAsync(
         TCommand command,
