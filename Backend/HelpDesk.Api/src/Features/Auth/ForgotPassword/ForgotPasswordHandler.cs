@@ -12,18 +12,18 @@ public sealed class ForgotPasswordHandler :
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IQueueEmailService _queueEmailService;
-    private readonly CorsOptions _frontendOptions;
+    private readonly CorsOptions _corsOptions;
     private readonly ILogger<ForgotPasswordHandler> _logger;
 
     public ForgotPasswordHandler(
         UserManager<ApplicationUser> userManager,
         IQueueEmailService queueEmailService,
-        IOptions<CorsOptions> frontendOptions,
+        IOptions<CorsOptions> corsOptions,
         ILogger<ForgotPasswordHandler> logger)
     {
         _userManager = userManager;
         _queueEmailService = queueEmailService;
-        _frontendOptions = frontendOptions.Value;
+        _corsOptions = corsOptions.Value;
         _logger = logger;
     }
 
@@ -44,7 +44,7 @@ public sealed class ForgotPasswordHandler :
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-        var baseUrl = _frontendOptions.Origins.Single();
+        var baseUrl = _corsOptions.Origins.Single();
 
         var resetLink = PasswordResetLink.Build(
             baseUrl: baseUrl,
