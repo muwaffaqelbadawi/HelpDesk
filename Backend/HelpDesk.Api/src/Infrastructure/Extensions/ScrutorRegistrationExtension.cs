@@ -16,7 +16,6 @@ public static class ScrutorRegistrationExtension
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-
         // 2- Register ICommandHandler<in TCommand, TResponse>
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
@@ -25,7 +24,6 @@ public static class ScrutorRegistrationExtension
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-
         // 3- Register IQueryHandler<TResult>
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
@@ -33,7 +31,6 @@ public static class ScrutorRegistrationExtension
                 .AssignableTo(typeof(IQueryHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-
 
         // 4- Register IQueryHandler<in TQuery, TResult>
         builder.Services.Scan(scan => scan
@@ -50,7 +47,6 @@ public static class ScrutorRegistrationExtension
                 .AssignableTo(typeof(IDomainEventHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-
 
         return builder;
     }

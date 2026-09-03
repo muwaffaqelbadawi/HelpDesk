@@ -35,16 +35,6 @@ public static class EmailExtension
         // Register QueueEmailService as Singleton service
         builder.Services.AddSingleton<IQueueEmailService, QueueEmailService>();
 
-
-
-        // Validation pipeline
-
-        // Register SendTestEmailHandler with its pipeline
-        //services.AddCommandPipeline<
-        //    TestEmailCommand,
-        //    TestEmailResponse,
-        //    TestEmailHandler>();
-
         return builder;
     }
 }
