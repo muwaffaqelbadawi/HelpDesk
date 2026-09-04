@@ -12,7 +12,7 @@
     }
   },
   "projects": {
-    "HelpDesk.Frontend": {
+    "HelpDesk.Client": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -72,10 +72,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "HelpDesk.Frontend:build:production"
+              "buildTarget": "HelpDesk.Client:build:production"
             },
             "development": {
-              "buildTarget": "HelpDesk.Frontend:build:development"
+              "buildTarget": "HelpDesk.Client:build:development"
             }
           },
           "defaultConfiguration": "development"

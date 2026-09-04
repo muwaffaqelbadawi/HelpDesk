@@ -1,1 +1,0 @@
-import{Ga as s,Za as o,_a as n,pb as a}from"./chunk-WRXRUGP5.js";var r=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=s({type:t,selectors:[["app-reset-password"]],decls:2,vars:0,template:function(e,i){e&1&&(o(0,"p"),a(1,"reset-password works!"),n())},encapsulation:2})};export{r as ResetPasswordComponent};

@@ -1,1 +1,0 @@
-import{Ga as n,Za as o,_a as s,pb as r}from"./chunk-WRXRUGP5.js";var a=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-refresh-token"]],decls:2,vars:0,template:function(e,f){e&1&&(o(0,"p"),r(1,"refresh-password works!"),s())},encapsulation:2})};export{a as RefreshTokenComponent};

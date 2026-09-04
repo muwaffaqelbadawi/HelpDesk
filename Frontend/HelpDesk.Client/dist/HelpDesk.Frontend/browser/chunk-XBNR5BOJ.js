@@ -1,1 +1,0 @@
-import{Ga as t,Za as n,_a as m,pb as a}from"./chunk-WRXRUGP5.js";var p=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-home"]],decls:2,vars:0,template:function(e,s){e&1&&(n(0,"p"),a(1,"home works!"),m())},encapsulation:2})};export{p as HomeComponent};

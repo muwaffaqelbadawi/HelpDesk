@@ -1,1 +1,0 @@
-import{Ga as e,Za as s,_a as n,pb as r}from"./chunk-WRXRUGP5.js";var a=class t{static \u0275fac=function(o){return new(o||t)};static \u0275cmp=e({type:t,selectors:[["app-forgot-password"]],decls:2,vars:0,template:function(o,i){o&1&&(s(0,"p"),r(1,"forgot-password works!"),n())},encapsulation:2})};export{a as ForgotPasswordComponent};

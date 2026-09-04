@@ -1,1 +1,0 @@
-import{Ga as t,Za as n,_a as a,pb as p}from"./chunk-WRXRUGP5.js";var i=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-revoke-token"]],decls:2,vars:0,template:function(e,r){e&1&&(n(0,"p"),p(1,"revoke-token works!"),a())},encapsulation:2})};export{i as RevokeTokenComponent};

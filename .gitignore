@@ -437,33 +437,26 @@ FodyWeavers.xsd
 # Angular .gitignore
 
 # Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
-.angular/
+/Frontend/HelpDesk.Client/dist/
+/Frontend/HelpDesk.Client/out-tsc/
+/Frontend/HelpDesk.Client/tmp/
+/Frontend/HelpDesk.Client/coverage/
+/Frontend/HelpDesk.Client/e2e/test-output/
+/Frontend/HelpDesk.Client/.angular/
 
 # Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
+/Frontend/HelpDesk.Client/node_modules/
 
 # Environment files
-/.env
-
-# Angular CLI and build artifacts
-/.angular-cli.json
-/.ng/
+/Frontend/HelpDesk.Client/.env
 
 # TypeScript cache
-*.tsbuildinfo
+/Frontend/HelpDesk.Client/*.tsbuildinfo
 
 # Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+/Frontend/HelpDesk.Client/npm-debug.log*
+/Frontend/HelpDesk.Client/yarn-debug.log*
+/Frontend/HelpDesk.Client/yarn-error.log*
 
 
 
