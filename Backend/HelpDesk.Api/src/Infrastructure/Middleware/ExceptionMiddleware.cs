@@ -75,11 +75,9 @@ public sealed class ExceptionMiddleware(
 
                 FluentValidationException ex => new ValidationProblemDetails(
                     ex.Errors.GroupBy(
-                        error => error.PropertyName,
-                        error => error.ErrorMessage)
+                        error => error.PropertyName, error => error.ErrorMessage)
                            .ToDictionary(
-                              group => group.Key,
-                              group => group.ToArray()))
+                              group => group.Key, group => group.ToArray()))
                 {
                     Type = $"{baseUrl}/errors/validation",
                     Title = "One or more validation errors occurred.",

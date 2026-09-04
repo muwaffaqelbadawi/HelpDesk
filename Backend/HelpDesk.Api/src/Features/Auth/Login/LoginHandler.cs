@@ -1,34 +1,24 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Exceptions;
-using HelpDesk.src.Shared.IdentityBuilders;
-using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Projections;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Auth.Login;
 
 public sealed class LoginHandler :
     ICommandHandler<LoginCommand, LoginResponse>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly AppDbContext _dbContext;
-    private readonly IdentityResolvers _identityResolver;
+    private readonly IIdentityResolver _identityResolver;
     private readonly ITokenService _tokenService;
+    private readonly IUserReader _userReader;
     private readonly ILogger<LoginHandler> _logger;
 
     public LoginHandler(
-        UserManager<ApplicationUser> userManager,
-        AppDbContext dbContext,
-        IdentityResolvers identityResolver,
+        IIdentityResolver identityResolver,
         ITokenService tokenService,
+        IUserReader userReader,
         ILogger<LoginHandler> logger)
     {
-        _userManager = userManager;
-        _dbContext = dbContext;
         _identityResolver = identityResolver;
         _tokenService = tokenService;
+        _userReader = userReader;
         _logger = logger;
     }
 
@@ -36,35 +26,29 @@ public sealed class LoginHandler :
         LoginCommand command,
         CancellationToken cancellationToken)
     {
-        // Resolve the user from login form
-        var user = await _identityResolver.ResolveAsync(command, cancellationToken);
+        // Resolve identity
+        var user = await _identityResolver.ResolveIdentity(
+            command,
+            cancellationToken);
 
-        // Password should have a separate service
-        var validPassword = await _userManager.CheckPasswordAsync(
+        // Resolve password
+        await _identityResolver.ResolvePassword(
             user,
-            command.Password);
-
-        // Check if the password is valid
-        if (!validPassword)
-        {
-            _logger.LogWarning("Authentication failed.");
-
-            // Use MediatR
-            //return LoginResult.InvalidCredentials;
-
-            throw new AuthenticationFailedException("Invalid username or password.");
-        }
+            command);
 
         // Issue new token
         var token = await _tokenService.IssueAfterLoginAsync(
             user,
             cancellationToken);
 
-        var userAccountData = await _dbContext.Users
-            .AsNoTracking()
-            .Where(u => u.Id == user.Id)
-            .SelectUserAccount()
-            .SingleAsync(cancellationToken);
+        // Get user
+        var userAccountData = await _userReader.GetByIdAsync(
+            userId: user.Id,
+            cancellationToken: cancellationToken);
+
+        _logger.LogInformation(
+            "User {userId} logged in successfully",
+            user.Id);
 
         return new LoginResponse(
             UserAccountData: userAccountData,

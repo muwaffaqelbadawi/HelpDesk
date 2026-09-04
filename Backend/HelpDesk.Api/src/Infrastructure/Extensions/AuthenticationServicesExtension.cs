@@ -25,14 +25,14 @@ public static class AuthenticationServicesExtension
         builder.Services.AddScoped<IUserContext, UserContext>();
 
         // UserProvider
-        // Register the CurrentUserProvider as a scoped service
+        // Register the UserProvider as a scoped service
         builder.Services.AddScoped<IUserProvider, UserProvider>();
 
         // Register the UserIdentityFilter as a scoped service
-        builder.Services.AddScoped<IdentityFilters>();
+        builder.Services.AddScoped<IdentityFilter>();
 
-        // Register the UserIdentityResolver as a scoped service
-        builder.Services.AddScoped<IdentityResolvers>();
+        // Register the IdentityResolver as a scoped service
+        builder.Services.AddScoped<IIdentityResolver, IdentityResolver>();
 
         // Register the PasswordHasher as a scoped service
         builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
