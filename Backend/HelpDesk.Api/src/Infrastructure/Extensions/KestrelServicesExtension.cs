@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using HelpDesk.src.Infrastructure.Services.Kestrel;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
@@ -7,33 +8,39 @@ public static class KestrelServicesExtension
     public static WebApplicationBuilder AddCustomKestrelServices(
         this WebApplicationBuilder builder)
     {
-        // Load the PEM certificate and convert it to PFX format
-        var certPath = builder.Configuration["Kestrel:Certificates:Default:Pem"];
+        var kestrelSection = builder.Configuration.GetSection("Kestrel:Certificates:Default");
 
-        if (string.IsNullOrWhiteSpace(certPath))
-            throw new InvalidOperationException("Kestrel certificate PEM path is not configured. Expected configuration key 'Kestrel:Certificates:Default:Pem'.");
+        var kestrelOptions = kestrelSection.Get<KestrelOptions>()
+            ?? throw new InvalidOperationException("Kestrel certificate options are not configured. Expected configuration section 'Kestrel:Certificates:Default'.");
 
-        var keyPath = builder.Configuration["Kestrel:Certificates:Default:Key"];
+        var certificatePath = Path.GetFullPath(kestrelOptions.Pem);
+        var keyPath = Path.GetFullPath(kestrelOptions.Key);
 
-        if (string.IsNullOrWhiteSpace(keyPath))
-            throw new InvalidOperationException("Kestrel certificate key path is not configured. Expected configuration key 'Kestrel:Certificates:Default:Key'.");
+        if (!File.Exists(certificatePath))
+        {
+            throw new FileNotFoundException(
+                 "Certificate was not found. Expected file: DevCertificate/cert.pem in the repo root.",
+                certificatePath);
+        }
 
-        // Create a temporary X509Certificate2 object from the PEM files
-        var tempCert = X509Certificate2.CreateFromPemFile(certPath, keyPath);
+        if (!File.Exists(keyPath))
+        {
+            throw new FileNotFoundException(
+                 "Certificate key was not found. Expected file: DevCertificate/key.pem in the repo root.",
+                keyPath);
+        }
 
-        // Export the certificate to PFX format (PKCS#12)
+        var tempCert = X509Certificate2.CreateFromPemFile(certificatePath, keyPath);
+
         byte[] pfxBytes = tempCert.Export(X509ContentType.Pfx);
 
-        // Dispose the temporary certificate as it's no longer needed
         tempCert.Dispose();
 
-        // Load the PFX certificate into an X509Certificate2 object
         var cert = X509CertificateLoader.LoadPkcs12(
             pfxBytes,
             password: null,
             X509KeyStorageFlags.DefaultKeySet);
 
-        // Configure Kestrel to use the loaded certificate for HTTPS
         builder.WebHost.ConfigureKestrel(options =>
         {
             options.ConfigureHttpsDefaults(https =>

@@ -26,7 +26,8 @@ public static class JwtExtension
 
         var jwtSection = builder.Configuration.GetSection("jwt");
 
-        var jwtOptions = jwtSection.Get<JwtOptions>()!;
+        var jwtOptions = jwtSection.Get<JwtOptions>()
+            ?? throw new InvalidOperationException("JWT options are not configured. Expected configuration section 'Jwt'.");
 
         builder.Services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
