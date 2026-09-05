@@ -93,6 +93,7 @@ public sealed class CreateUserAccountHandler :
         // Success log
         _logger.LogInformation("User {user} created successfully with temporary password", user.Id);
 
+        // Send welcome email
         await _queueEmailService.WelcomeEmail(
             userName: user.UserName,
             recipientEmail: user.Email,

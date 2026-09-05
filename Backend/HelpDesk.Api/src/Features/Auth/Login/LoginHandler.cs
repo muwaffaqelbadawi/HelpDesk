@@ -46,6 +46,8 @@ public sealed class LoginHandler :
             userId: user.Id,
             cancellationToken: cancellationToken);
 
+        // Add someone login to your account email later
+
         _logger.LogInformation(
             "User {userId} logged in successfully",
             user.Id);

@@ -34,7 +34,10 @@ public sealed class UserRepository : IUserRepository
         try
         {
             _dbContext.Employees.Add(employee);
-            var userResult = await _userManager.CreateAsync(user, tempPassword);
+
+            var userResult = await _userManager.CreateAsync(
+                user,
+                tempPassword);
 
             if (!userResult.Succeeded)
             {
