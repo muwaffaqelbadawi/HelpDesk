@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.Interfaces;
 
-public interface IAdminSeedRunner
+public interface ISuperadminSeedRunner
 {
     Task BootstrapAsync(
         CancellationToken cancellationToken);

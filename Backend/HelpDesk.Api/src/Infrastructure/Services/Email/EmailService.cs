@@ -46,6 +46,27 @@ public sealed class EmailService : IEmailService
             cancellationToken: cancellationToken);
     }
 
+    public async Task SendSuperadminWelcomeEmailAsync(
+        string userName,
+        string recipientEmail,
+        string tempPassword,
+        CancellationToken cancellationToken = default)
+    {
+        var body = await _templateRenderer.RenderAsync(
+            "SuperadminWelcomeEmail.html",
+            new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["tempPassword"] = tempPassword
+            });
+
+        await SendEmailAsync(
+            recipientEmail: recipientEmail,
+            subject: EmailSubject.SuperadminWelcomeEmail,
+            htmlBody: body,
+            cancellationToken: cancellationToken);
+    }
+
     public async Task SendConfirmationLinkAsync(
         string userName,
         string recipientEmail,

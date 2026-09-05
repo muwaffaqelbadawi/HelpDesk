@@ -10,7 +10,7 @@ public static class SeedAdminServiceExtension
     {
         using var scope = app.Services.CreateScope();
 
-        var bootstrapper = scope.ServiceProvider.GetRequiredService<IAdminSeedRunner>();
+        var bootstrapper = scope.ServiceProvider.GetRequiredService<ISuperadminSeedRunner>();
 
         await bootstrapper.BootstrapAsync(cancellationToken);
 

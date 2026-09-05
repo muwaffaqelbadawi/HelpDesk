@@ -19,4 +19,11 @@ public interface IQueueEmailService
         string fullName,
         string tempPassword,
     CancellationToken cancellationToken);
+
+    // Superadmin Welcome email
+    Task SuperadminWelcomeEmail(
+        string userName,
+        string recipientEmail,
+        string tempPassword,
+    CancellationToken cancellationToken);
 }

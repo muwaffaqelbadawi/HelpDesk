@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.Responses.Data;
 
-public sealed record AdminData
+public sealed record SuperadminAccountData
 {
     public Guid UserId { get; init; }
     public string UserName { get; init; } = null!;
@@ -8,4 +8,3 @@ public sealed record AdminData
     public bool MustChangePassword { get; init; }
     public IReadOnlyCollection<string> Roles { get; init; } = [];
 }
-

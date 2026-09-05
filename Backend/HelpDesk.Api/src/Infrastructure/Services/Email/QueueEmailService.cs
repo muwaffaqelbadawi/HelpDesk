@@ -2,7 +2,8 @@
 
 namespace HelpDesk.src.Infrastructure.Services.Email;
 
-public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue) : IQueueEmailService
+public sealed class QueueEmailService(
+    IBackgroundTaskQueue taskQueue) : IQueueEmailService
 {
     // Test Email
     public async Task TestEmail(
@@ -42,7 +43,7 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue) : IQueueEm
         }, cancellationToken);
     }
 
-    // Welcome
+    // WelcomeEmail
     public async Task WelcomeEmail(
         string userName,
         string recipientEmail,
@@ -63,5 +64,29 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue) : IQueueEm
                 tempPassword,
                 cancellationToken);
         }, cancellationToken);
+    }
+
+    // SuperadminWelcomeEmail
+    public async Task SuperadminWelcomeEmail(
+        string userName,
+        string recipientEmail,
+        string tempPassword,
+        CancellationToken cancellationToken)
+    {
+        await taskQueue.QueueBackgroundWorkItemAsync(async (services, cancellationToken) =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var emailSender = services.GetRequiredService<IEmailService>();
+
+            await emailSender.SendSuperadminWelcomeEmailAsync(
+                userName,
+                recipientEmail,
+                tempPassword,
+                cancellationToken);
+        }, cancellationToken);
+
+
+        throw new NotImplementedException();
     }
 }

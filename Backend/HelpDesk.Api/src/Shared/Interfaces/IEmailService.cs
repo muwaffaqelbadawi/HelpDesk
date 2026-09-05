@@ -9,6 +9,12 @@ public interface IEmailService
         string tempPassword,
         CancellationToken cancellationToken = default);
 
+    Task SendSuperadminWelcomeEmailAsync(
+        string userName,
+        string recipientEmail,
+        string tempPassword,
+        CancellationToken cancellationToken = default);
+
     Task SendConfirmationLinkAsync(
         string userName,
         string recipientEmail,

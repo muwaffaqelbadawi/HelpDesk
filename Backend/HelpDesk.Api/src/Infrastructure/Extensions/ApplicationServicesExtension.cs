@@ -20,7 +20,7 @@ public static class ApplicationServicesExtension
             .AddHttpResilienceServices()
             .AddRateLimitServices()
             .AddSeeders()
-            .AddAdmin()
+            .AddSuperadmin()
             .AddFeatures()
             .AddEvents()
             .AddEmail()
