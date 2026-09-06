@@ -6,12 +6,13 @@ public sealed class CreateUserAccountValidator : AbstractValidator<CreateUserAcc
 {
     public CreateUserAccountValidator()
     {
-        //RuleFor(x => x.)
-        //    .NotEmpty()
-        //    .MaximumLength();
+        RuleFor(x => x.UserName)
+            .NotEmpty()
+            .MaximumLength(100);
 
-        //RuleFor(x => x.)
-        //    .NotEmpty()
-        //    .MaximumLength();
+        RuleFor(x => x.Email)
+            .NotEmpty()
+            .EmailAddress()
+            .MaximumLength(200);
     }
 }

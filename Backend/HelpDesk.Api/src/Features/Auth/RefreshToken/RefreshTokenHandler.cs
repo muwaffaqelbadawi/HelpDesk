@@ -10,6 +10,7 @@ public sealed class RefreshTokenHandler :
     ICommandHandler<RefreshTokenCommand, RefreshTokenResponse>
 {
     private readonly IDateTimeService _dateTimeService;
+    private readonly IUserContext _userContext;
     private readonly IUserProvider _userProvider;
     private readonly AppDbContext _dbContext;
     private readonly IRefreshTokenRevocationService _refreshTokenRevocationService;
@@ -18,6 +19,7 @@ public sealed class RefreshTokenHandler :
 
     public RefreshTokenHandler(
         IDateTimeService dateTimeService,
+        IUserContext userContext,
         IUserProvider userProvider,
         AppDbContext dbContext,
         IRefreshTokenRevocationService refreshTokenRevocationService,
@@ -25,6 +27,7 @@ public sealed class RefreshTokenHandler :
         ILogger<RefreshTokenHandler> logger)
     {
         _dateTimeService = dateTimeService;
+        _userContext = userContext;
         _userProvider = userProvider;
         _dbContext = dbContext;
         _refreshTokenRevocationService = refreshTokenRevocationService;
@@ -36,18 +39,16 @@ public sealed class RefreshTokenHandler :
         RefreshTokenCommand command,
         CancellationToken cancellationToken)
     {
-        // Resolve currentUser with ID
-        var user = await _userProvider.GetUserAsync(cancellationToken)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
-
         // Find the refresh token
         var existingToken = await _dbContext.RefreshTokens
             .SingleOrDefaultAsync(x => x.Token == command.RefreshToken, cancellationToken);
 
+        var userId = _userContext.GuidUserId;
+
         if (existingToken is null)
         {
-            _logger.LogWarning("Refresh token not found for value ending with: {TokenSuffix}",
-                command.RefreshToken[^6..]);
+            _logger.LogWarning("Refresh token not found for user {UserId}.",
+                userId);
 
             throw new AuthorizationFailedException("Invalid refresh token.");
         }
@@ -78,6 +79,11 @@ public sealed class RefreshTokenHandler :
             throw new AuthenticationFailedException("Refresh token has expired.");
         }
 
+        var stringUserId = _userContext.UserId;
+
+        var user = await _userProvider.GetUserAsync(stringUserId)
+            ?? throw new AuthorizationFailedException("Unauthorized user.");
+
         // Issue new token
         var token = await _tokenService.IssueAfterRefreshAsync(
             user,
@@ -86,13 +92,13 @@ public sealed class RefreshTokenHandler :
 
         // Get user roles (if found)
         var roles = await _dbContext.UserRoles
-            .Where(ur => ur.UserId == user.Id && ur.RemovedAt == null)
+            .Where(ur => ur.UserId == userId && ur.RemovedAt == null)
             .Select(ur => ur.Role.Name ?? string.Empty)
             .ToListAsync(cancellationToken);
 
         var userAccountData = await _dbContext.Users
             .AsNoTracking()
-            .Where(u => u.Id == user.Id)
+            .Where(u => u.Id == userId)
             .SelectUserAccount()
             .SingleAsync(cancellationToken);
 

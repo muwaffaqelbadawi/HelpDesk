@@ -3,27 +3,37 @@
 public interface IQueueEmailService
 {
     Task TestEmail(
+        Guid userId,
         string recipientEmail,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken);
-    // Reset password email
+
     Task ResetPasswordEmail(
+        Guid userId,
         string userName,
         string recipientEmail,
         string resetLink,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken);
 
-    // Welcome email
     Task WelcomeEmail(
+        Guid userId,
         string userName,
         string recipientEmail,
         string fullName,
         string tempPassword,
-    CancellationToken cancellationToken);
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken);
 
-    // Superadmin Welcome email
     Task SuperadminWelcomeEmail(
+        Guid userId,
         string userName,
         string recipientEmail,
         string tempPassword,
-    CancellationToken cancellationToken);
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken);
 }

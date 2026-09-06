@@ -22,21 +22,23 @@ public sealed class SuperadminRepository(
         try
         {
             // Create a new user
-            var userResult = await userManager.CreateAsync(
+            var superadminResult = await userManager.CreateAsync(
                 superadmin,
                 tempPassword);
 
             // Check for user creation success
-            if (!userResult.Succeeded)
+            if (!superadminResult.Succeeded)
             {
                 logger.LogWarning(
-                    "Failed to create Superadmin {UserName}. Errors: {Errors}",
-                    superadmin.UserName,
-                    string.Join(", ", userResult.Errors.Select(e => e.Description)));
+                    "Failed to create superadmin. Errors: {Errors}",
+                    string.Join(
+                        ", ",
+                        superadminResult.Errors.Select(e => e.Description)));
 
                 throw new InvalidOperationException(
-                    string.Join(", ",
-                        userResult.Errors.Select(e => e.Description)));
+                    string.Join(
+                        ", ",
+                        superadminResult.Errors.Select(e => e.Description)));
             }
 
             dbContext.UserRoles.Add(superadminRoleEntity);
@@ -48,6 +50,7 @@ public sealed class SuperadminRepository(
         catch
         {
             await transaction.RollbackAsync(cancellationToken);
+
             throw;
         }
     }

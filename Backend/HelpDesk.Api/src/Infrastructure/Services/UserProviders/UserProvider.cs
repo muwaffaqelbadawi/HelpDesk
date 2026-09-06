@@ -1,40 +1,22 @@
 ﻿using System.Data;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Exceptions;
-using Microsoft.AspNetCore.Identity;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace HelpDesk.src.Infrastructure.Services.UserProviders;
 
-public sealed class UserProvider : IUserProvider
+public sealed class UserProvider(UserManager<ApplicationUser> userManager)
+    : IUserProvider
 {
-    private readonly IUserContext _userContext;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public UserProvider(
-        IUserContext userContext,
-        UserManager<ApplicationUser> userManager)
+    public Task<ApplicationUser?> GetUserAsync(string userId)
     {
-        _userContext = userContext;
-        _userManager = userManager;
+        return userManager.FindByIdAsync(userId);
     }
 
-    public Task<ApplicationUser?> GetUserAsync(
-       CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<string>> GetRoleNamesAsync(ApplicationUser user)
     {
-        var userId = _userContext.UserId;
+        var roles = await userManager.GetRolesAsync(user);
 
-        return _userManager.FindByIdAsync(userId)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
-    }
-
-    public async Task<IReadOnlyCollection<string>> GetRoleNamesAsync(
-        ApplicationUser user)
-    {
-        var roles = await _userManager.GetRolesAsync(user);
-
-        return roles
-            .Where(r => !string.IsNullOrWhiteSpace(r))
-            .ToList();
+        return [.. roles.Where(r => !string.IsNullOrWhiteSpace(r))];
     }
 }

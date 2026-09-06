@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HelpDesk.src.Infrastructure.Services.Jwt;
 
@@ -25,7 +25,6 @@ public sealed class JwtProvider : IJwtProvider
 
     public async Task<string> GenerateAccessToken(
         ApplicationUser user,
-
         CancellationToken cancellationToken = default)
     {
         var key = Encoding.UTF8.GetBytes(_jwtOptions.Key);

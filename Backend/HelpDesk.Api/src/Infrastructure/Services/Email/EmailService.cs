@@ -24,10 +24,13 @@ public sealed class EmailService : IEmailService
     }
 
     public async Task SendWelcomeEmailAsync(
+        Guid userId,
         string userName,
         string fullName,
         string recipientEmail,
         string tempPassword,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken)
     {
         var body = await _templateRenderer.RenderAsync(
@@ -40,16 +43,22 @@ public sealed class EmailService : IEmailService
             });
 
         await SendEmailAsync(
+            userId: userId,
             recipientEmail: recipientEmail,
             subject: EmailSubject.WelcomeEmail,
             htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
     }
 
     public async Task SendSuperadminWelcomeEmailAsync(
+        Guid userId,
         string userName,
         string recipientEmail,
         string tempPassword,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken = default)
     {
         var body = await _templateRenderer.RenderAsync(
@@ -61,16 +70,22 @@ public sealed class EmailService : IEmailService
             });
 
         await SendEmailAsync(
+            userId: userId,
             recipientEmail: recipientEmail,
             subject: EmailSubject.SuperadminWelcomeEmail,
             htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
     }
 
     public async Task SendConfirmationLinkAsync(
+        Guid userId,
         string userName,
         string recipientEmail,
         string confirmationLink,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken = default)
     {
         var body = await _templateRenderer.RenderAsync(
@@ -82,16 +97,22 @@ public sealed class EmailService : IEmailService
             });
 
         await SendEmailAsync(
+            userId: userId,
             recipientEmail: recipientEmail,
             subject: EmailSubject.ConfirmationEmail,
             htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
     }
 
     public async Task SendPasswordResetCodeAsync(
+        Guid userId,
         string userName,
         string recipientEmail,
         string resetCode,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken = default)
     {
         var body = await _templateRenderer.RenderAsync(
@@ -103,16 +124,22 @@ public sealed class EmailService : IEmailService
             });
 
         await SendEmailAsync(
+            userId: userId,
             recipientEmail: recipientEmail,
             subject: EmailSubject.PasswordResetCode,
             htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
     }
 
     public async Task SendPasswordResetLinkAsync(
+        Guid userId,
         string userName,
         string recipientEmail,
         string resetLink,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken = default)
     {
         var body = await _templateRenderer.RenderAsync(
@@ -124,32 +151,43 @@ public sealed class EmailService : IEmailService
             });
 
         await SendEmailAsync(
+            userId: userId,
             recipientEmail: recipientEmail,
             subject: EmailSubject.PasswordResetLink,
             htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
     }
 
     public async Task SendTestEmailAsync(
-    string recipientEmail,
-    CancellationToken cancellationToken = default)
+        Guid userId,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken = default)
     {
         var body = await _templateRenderer.RenderAsync("TestEmail.html");
 
         await SendEmailAsync(
+            userId: userId,
             recipientEmail: recipientEmail,
             subject: EmailSubject.TestEmailService,
             htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
     }
 
     private async Task SendEmailAsync(
+        Guid userId,
         string recipientEmail,
         string subject,
         string htmlBody,
+        string traceId,
+        string correlationId,
         CancellationToken cancellationToken = default)
     {
-        // Build the MimeMessage
         var message = new MimeMessage();
 
         message.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.SenderEmail));
@@ -163,7 +201,6 @@ public sealed class EmailService : IEmailService
             Text = htmlBody
         };
 
-        // Send via a new SmtpClient (don't reuse)
         using var smtp = new SmtpClient();
 
         try
@@ -176,7 +213,6 @@ public sealed class EmailService : IEmailService
                 : SecureSocketOptions.None,
                 cancellationToken);
 
-            // Authenticate if credentials are provided
             if (!string.IsNullOrWhiteSpace(_smtpSettings.Username) &&
                 !string.IsNullOrWhiteSpace(_smtpSettings.Password))
             {
@@ -188,11 +224,20 @@ public sealed class EmailService : IEmailService
 
             await smtp.SendAsync(message);
 
-            _logger.LogInformation("Email sent to {Recipient}", recipientEmail);
+            _logger.LogInformation(
+                "Email sent successfully for user {UserId}. TraceId: {TraceId}, CorrelationId: {CorrelationId}",
+                userId,
+                traceId,
+                correlationId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send email to {Recipient}", recipientEmail);
+            _logger.LogError(
+                ex,
+                "Failed to send email for user {UserId}. TraceId: {TraceId}, CorrelationId: {CorrelationId}.",
+                userId,
+                traceId,
+                correlationId);
 
             throw;
         }

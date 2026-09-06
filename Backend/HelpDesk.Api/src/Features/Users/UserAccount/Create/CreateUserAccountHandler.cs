@@ -91,16 +91,27 @@ public sealed class CreateUserAccountHandler :
             cancellationToken: cancellationToken);
 
         // Success log
-        _logger.LogInformation("User {user} created successfully with temporary password", user.Id);
+        _logger.LogInformation("User {user} created successfully with temporary password",
+            user.Id);
+
+        var traceId = _userContext.TraceId;
+        var correlationId = _userContext.CorrelationId;
 
         // Send welcome email
         await _queueEmailService.WelcomeEmail(
+            userId: user.Id,
             userName: user.UserName,
             recipientEmail: user.Email,
             fullName: userAccountData.Employee!.FullEnName,
             tempPassword: tempPassword,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
 
-        return new CreateUserAccountResponse(userAccountData);
+        _logger.LogInformation("Welcome email for user {user} queued successfully.",
+            user.Id);
+
+        return new CreateUserAccountResponse(
+            UserAccountData: userAccountData);
     }
 }

@@ -4,30 +4,20 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.HttpContexts;
 
-public sealed class UserContext : IUserContext
+public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
+    : IUserContext
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public UserContext(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     public string UserId
     {
         get
         {
-            var userId = _httpContextAccessor.HttpContext?
+            var userId = httpContextAccessor.HttpContext?
                 .User
                 .FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                throw new UnauthorizedAccessException(
-                "Authenticated user not found.");
-            }
-
-            return userId;
+            return string.IsNullOrWhiteSpace(userId)
+                ? throw new UnauthorizedAccessException("Authenticated user not found.")
+                : userId;
         }
     }
 
@@ -35,29 +25,21 @@ public sealed class UserContext : IUserContext
     {
         get
         {
-            var value = _httpContextAccessor.HttpContext?
+            var value = httpContextAccessor.HttpContext?
                 .User
                 .FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!Guid.TryParse(value, out var guid))
-            {
-                throw new UnauthorizedAccessException(
-                    "Invalid user identifier.");
-            }
-
-            return guid;
+            return !Guid.TryParse(value, out var guid)
+                ? throw new UnauthorizedAccessException("Invalid user identifier.")
+                : guid;
         }
     }
 
     public Guid ToGuidId(string id)
     {
-        if (!Guid.TryParse(id, out var guid))
-        {
-            throw new UnauthorizedAccessException(
-                "Invalid user identifier.");
-        }
-
-        return guid;
+        return !Guid.TryParse(id, out var guid)
+            ? throw new UnauthorizedAccessException("Invalid user identifier.")
+            : guid;
     }
 
     public string UserName
@@ -65,23 +47,19 @@ public sealed class UserContext : IUserContext
         get
         {
             var userName =
-                _httpContextAccessor.HttpContext?
+                httpContextAccessor.HttpContext?
                     .User
                     .Identity?
                     .Name;
 
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                throw new UnauthorizedAccessException(
-                    "Authenticated user not found.");
-            }
-
-            return userName;
+            return string.IsNullOrWhiteSpace(userName)
+                ? throw new UnauthorizedAccessException("Authenticated user not found.")
+                : userName;
         }
     }
 
     public string? UserAgent =>
-        _httpContextAccessor.HttpContext?
+        httpContextAccessor.HttpContext?
             .Request
             .Headers
             .UserAgent
@@ -97,31 +75,29 @@ public sealed class UserContext : IUserContext
         : "Unknown";
 
     public string? IpAddress =>
-       _httpContextAccessor.HttpContext?
+       httpContextAccessor.HttpContext?
            .Connection
            .RemoteIpAddress?
            .ToString();
 
+    // for distributed tracing
     public string TraceId =>
-        Activity
-        .Current?
-        .TraceId
-        .ToString()!;
+        Activity.Current?.TraceId.ToString()
+        ?? Guid.NewGuid().ToString();
 
     public string CorrelationId =>
-        _httpContextAccessor
-            .HttpContext?
-            .TraceIdentifier!;
+        httpContextAccessor.HttpContext?.TraceIdentifier
+        ?? Guid.NewGuid().ToString();
 
     public bool IsAuthenticated =>
-        _httpContextAccessor.HttpContext?
+        httpContextAccessor.HttpContext?
             .User
             .Identity?
             .IsAuthenticated
         ?? false;
 
     public bool HasClaims =>
-        _httpContextAccessor
+        httpContextAccessor
             .HttpContext?
             .User
             .Claims is null;

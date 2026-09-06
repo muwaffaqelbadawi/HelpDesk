@@ -20,6 +20,7 @@ public sealed class SuperadminHandler :
     private readonly IDateTimeService _dateTimeService;
     private readonly ISuperadminReader _superadminReader;
     private readonly IQueueEmailService _queueEmailService;
+    private readonly IUserContext _userContext;
     private readonly ILogger<SuperadminHandler> _logger;
 
     public SuperadminHandler(
@@ -30,6 +31,7 @@ public sealed class SuperadminHandler :
         IDateTimeService dateTimeService,
         ISuperadminReader superadminReader,
         IQueueEmailService queueEmailService,
+        IUserContext userContext,
         ILogger<SuperadminHandler> logger)
     {
         _userManager = userManager;
@@ -39,6 +41,7 @@ public sealed class SuperadminHandler :
         _dateTimeService = dateTimeService;
         _superadminReader = superadminReader;
         _queueEmailService = queueEmailService;
+        _userContext = userContext;
         _logger = logger;
     }
 
@@ -130,13 +133,22 @@ public sealed class SuperadminHandler :
             mustChangePassword: superadminAccountData.MustChangePassword,
             roles: superadminAccountData.Roles);
 
+        var traceId = _userContext.TraceId;
+        var correlationId = _userContext.CorrelationId;
+
         // In the production environment for Superadmin Prefer controlled
         // bootstrap/provisioning process SSO
         await _queueEmailService.SuperadminWelcomeEmail(
+            userId: superadmin.Id,
             userName: superadmin.UserName,
             recipientEmail: superadmin.Email,
             tempPassword: tempPassword,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
+
+        _logger.LogInformation("Superadmin welcome email for user {user} queued successfully.",
+            superadmin.Id);
 
         // Should be changed to SuperadminData
         return new SuperadminResponse(

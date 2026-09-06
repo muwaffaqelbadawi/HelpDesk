@@ -12,6 +12,7 @@ public sealed class ChangePasswordHandler :
     ICommandHandler<ChangePasswordCommand, ChangePasswordResponse>
 {
     private readonly IDateTimeService _dateTimeService;
+    private readonly IUserContext _userContext;
     private readonly IUserProvider _userProvider;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly AppDbContext _dbContext;
@@ -20,6 +21,7 @@ public sealed class ChangePasswordHandler :
 
     public ChangePasswordHandler(
         IDateTimeService dateTimeService,
+        IUserContext userContext,
         IUserProvider userProvider,
         UserManager<ApplicationUser> userManager,
         AppDbContext dbContext,
@@ -27,6 +29,7 @@ public sealed class ChangePasswordHandler :
         ILogger<ChangePasswordHandler> logger)
     {
         _dateTimeService = dateTimeService;
+        _userContext = userContext;
         _userProvider = userProvider;
         _dbContext = dbContext;
         _userManager = userManager;
@@ -39,9 +42,10 @@ public sealed class ChangePasswordHandler :
         CancellationToken cancellationToken)
     {
         //self - service change
+        var userId = _userContext.UserId;
 
         // Resolve currentUser with ID
-        var user = await _userProvider.GetUserAsync(cancellationToken)
+        var user = await _userProvider.GetUserAsync(userId)
             ?? throw new AuthorizationFailedException("Unauthorized user.");
 
         // Change password
@@ -55,7 +59,7 @@ public sealed class ChangePasswordHandler :
         {
             _logger.LogWarning(
                 "Failed to change password for user: {UserId}. Errors: {Errors}",
-                user.Id.ToString(),
+                userId.ToString(),
                 string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)));
 
             throw new PasswordChangeFailedException(new()
@@ -67,8 +71,10 @@ public sealed class ChangePasswordHandler :
             });
         }
 
+        var guidUserId = _userContext.GuidUserId;
+
         user.LastPasswordChangedAt = _dateTimeService.UtcNow;
-        user.LastPasswordChangedById = user.Id;
+        user.LastPasswordChangedById = guidUserId;
         user.MustChangePassword = false;
 
         await _userManager.UpdateAsync(user);
@@ -79,11 +85,11 @@ public sealed class ChangePasswordHandler :
             cancellationToken);
 
         // Success log
-        _logger.LogInformation("User {UserId} changed password and received new tokens", user.Id);
+        _logger.LogInformation("User {UserId} changed password and received new tokens", userId);
 
         var userAccountData = await _dbContext.Users
             .AsNoTracking()
-            .Where(u => u.Id == user.Id)
+            .Where(u => u.Id == guidUserId)
             .SelectUserAccount()
             .SingleAsync(cancellationToken);
 

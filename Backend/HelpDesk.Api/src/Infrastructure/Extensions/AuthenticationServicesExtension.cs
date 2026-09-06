@@ -17,7 +17,7 @@ public static class AuthenticationServicesExtension
         //Identity Middleware
         builder.Services.AddIdentityConfiguration();
 
-        // Register HttpContextAccessor to access the current HTTP context in builder.Services
+        // Register HttpContextAccessor
         builder.Services.AddHttpContextAccessor();
 
         // UserContext

@@ -11,9 +11,13 @@
 
   <ItemGroup>
     <Compile Remove="src\Features\Settings\**" />
+    <Compile Remove="src\Features\Users\User\**" />
     <Content Remove="src\Features\Settings\**" />
+    <Content Remove="src\Features\Users\User\**" />
     <EmbeddedResource Remove="src\Features\Settings\**" />
+    <EmbeddedResource Remove="src\Features\Users\User\**" />
     <None Remove="src\Features\Settings\**" />
+    <None Remove="src\Features\Users\User\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,7 +58,6 @@
     <Folder Include="src\Features\Dashboard\" />
     <Folder Include="src\Features\Permissions\GetAssigned\" />
     <Folder Include="src\Features\Roles\GetAssigned\" />
-    <Folder Include="src\Features\Users\User\" />
   </ItemGroup>
 
 </Project>

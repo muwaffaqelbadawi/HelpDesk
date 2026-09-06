@@ -100,8 +100,6 @@ public sealed class AuthController : ControllerBase
         // Read from cookie (no body needed)
         var refreshTokenValue = Request.Cookies["refresh_token"];
 
-        _logger.LogInformation("refreshTokenValue: {refreshTokenValue}", refreshTokenValue);
-
         if (string.IsNullOrEmpty(refreshTokenValue))
         {
             return Unauthorized(new { Message = "No refresh token provided." });

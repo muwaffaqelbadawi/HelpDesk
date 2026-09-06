@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
+using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using DataAnnotationsValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 using FluentValidationException = FluentValidation.ValidationException;
@@ -11,7 +11,9 @@ public sealed class ExceptionMiddleware(
     RequestDelegate next,
     IWebHostEnvironment env)
 {
-    public async Task Invoke(HttpContext context)
+    public async Task Invoke(
+        HttpContext context,
+        IUserContext userContext)
     {
         try
         {
@@ -30,15 +32,19 @@ public sealed class ExceptionMiddleware(
                 ConflictException => StatusCodes.Status409Conflict,
                 BusinessRuleViolationException => StatusCodes.Status422UnprocessableEntity,
                 IdentityOperationException => StatusCodes.Status400BadRequest,
-                Exception => StatusCodes.Status500InternalServerError
+                Exception => StatusCodes.Status500InternalServerError,
             };
 
-            context.Response.ContentType = "application/json";
+            var traceId = userContext.TraceId;
+            var correlationId = userContext.CorrelationId;
+            bool isDevelopment = env.IsDevelopment();
 
             var response = CreateErrorResponse(
                 ex,
                 context,
-                env.IsDevelopment());
+                traceId,
+                correlationId,
+                isDevelopment);
 
             await context.Response.WriteAsJsonAsync(response);
         }
@@ -47,18 +53,17 @@ public sealed class ExceptionMiddleware(
     private static ProblemDetails CreateErrorResponse(
         Exception exception,
         HttpContext httpContext,
+        string traceId,
+        string correlationId,
         bool isDevelopment)
     {
         var status = httpContext.Response.StatusCode;
         var details = exception.Message;
         var path = httpContext.Request.Path;
         var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
-        var traceId = Activity.Current?.TraceId.ToString()
-            ?? httpContext.TraceIdentifier;
 
-        if (isDevelopment)
-        {
-            return exception switch
+        return isDevelopment
+            ? exception switch
             {
                 HelpDeskValidationException ex => new ValidationProblemDetails(ex.Errors)
                 {
@@ -69,7 +74,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -86,7 +92,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -99,7 +106,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -112,7 +120,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -125,7 +134,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -138,7 +148,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -151,7 +162,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -164,7 +176,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -177,7 +190,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -190,7 +204,8 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 },
 
@@ -203,16 +218,14 @@ public sealed class ExceptionMiddleware(
                     Instance = path,
                     Extensions =
                     {
-                        ["traceId"] = traceId
-
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
                     }
                 }
+            }
+            : new ProblemDetails
+            {
+
             };
-        }
-
-        return new ProblemDetails
-        {
-
-        };
     }
 }

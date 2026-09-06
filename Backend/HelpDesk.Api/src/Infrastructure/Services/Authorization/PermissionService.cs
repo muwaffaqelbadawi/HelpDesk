@@ -6,13 +6,16 @@ namespace HelpDesk.src.Infrastructure.Services.Authorization;
 
 public sealed class PermissionService : IPermissionService
 {
+    public readonly IUserContext _userContext;
     private readonly IUserProvider _userProvider;
     private readonly AppDbContext _dbContext;
 
     public PermissionService(
+        IUserContext userContext,
         IUserProvider userProvider,
         AppDbContext dbContext)
     {
+        _userContext = userContext;
         _userProvider = userProvider;
         _dbContext = dbContext;
     }
@@ -20,8 +23,11 @@ public sealed class PermissionService : IPermissionService
     public async Task<IReadOnlyCollection<string>> GetUserPermissionsAsync(
         CancellationToken cancellationToken)
     {
+        //self - service change
+        var userId = _userContext.UserId;
+
         // Current user
-        var user = await _userProvider.GetUserAsync(cancellationToken)
+        var user = await _userProvider.GetUserAsync(userId)
             ?? throw new UnauthorizedAccessException("Authenticated user not found.");
 
         // Get user roles

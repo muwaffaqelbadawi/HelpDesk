@@ -137,7 +137,6 @@ public partial class AppDbContext
                 .HasDefaultValue(true);
         });
 
-
         // Business.Departments
         modelBuilder.Entity<Department>(entity =>
         {
@@ -173,7 +172,6 @@ public partial class AppDbContext
             entity.Property(e => e.SortOrder)
                 .HasDefaultValue(0);
         });
-
 
         // Employee Sequence (BIGINT)
         modelBuilder.HasSequence<long>(
@@ -231,43 +229,29 @@ public partial class AppDbContext
             // DeletedAt (Property)
             entity.Property(e => e.DeletedAt);
 
-
-
-
-
-
-            // 1
             // User <-> Employee (Relation)
             entity.HasOne(e => e.User)
                 .WithOne(e => e.Employee)
                 .HasForeignKey<Employee>(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 2
             // CreatedBy (Relation)
             entity.HasOne(e => e.CreatedBy)
                 .WithMany(e => e.CreatedEmployees)
                 .HasForeignKey(e => e.CreatedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 3
             // UpdatedBy (Relation)
             entity.HasOne(e => e.UpdatedBy)
                 .WithMany(e => e.UpdatedEmployees)
                 .HasForeignKey(e => e.UpdatedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 4
             // DeletedBy (Relation)
             entity.HasOne(e => e.DeletedBy)
                 .WithMany(e => e.DeletedEmployees)
                 .HasForeignKey(e => e.DeletedById)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
-
-
-
 
             //Department(Relation)
             entity.HasOne(e => e.Department)

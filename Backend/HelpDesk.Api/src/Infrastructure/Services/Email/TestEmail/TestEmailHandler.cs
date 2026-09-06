@@ -1,37 +1,32 @@
 ﻿using HelpDesk.src.Shared.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace HelpDesk.src.Infrastructure.Services.Email.TestEmail;
 
-public sealed class TestEmailHandler :
-    ICommandHandler<TestEmailCommand, TestEmailResponse>
+public sealed class TestEmailHandler(
+    IQueueEmailService queueEmailService,
+    IUserContext userContext,
+    ILogger<TestEmailHandler> logger)
+        : ICommandHandler<TestEmailCommand>
 {
-    private readonly SmtpSettings _emailOptions;
-    private readonly IQueueEmailService _queueEmailService;
-    private readonly ILogger<TestEmailHandler> _logger;
-
-    public TestEmailHandler(
-        IOptions<SmtpSettings> emailOptions,
-        IQueueEmailService queueEmailService,
-        ILogger<TestEmailHandler> logger)
-    {
-        _emailOptions = emailOptions.Value;
-        _queueEmailService = queueEmailService;
-        _logger = logger;
-    }
-
-    public async Task<TestEmailResponse> HandleAsync(
+    public async Task HandleAsync(
         TestEmailCommand command,
         CancellationToken cancellationToken)
     {
-        await _queueEmailService.TestEmail(
+        // For testing purposes, we can generate a new userId for each test email sent.
+        // In a real-world scenario, you might want to use an existing userId.
+
+        var userId = Guid.NewGuid();
+        var traceId = userContext.TraceId;
+        var correlationId = userContext.CorrelationId;
+
+        await queueEmailService.TestEmail(
+            userId: userId,
             recipientEmail: command.RecipientEmail,
+            traceId: traceId,
+            correlationId: correlationId,
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation(
-            "Test email sent to {RecipientEmail}", command.RecipientEmail);
-
-        return new TestEmailResponse(
-            SenderEmail: _emailOptions.SenderEmail);
+        logger.LogInformation("Test email for user {user} queued successfully.",
+            userId);
     }
 }

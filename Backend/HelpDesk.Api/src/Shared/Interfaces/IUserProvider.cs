@@ -4,9 +4,7 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IUserProvider
 {
-    Task<ApplicationUser?> GetUserAsync(
-       CancellationToken cancellationToken = default);
+    Task<ApplicationUser?> GetUserAsync(string userId);
 
-    Task<IReadOnlyCollection<string>> GetRoleNamesAsync(
-        ApplicationUser user);
+    Task<IReadOnlyCollection<string>> GetRoleNamesAsync(ApplicationUser user);
 }
