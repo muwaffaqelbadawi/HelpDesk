@@ -432,7 +432,9 @@ FodyWeavers.xsd
 *.msp
 
 
-# ---------------------------------------------------------------------------------------------------
+
+
+
 
 # Angular .gitignore
 
@@ -448,7 +450,7 @@ FodyWeavers.xsd
 /Frontend/HelpDesk.Client/node_modules/
 
 # Environment files
-/Frontend/HelpDesk.Client/.env
+/Frontend/HelpDesk.Client/*.env
 
 # TypeScript cache
 /Frontend/HelpDesk.Client/*.tsbuildinfo
@@ -457,6 +459,8 @@ FodyWeavers.xsd
 /Frontend/HelpDesk.Client/npm-debug.log*
 /Frontend/HelpDesk.Client/yarn-debug.log*
 /Frontend/HelpDesk.Client/yarn-error.log*
+
+
 
 
 
