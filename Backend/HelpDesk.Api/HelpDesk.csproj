@@ -11,12 +11,24 @@
 
   <ItemGroup>
     <Compile Remove="src\Features\Settings\**" />
+    <Compile Remove="src\Features\Users\UserModules\GetAssigned\**" />
+    <Compile Remove="src\Features\Users\UserPermissions\GetAssigned\**" />
+    <Compile Remove="src\Features\Users\UserRoles\GetAssigned\**" />
     <Compile Remove="src\Features\Users\User\**" />
     <Content Remove="src\Features\Settings\**" />
+    <Content Remove="src\Features\Users\UserModules\GetAssigned\**" />
+    <Content Remove="src\Features\Users\UserPermissions\GetAssigned\**" />
+    <Content Remove="src\Features\Users\UserRoles\GetAssigned\**" />
     <Content Remove="src\Features\Users\User\**" />
     <EmbeddedResource Remove="src\Features\Settings\**" />
+    <EmbeddedResource Remove="src\Features\Users\UserModules\GetAssigned\**" />
+    <EmbeddedResource Remove="src\Features\Users\UserPermissions\GetAssigned\**" />
+    <EmbeddedResource Remove="src\Features\Users\UserRoles\GetAssigned\**" />
     <EmbeddedResource Remove="src\Features\Users\User\**" />
     <None Remove="src\Features\Settings\**" />
+    <None Remove="src\Features\Users\UserModules\GetAssigned\**" />
+    <None Remove="src\Features\Users\UserPermissions\GetAssigned\**" />
+    <None Remove="src\Features\Users\UserRoles\GetAssigned\**" />
     <None Remove="src\Features\Users\User\**" />
   </ItemGroup>
 
@@ -54,10 +66,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="src\Features\Modules\GetAssigned\" />
     <Folder Include="src\Features\Dashboard\" />
-    <Folder Include="src\Features\Permissions\GetAssigned\" />
-    <Folder Include="src\Features\Roles\GetAssigned\" />
   </ItemGroup>
 
 </Project>

@@ -15,6 +15,11 @@ public sealed class Employee
     public ApplicationUser User { get; set; } = null!;
 
 
+    // Photo
+    public string? PhotoUrl { get; set; }
+
+
+
     // Domain link
     public string FullEnName { get; set; } = null!;
     public string FullArName { get; set; } = null!;
@@ -24,11 +29,24 @@ public sealed class Employee
     public string Number { get; set; } = null!;
 
 
+
     public Guid? StatusId { get; set; }
     public EmployeeStatus? Status { get; set; }
 
     public Guid? DepartmentId { get; set; }
     public Department? Department { get; set; }
+
+
+
+
+    // Country information
+    public Guid CountryId { get; set; }
+    public Country Country { get; set; } = null!;
+
+
+    // Job
+    public string? JobTitle { get; set; }
+
 
     public Guid? BranchId { get; set; }
     public Branch? Branch { get; set; }

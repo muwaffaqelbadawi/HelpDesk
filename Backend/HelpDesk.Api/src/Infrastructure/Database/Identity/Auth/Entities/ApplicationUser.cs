@@ -25,6 +25,8 @@ public sealed class ApplicationUser : IdentityUser<Guid>
 
     // Login Tracking/Auditing
     public DateTimeOffset? LastLoginAt { get; set; }
+    public DateTimeOffset? LastFailedLoginAt { get; set; }
+    public int FailedLoginCount { get; set; }
 
 
     // Audit
@@ -43,63 +45,47 @@ public sealed class ApplicationUser : IdentityUser<Guid>
     public DateTimeOffset? LockedAt { get; set; }
 
 
-
-
+    // Delete
     public Guid? DeletedById { get; set; }
     public ApplicationUser? DeletedBy { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
-
-
-    // IsDeleted (flag)
-    // soft-delete flag
     public bool IsDeleted { get; set; }
+
+
+    // Profile
+    public string? TimeZone { get; set; }
+    public UserLanguage? PreferredLanguage { get; set; }
 
 
     // Concurrency
     public byte[] RowVersion { get; set; } = null!;
 
 
-
     // UserRoles
     public ICollection<ApplicationUserRole> UserRoles { get; set; } = [];
-
 
 
     // RefreshTokens
     public ICollection<ApplicationRefreshToken> RefreshTokens { get; set; } = [];
 
 
-    // Navigation properties for Tickets
-    public ICollection<Ticket> CreatedTickets { get; set; }
-        = new List<Ticket>();
-
-    public ICollection<Ticket> AssignedByTickets { get; set; }
-        = new List<Ticket>();
-
-    public ICollection<Ticket> AssignedToTickets { get; set; }
-        = new List<Ticket>();
-
-    public ICollection<Ticket> UpdatedTickets { get; set; }
-        = new List<Ticket>();
-
-    public ICollection<Ticket> DeletedTickets { get; set; }
-        = new List<Ticket>();
-
-    public ICollection<Ticket> ClosedTickets { get; set; }
-        = new List<Ticket>();
+    // Tickets
+    public ICollection<Ticket> CreatedTickets { get; set; } = [];
+    public ICollection<Ticket> AssignedByTickets { get; set; } = [];
+    public ICollection<Ticket> AssignedToTickets { get; set; } = [];
+    public ICollection<Ticket> UpdatedTickets { get; set; } = [];
+    public ICollection<Ticket> DeletedTickets { get; set; } = [];
+    public ICollection<Ticket> ClosedTickets { get; set; } = [];
 
 
-
-    // Navigation properties for Employees
+    // Employees
 
     public Employee? Employee { get; set; }
+    public ICollection<Employee> CreatedEmployees { get; set; } = [];
+    public ICollection<Employee> UpdatedEmployees { get; set; } = [];
+    public ICollection<Employee> DeletedEmployees { get; set; } = [];
 
-    public ICollection<Employee> CreatedEmployees { get; set; }
-        = new List<Employee>();
 
-    public ICollection<Employee> UpdatedEmployees { get; set; }
-        = new List<Employee>();
-
-    public ICollection<Employee> DeletedEmployees { get; set; }
-        = new List<Employee>();
+    // UserSession
+    public ICollection<ApplicationUserSession> Sessions { get; set; } = [];
 }

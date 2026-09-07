@@ -68,6 +68,8 @@ public sealed class CreateUserAccountHandler :
         {
             UserName = command.UserName,
             Email = command.Email,
+            PhoneNumber = command.PhoneNumber,
+            PhoneNumberConfirmed = false,
             Employee = employee,
             StatusId = UserStatusIds.Active,
             LastPasswordChangedAt = null,

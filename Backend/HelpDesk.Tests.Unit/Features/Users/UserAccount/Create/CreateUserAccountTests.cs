@@ -63,6 +63,7 @@ public sealed class CreateUserAccountTests
         var command = new CreateUserAccountCommand(
             UserName: "johndoe",
             Email: "johndoe@example.com",
+            PhoneNumber: "123-4567-89",
             FullEnName: "John Doe",
             FullArName: "جون دو");
 

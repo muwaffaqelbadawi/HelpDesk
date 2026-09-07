@@ -259,6 +259,18 @@ public partial class AppDbContext
                 .HasForeignKey(e => e.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // CountryId (Relation)
+            entity.HasOne(e => e.Country)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // PhotoUrl (Property)
+            entity.Property(e => e.PhotoUrl);
+
+            // JobTitle (Property)
+            entity.Property(e => e.JobTitle);
+
             //Branch(Relation)
             entity.HasOne(e => e.Branch)
                 .WithMany(e => e.Employees)

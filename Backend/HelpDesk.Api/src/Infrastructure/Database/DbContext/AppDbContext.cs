@@ -76,6 +76,12 @@ public partial class AppDbContext
             // LastLoginAt (Property)
             entity.Property(e => e.LastLoginAt);
 
+            // LastFailedLoginAt (Property)
+            entity.Property(e => e.LastFailedLoginAt);
+
+            // FailedLoginCount (Property)
+            entity.Property(e => e.FailedLoginCount);
+
             // CreatedBy (Relation)
             entity.HasOne(e => e.CreatedBy)
                 .WithMany()
@@ -115,6 +121,16 @@ public partial class AppDbContext
             // DeletedAt (Property)
             entity.Property(e => e.DeletedAt);
 
+            // IsDeleted (Property)
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // TimeZone (Property)
+            entity.Property(e => e.TimeZone);
+
+            // PreferredLanguage (Property)
+            entity.Property(e => e.PreferredLanguage);
+
             // RowVersion (Property)
             entity.Property(e => e.RowVersion)
                 .IsRowVersion();
@@ -123,10 +139,6 @@ public partial class AppDbContext
             entity.HasMany(u => u.UserRoles)
                 .WithOne(ur => ur.User)
                 .HasForeignKey(ur => ur.UserId);
-
-            // IsDeleted (Property)
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false);
 
             // User query filter (IsDeleted)
             entity.HasQueryFilter(e => !e.IsDeleted);
@@ -375,7 +387,6 @@ public partial class AppDbContext
             entity.Property(e => e.UserAgent)
                 .HasMaxLength(500);
 
-
             // Token (Property)
             entity.Property(e => e.Token)
                 .IsRequired()
@@ -412,6 +423,59 @@ public partial class AppDbContext
             entity.HasQueryFilter(e =>
                 e.RevokedAt == null &&
                 !e.User.IsDeleted);
+        });
+
+        // Auth.RefreshTokens
+        modelBuilder.Entity<ApplicationUserSession>(entity =>
+        {
+            // Schema
+            entity.ToTable("UserSession", "Auth");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // User (Relation)
+            entity.HasOne(e => e.User)
+                .WithMany(e => e.Sessions)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UserAgent
+            entity.Property(e => e.UserAgent)
+                .HasMaxLength(1000);
+
+            // Browser
+            entity.Property(e => e.Browser)
+                .HasMaxLength(100);
+
+            // IpAddress
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(45);
+
+            // CreatedAt
+            entity.Property(e => e.CreatedAt);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany()
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DeletedAt (Property)
+            entity.Property(e => e.DeletedAt);
+
+            // IsDeleted (Property)
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // LastActivityAt
+            entity.Property(e => e.LastActivityAt);
+
+            // ExpiresAt
+            entity.Property(e => e.ExpiresAt);
+
+            // UserSession query filter (IsDeleted)
+            entity.HasQueryFilter(e => !e.IsDeleted);
         });
 
         ConfigureBusinessModel(modelBuilder);

@@ -1,12 +1,12 @@
-﻿using HelpDesk.src.Features.Roles.Assign;
-using HelpDesk.src.Features.Roles.Delete;
-using HelpDesk.src.Features.Roles.GetAll;
-using HelpDesk.src.Features.Roles.GetById;
-using HelpDesk.src.Features.Roles.Update;
-using HelpDesk.src.Features.Users.UserAccount.Create;
+﻿using HelpDesk.src.Features.Users.UserAccount.Create;
 using HelpDesk.src.Features.Users.UserAccount.Delete;
 using HelpDesk.src.Features.Users.UserAccount.GetById;
 using HelpDesk.src.Features.Users.UserAccount.Update;
+using HelpDesk.src.Features.Users.UserRoles.Assign;
+using HelpDesk.src.Features.Users.UserRoles.Delete;
+using HelpDesk.src.Features.Users.UserRoles.GetAll;
+using HelpDesk.src.Features.Users.UserRoles.GetById;
+using HelpDesk.src.Features.Users.UserRoles.Update;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Queries;
@@ -82,6 +82,7 @@ public sealed class AdminUserController : ControllerBase
         var command = new CreateUserAccountCommand(
             UserName: body.UserName,
             Email: body.Email,
+            PhoneNumber: body.PhoneNumber,
             FullEnName: body.FullEnName,
             FullArName: body.FullArName);
 

@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Features.Tickets.Create;
-using HelpDesk.src.Shared.Histories.HistoryTypes;
+using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Shared.Interfaces;
 using NSubstitute;
 using Xunit;

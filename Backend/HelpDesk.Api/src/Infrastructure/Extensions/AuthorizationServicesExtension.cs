@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Infrastructure.Services.Authorization;
+﻿using HelpDesk.src.Infrastructure.Services.Permissions;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 

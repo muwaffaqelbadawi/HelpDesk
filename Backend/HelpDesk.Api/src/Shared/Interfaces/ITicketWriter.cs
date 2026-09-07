@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Shared.Histories.HistoryTypes;
+﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 
 namespace HelpDesk.src.Shared.Interfaces;
 

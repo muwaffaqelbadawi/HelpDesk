@@ -15,4 +15,6 @@ public sealed class Country
     public string NameArabic { get; set; } = null!;
 
     public bool IsActive { get; set; }
+
+    public ICollection<Employee> Employees { get; set; } = [];
 }

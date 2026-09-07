@@ -1,5 +1,4 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Histories.HistoryTypes;
 
 namespace HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 

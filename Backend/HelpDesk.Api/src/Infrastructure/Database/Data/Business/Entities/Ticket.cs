@@ -62,9 +62,10 @@ public sealed class Ticket
     public ApplicationUser? ClosedBy { get; set; }
     public DateTimeOffset? ClosedAt { get; set; }
 
+
+
     // Concurrency
     public byte[] RowVersion { get; set; } = null!;
-
 
 
     // Navigation properties
