@@ -1,15 +1,11 @@
 ﻿namespace HelpDesk.src.Shared.Responses;
 
-public sealed class ApiResponse<T>
+public sealed class ApiResponse<T>(
+    string message,
+    DateTimeOffset time,
+    T? data = default)
 {
-    public string Message { get; init; }
-    public DateTimeOffset Time { get; init; }
-    public T? Data { get; init; }
-
-    public ApiResponse(string message, DateTimeOffset time, T? data = default)
-    {
-        Message = message;
-        Time = time;
-        Data = data;
-    }
+    public string Message { get; init; } = message;
+    public DateTimeOffset Time { get; init; } = time;
+    public T? Data { get; init; } = data;
 }
