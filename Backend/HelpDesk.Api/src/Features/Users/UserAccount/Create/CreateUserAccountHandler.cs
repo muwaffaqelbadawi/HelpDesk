@@ -15,15 +15,9 @@ public sealed class CreateUserAccountHandler :
     private readonly IUserRepository _userRepository;
     private readonly IUserReader _userReader;
     private readonly ITemporaryPasswordGenerator _passwordGenerator;
-
-
     private readonly IDepartmentRules _departmentRules;
     private readonly ISectorRules _sectorRules;
     private readonly ICountryRules _countryRules;
-
-
-
-
     private readonly IPhoneNumberRules _phoneNumberRules;
     private readonly INumberingService _numberingService;
     private readonly IDateTimeService _dateTimeService;
