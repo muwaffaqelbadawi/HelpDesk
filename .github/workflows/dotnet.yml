@@ -21,7 +21,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 9.0.317
+          dotnet-version: 9.0.318
       - name: Restore dependencies
         working-directory: Backend
         run: dotnet restore HelpDesk.slnx

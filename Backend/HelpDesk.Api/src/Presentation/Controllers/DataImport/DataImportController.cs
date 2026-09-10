@@ -24,7 +24,7 @@ public sealed class DataImportController : ControllerBase
 
         return Ok(new ApiResponse<ImportResult>(
             message: ApiMessages.DataImported,
-            time: dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 }

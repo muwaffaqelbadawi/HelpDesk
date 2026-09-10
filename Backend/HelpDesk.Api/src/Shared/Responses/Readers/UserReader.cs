@@ -62,7 +62,8 @@ public sealed class UserReader : IUserReader
                 (u.Employee != null && (
                     u.Employee.Number.Contains(search) ||
                     u.Employee.FullEnName.Contains(search) ||
-                    u.Employee.FullArName.Contains(search))));
+                    (u.Employee.FullArName != null &&
+                     u.Employee.FullArName.Contains(search)))));
         }
 
         return await query

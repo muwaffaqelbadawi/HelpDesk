@@ -62,13 +62,14 @@ public sealed class ChangePasswordHandler :
                 userId.ToString(),
                 string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)));
 
-            throw new PasswordChangeFailedException(new()
-            {
-                ["password"] =
-                [
-                    changePasswordResult.Errors.First().Description
-                ],
-            });
+            throw new PasswordChangeFailedException(
+                errors: new()
+                {
+                    ["password"] =
+                    [
+                        changePasswordResult.Errors.First().Description
+                    ],
+                });
         }
 
         var guidUserId = _userContext.GuidUserId;

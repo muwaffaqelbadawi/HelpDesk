@@ -15,19 +15,11 @@ public sealed class Employee
     public ApplicationUser User { get; set; } = null!;
 
 
-    // Photo
-    public string? PhotoUrl { get; set; }
-
-
-
     // Domain link
+    public string? PhotoUrl { get; set; }
     public string FullEnName { get; set; } = null!;
-    public string FullArName { get; set; } = null!;
-
-
-
+    public string? FullArName { get; set; } = null!;
     public string Number { get; set; } = null!;
-
 
 
     public Guid? StatusId { get; set; }
@@ -35,8 +27,6 @@ public sealed class Employee
 
     public Guid? DepartmentId { get; set; }
     public Department? Department { get; set; }
-
-
 
 
     // Country information
@@ -53,12 +43,11 @@ public sealed class Employee
 
 
     public Guid? SectorId { get; set; }
+    public Sector? Sector { get; set; } = null!;
 
-    public Guid? PositionId { get; set; }
-
-    public Guid? ProfessionId { get; set; }
 
     public Guid? CompanyId { get; set; }
+    public Company? Company { get; set; } = null!;
 
 
     // Audit
@@ -77,10 +66,6 @@ public sealed class Employee
     public Guid? DeletedById { get; set; }
     public ApplicationUser? DeletedBy { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
-
-
-    // IsDeleted (flag)
-    // soft-delete flag
     public bool IsDeleted { get; set; }
 
 

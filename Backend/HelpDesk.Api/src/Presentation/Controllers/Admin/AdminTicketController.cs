@@ -12,19 +12,10 @@ namespace HelpDesk.src.Presentation.Controllers.Admin;
 [ApiController]
 [Route("api/admin/tickets")]
 [Authorize]
-public sealed class AdminTicketController : ControllerBase
+public sealed class AdminTicketController(IDateTimeService dateTimeService)
+    : ControllerBase
 {
-    // Admin
-    private readonly IWebHostEnvironment _environment;
-    private readonly IDateTimeService _dateTimeService;
-
-    public AdminTicketController(
-        IWebHostEnvironment environment,
-        IDateTimeService dateTimeService)
-    {
-        _environment = environment;
-        _dateTimeService = dateTimeService;
-    }
+    // Admin-level permission
 
     // GetAll
     [Authorize(Policy = "Permission:Tickets.View")]
@@ -38,7 +29,7 @@ public sealed class AdminTicketController : ControllerBase
 
         return Ok(new ApiResponse<PagedResult<TicketData>>(
             message: ApiMessages.TicketsRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -56,7 +47,7 @@ public sealed class AdminTicketController : ControllerBase
 
         return Ok(new ApiResponse<GetByIdTicketResponse>(
             message: ApiMessages.TicketRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -78,7 +69,7 @@ public sealed class AdminTicketController : ControllerBase
 
         return Ok(new ApiResponse<AssignTicketResponse>(
             message: ApiMessages.TicketAssigned,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 }

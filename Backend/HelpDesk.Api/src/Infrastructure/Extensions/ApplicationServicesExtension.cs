@@ -16,7 +16,7 @@ public static class ApplicationServicesExtension
             .AddJwtOptions()
             .AddAuthentication()
             .AddAuthorization()
-            .AddTimeProviderServices()
+            .AddTimeProvider()
             .AddHttpResilienceServices()
             .AddRateLimitServices()
             .AddSeeders()
@@ -26,9 +26,9 @@ public static class ApplicationServicesExtension
             .AddEmail()
             .AddCorsOptions()
             .AddDataImporters()
-            .AddScrutorScan()
-            .AddScrutorDecorate()
-            .AddCommandPipeline();
+            .AddScrutor()
+            .AddCommandPipeline()
+            .AddApplicationOptions();
 
         return builder;
     }

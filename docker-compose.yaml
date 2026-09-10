@@ -2,6 +2,8 @@ services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2025-latest
     container_name: helpdesk-sqlserver
+    volumes:
+      - sqlserver_data:/var/opt/mssql
 
     environment:
       ACCEPT_EULA: "Y"
@@ -20,9 +22,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-
-    volumes:
-      - sqlserver_data:/var/opt/mssql
 
     restart: unless-stopped
 
@@ -53,3 +52,5 @@ services:
 
 volumes:
   sqlserver_data:
+    external: true
+    name: docker_sqlserver_data

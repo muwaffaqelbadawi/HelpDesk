@@ -3,6 +3,7 @@
 public sealed class Branch
 {
     public Guid Id { get; set; }
+
     public string Code { get; set; } = null!;
     public string Name { get; set; } = null!;
     public string NormalizedName { get; set; } = null!;
@@ -11,5 +12,4 @@ public sealed class Branch
 
     // Navigation property
     public ICollection<Employee> Employees { get; set; } = [];
-
 }

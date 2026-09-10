@@ -20,19 +20,10 @@ namespace HelpDesk.src.Presentation.Controllers.Admin;
 [ApiController]
 [Route("api/admin/users")]
 [Authorize]
-public sealed class AdminUserController : ControllerBase
+public sealed class AdminUserController(IDateTimeService dateTimeService)
+    : ControllerBase
 {
-    // Admin
-    private readonly IWebHostEnvironment _environment;
-    private readonly IDateTimeService _dateTimeService;
-
-    public AdminUserController(
-        IWebHostEnvironment environment,
-        IDateTimeService dateTimeService)
-    {
-        _environment = environment;
-        _dateTimeService = dateTimeService;
-    }
+    // Admin-level permission
 
     // Users
 
@@ -48,7 +39,7 @@ public sealed class AdminUserController : ControllerBase
 
         return Ok(new ApiResponse<PagedResult<UserAccountData>>(
             message: ApiMessages.UsersRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -67,7 +58,7 @@ public sealed class AdminUserController : ControllerBase
 
         return Ok(new ApiResponse<UserAccountData>(
             message: ApiMessages.UserRetrieved,
-            time: dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result.UserAccountData));
     }
 
@@ -84,13 +75,17 @@ public sealed class AdminUserController : ControllerBase
             Email: body.Email,
             PhoneNumber: body.PhoneNumber,
             FullEnName: body.FullEnName,
-            FullArName: body.FullArName);
+            FullArName: body.FullArName,
+            JobTitle: body.JobTitle,
+            DepartmentId: body.DepartmentId,
+            SectorId: body.SectorId,
+            CountryId: body.CountryId);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
         var value = new ApiResponse<CreateUserAccountResponse>(
             message: ApiMessages.UsersCreated,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result);
 
         return CreatedAtRoute(
@@ -122,7 +117,7 @@ public sealed class AdminUserController : ControllerBase
 
         return Ok(new ApiResponse<UpdateUserAccountResponse>(
             message: ApiMessages.UserRetrieved,
-            time: dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -160,7 +155,7 @@ public sealed class AdminUserController : ControllerBase
 
         return Ok(new ApiResponse<IReadOnlyCollection<RoleData>>(
             message: ApiMessages.RolesRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result.Roles));
     }
 
@@ -178,7 +173,7 @@ public sealed class AdminUserController : ControllerBase
 
         return Ok(new ApiResponse<GetByIdRoleResponse>(
             message: ApiMessages.RoleRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -199,7 +194,7 @@ public sealed class AdminUserController : ControllerBase
 
         return Ok(new ApiResponse<UpdateRoleResponse>(
             message: ApiMessages.RoleUpdated,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -238,7 +233,7 @@ public sealed class AdminUserController : ControllerBase
 
         return Ok(new ApiResponse<AssignRoleResponse>(
             message: ApiMessages.RoleAssigned,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 }

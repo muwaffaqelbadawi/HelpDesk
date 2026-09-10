@@ -22,12 +22,8 @@ public sealed class TestEmailController : ControllerBase
 
         await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(
-            new
-            {
-                Message = ApiMessages.TestEmail,
-                Time = dateTimeService.UtcNow
-            }
-        );
+        return Ok(new ApiResponse(
+            message: ApiMessages.TestEmail,
+            time: dateTimeService));
     }
 }

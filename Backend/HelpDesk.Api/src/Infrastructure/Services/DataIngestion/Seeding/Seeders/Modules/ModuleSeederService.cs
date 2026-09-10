@@ -9,25 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Modules;
 
-public sealed class ModuleSeederService : IDataSeeder
+public sealed class ModuleSeederService(
+    AppDbContext dbContext,
+    ILookupNormalizer normalizer,
+    IDateTimeService dateTimeService,
+    ILogger<ModuleSeederService> logger) : IDataSeeder
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILookupNormalizer _normalizer;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<ModuleSeederService> _logger;
-
-    public ModuleSeederService(
-        AppDbContext dbContext,
-        ILookupNormalizer normalizer,
-        IDateTimeService dateTimeService,
-        ILogger<ModuleSeederService> logger)
-    {
-        _dbContext = dbContext;
-        _normalizer = normalizer;
-        _dateTimeService = dateTimeService;
-        _logger = logger;
-    }
-
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
@@ -38,7 +25,7 @@ public sealed class ModuleSeederService : IDataSeeder
         var scope = identity.Scope;
 
         // Check SeedHistory
-        var exists = await _dbContext.SeedHistories
+        var exists = await dbContext.SeedHistories
             .AnyAsync(e =>
                 e.Key == key &&
                 e.Version == version &&
@@ -48,16 +35,22 @@ public sealed class ModuleSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, scope, version);
+            logger.SeedAlreadyApplied(
+                key: key,
+                scope: scope,
+                version: version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, scope, version);
+        logger.ApplyingSeed(
+            key: key,
+            scope: scope,
+            version: version);
 
         // Load existing modules into Dictionary
-        var existingModules = await _dbContext.Modules
+        var existingModules = await dbContext.Modules
             .ToDictionaryAsync(
                 x => x.Code,
                 cancellationToken);
@@ -66,11 +59,11 @@ public sealed class ModuleSeederService : IDataSeeder
         foreach (var seed in ModulesLookup.Modules)
         {
             var normalizedName =
-            _normalizer.NormalizeName(seed.Name);
+            normalizer.NormalizeName(seed.Name);
 
             if (!existingModules.TryGetValue(seed.Code, out var existing))
             {
-                _dbContext.Modules.Add(
+                dbContext.Modules.Add(
                     new ApplicationModule
                     {
                         Id = seed.Id,
@@ -91,19 +84,22 @@ public sealed class ModuleSeederService : IDataSeeder
         }
 
         // Add SeedHistory
-        _dbContext.SeedHistories.Add(
+        dbContext.SeedHistories.Add(
             new SeedHistory
             {
                 Key = key,
                 Version = version,
                 Scope = scope,
-                AppliedAt = _dateTimeService.UtcNow
+                AppliedAt = dateTimeService.UtcNow
             });
 
         // Log (3)
-        _logger.SeedApplied(key, scope, version);
+        logger.SeedApplied(
+            key: key,
+            scope: scope,
+            version: version);
 
         // SaveChanges once
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

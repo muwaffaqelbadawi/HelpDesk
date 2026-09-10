@@ -8,22 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.RolePermissionModules;
 
-public sealed class RolePermissionModulesSeederService : IDataSeeder
+public sealed class RolePermissionModulesSeederService(
+    AppDbContext dbContext,
+    IDateTimeService dateTimeService,
+    ILogger<RolePermissionModulesSeederService> logger) : IDataSeeder
 {
-    private readonly AppDbContext _dbContext;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<RolePermissionModulesSeederService> _logger;
-
-    public RolePermissionModulesSeederService(
-         AppDbContext dbContext,
-         IDateTimeService dateTimeService,
-         ILogger<RolePermissionModulesSeederService> logger)
-    {
-        _dbContext = dbContext;
-        _dateTimeService = dateTimeService;
-        _logger = logger;
-    }
-
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
@@ -34,7 +23,7 @@ public sealed class RolePermissionModulesSeederService : IDataSeeder
         var scope = identity.Scope;
 
         // Check SeedHistory
-        var exists = await _dbContext.SeedHistories
+        var exists = await dbContext.SeedHistories
             .AnyAsync(e =>
                 e.Key == key &&
                 e.Version == version &&
@@ -44,16 +33,22 @@ public sealed class RolePermissionModulesSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, scope, version);
+            logger.SeedAlreadyApplied(
+                key: key,
+                scope: scope,
+                version: version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, scope, version);
+        logger.ApplyingSeed(
+            key: key,
+            scope: scope,
+            version: version);
 
         // Load existing entities into Dictionary
-        var existingMappings = await _dbContext.RolePermissionModules
+        var existingMappings = await dbContext.RolePermissionModules
             .ToDictionaryAsync(
                x => (
                 x.RoleId,
@@ -71,7 +66,7 @@ public sealed class RolePermissionModulesSeederService : IDataSeeder
 
             if (!existingMappings.ContainsKey(primaryKey))
             {
-                _dbContext.RolePermissionModules.Add(
+                dbContext.RolePermissionModules.Add(
                    new ApplicationRolePermissionModule
                    {
                        RoleId = seed.RoleId,
@@ -82,19 +77,22 @@ public sealed class RolePermissionModulesSeederService : IDataSeeder
         }
 
         // Add SeedHistory
-        _dbContext.SeedHistories.Add(
+        dbContext.SeedHistories.Add(
             new SeedHistory
             {
                 Key = key,
                 Version = version,
                 Scope = scope,
-                AppliedAt = _dateTimeService.UtcNow
+                AppliedAt = dateTimeService.UtcNow
             });
 
         // Log (3)
-        _logger.SeedApplied(key, scope, version);
+        logger.SeedApplied(
+            key: key,
+            scope: scope,
+            version: version);
 
         // SaveChanges once
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

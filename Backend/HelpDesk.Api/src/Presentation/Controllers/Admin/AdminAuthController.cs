@@ -14,17 +14,6 @@ public sealed class AdminAuthController : ControllerBase
 {
     // Admin-level permission
 
-    private readonly IWebHostEnvironment _environment;
-    private readonly IDateTimeService _dateTimeService;
-
-    public AdminAuthController(
-        IWebHostEnvironment environment,
-        IDateTimeService dateTimeService)
-    {
-        _environment = environment;
-        _dateTimeService = dateTimeService;
-    }
-
     // Reset Password
     [Authorize(Policy = "Permission:Users.Reset-Password")]
     [HttpPost("users/{userId:guid}/reset-password", Name = "ResetPassword")]
@@ -41,7 +30,7 @@ public sealed class AdminAuthController : ControllerBase
 
         return Ok(new ApiResponse<UserAccountData>(
             message: ApiMessages.PasswordReset,
-            time: dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result.UserAccountData));
     }
 }

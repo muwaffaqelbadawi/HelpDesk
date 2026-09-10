@@ -8,26 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketStatuses;
 
-public sealed class TicketStatusSeederService : IDataSeeder
+public sealed class TicketStatusSeederService(
+    AppDbContext dbContext,
+    IDateTimeService dateTimeService,
+    ILookupNormalizer normalizer,
+    ILogger<TicketStatusSeederService> logger) : IDataSeeder
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILookupNormalizer _normalizer;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<TicketStatusSeederService> _logger;
-
-    public TicketStatusSeederService(
-        AppDbContext dbContext,
-        IDateTimeService dateTimeService,
-        ILookupNormalizer normalizer,
-
-        ILogger<TicketStatusSeederService> logger)
-    {
-        _dbContext = dbContext;
-        _normalizer = normalizer;
-        _dateTimeService = dateTimeService;
-        _logger = logger;
-    }
-
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
@@ -38,7 +24,7 @@ public sealed class TicketStatusSeederService : IDataSeeder
         var scope = identity.Scope;
 
         // Check SeedHistory
-        var exists = await _dbContext.SeedHistories
+        var exists = await dbContext.SeedHistories
             .AnyAsync(e =>
                 e.Key == key &&
                 e.Version == version &&
@@ -48,16 +34,22 @@ public sealed class TicketStatusSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, scope, version);
+            logger.SeedAlreadyApplied(
+                key: key,
+                scope: scope,
+                version: version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, scope, version);
+        logger.ApplyingSeed(
+            key: key,
+            scope: scope,
+            version: version);
 
         // Load existing entities into Dictionary
-        var existingStatuses = await _dbContext.TicketStatuses
+        var existingStatuses = await dbContext.TicketStatuses
             .ToDictionaryAsync(
                 x => x.Code,
                 cancellationToken);
@@ -65,12 +57,12 @@ public sealed class TicketStatusSeederService : IDataSeeder
         // AddRange(new entities) 
         foreach (var seed in TicketStatusesLookup.Statuses)
         {
-            var normalizedName = _normalizer.NormalizeName(seed.Name);
+            var normalizedName = normalizer.NormalizeName(seed.Name);
 
             if (!existingStatuses.TryGetValue(seed.Code, out var existing))
             {
                 // INSERT
-                _dbContext.TicketStatuses.Add(
+                dbContext.TicketStatuses.Add(
                     new TicketStatus
                     {
                         Id = seed.Id,
@@ -92,19 +84,22 @@ public sealed class TicketStatusSeederService : IDataSeeder
         }
 
         // Add SeedHistory
-        _dbContext.SeedHistories.Add(
+        dbContext.SeedHistories.Add(
             new SeedHistory
             {
                 Key = key,
                 Version = version,
                 Scope = scope,
-                AppliedAt = _dateTimeService.UtcNow
+                AppliedAt = dateTimeService.UtcNow
             });
 
         // Log (3)
-        _logger.SeedApplied(key, scope, version);
+        logger.SeedApplied(
+            key: key,
+            scope: scope,
+            version: version);
 
         // SaveChanges once
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

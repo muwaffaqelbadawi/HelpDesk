@@ -9,25 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Roles;
 
-public sealed class RoleSeederService : IDataSeeder
+public sealed class RoleSeederService(
+    AppDbContext dbContext,
+    IDateTimeService dateTimeService,
+    ILookupNormalizer normalizer,
+    ILogger<RoleSeederService> logger) : IDataSeeder
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILookupNormalizer _normalizer;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<RoleSeederService> _logger;
-
-    public RoleSeederService(
-        AppDbContext dbContext,
-        IDateTimeService dateTimeService,
-        ILookupNormalizer normalizer,
-        ILogger<RoleSeederService> logger)
-    {
-        _dbContext = dbContext;
-        _dateTimeService = dateTimeService;
-        _normalizer = normalizer;
-        _logger = logger;
-    }
-
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
@@ -38,7 +25,7 @@ public sealed class RoleSeederService : IDataSeeder
         var scope = identity.Scope;
 
         // Check SeedHistory
-        var exists = await _dbContext.SeedHistories
+        var exists = await dbContext.SeedHistories
             .AnyAsync(e =>
                 e.Key == key &&
                 e.Version == version &&
@@ -48,16 +35,22 @@ public sealed class RoleSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, scope, version);
+            logger.SeedAlreadyApplied(
+                key: key,
+                scope: scope,
+                version: version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, scope, version);
+        logger.ApplyingSeed(
+            key: key,
+            scope: scope,
+            version: version);
 
         // Load existing entities into Dictionary 
-        var existingRoles = await _dbContext.Roles
+        var existingRoles = await dbContext.Roles
             .ToDictionaryAsync(
                 x => x.Code,
                 cancellationToken);
@@ -65,11 +58,11 @@ public sealed class RoleSeederService : IDataSeeder
         // AddRange(new entities)
         foreach (var seed in RolesLookup.Roles)
         {
-            var normalizedName = _normalizer.NormalizeName(seed.Name);
+            var normalizedName = normalizer.NormalizeName(seed.Name);
 
             if (!existingRoles.TryGetValue(seed.Code, out var existing))
             {
-                _dbContext.Roles.Add(
+                dbContext.Roles.Add(
                    new ApplicationRole
                    {
                        Id = seed.Id,
@@ -92,19 +85,22 @@ public sealed class RoleSeederService : IDataSeeder
         }
 
         // Add SeedHistory
-        _dbContext.SeedHistories.Add(
+        dbContext.SeedHistories.Add(
             new SeedHistory
             {
                 Key = key,
                 Version = version,
                 Scope = scope,
-                AppliedAt = _dateTimeService.UtcNow
+                AppliedAt = dateTimeService.UtcNow
             });
 
         // Log (3)
-        _logger.SeedApplied(key, scope, version);
+        logger.SeedApplied(
+            key: key,
+            scope: scope,
+            version: version);
 
         // SaveChanges once
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

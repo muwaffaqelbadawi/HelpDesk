@@ -23,6 +23,12 @@ public partial class AppDbContext
     // Business.Departments
     public DbSet<Department> Departments { get; set; } = null!;
 
+    // Business.Sectors
+    public DbSet<Sector> Sectors { get; set; } = null!;
+
+    // Business.Companies 
+    public DbSet<Company> Companies { get; set; } = null!;
+
     // Business.Employees
     public DbSet<Employee> Employees { get; set; } = null!;
 
@@ -52,6 +58,7 @@ public partial class AppDbContext
         // Business.Branches
         modelBuilder.Entity<Branch>(entity =>
         {
+            // Schema
             entity.ToTable("Branches", "Business");
 
             // ID
@@ -140,7 +147,82 @@ public partial class AppDbContext
         // Business.Departments
         modelBuilder.Entity<Department>(entity =>
         {
+            // Schema
             entity.ToTable("Departments", "Business");
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            // SortOrder (Property)
+            entity.Property(e => e.SortOrder)
+                .HasDefaultValue(0);
+        });
+
+        // Business.Sectors
+        modelBuilder.Entity<Sector>(entity =>
+        {
+            // Schema
+            entity.ToTable("Sectors", "Business");
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            // SortOrder (Property)
+            entity.Property(e => e.SortOrder)
+                .HasDefaultValue(0);
+        });
+
+        // Business.Companies
+        modelBuilder.Entity<Company>(entity =>
+        {
+            // Schema
+            entity.ToTable("Companies", "Business");
 
             // ID (Key)
             entity.HasKey(e => e.Id);
@@ -175,15 +257,17 @@ public partial class AppDbContext
 
         // Employee Sequence (BIGINT)
         modelBuilder.HasSequence<long>(
-                BusinessSchema.EmployeeNumber,
-                BusinessSchema.Name)
-            .StartsAt(Numbering.Start)
-            .IncrementsBy(increment: Numbering.Increment);
+            BusinessSchema.EmployeeNumber,
+            BusinessSchema.Name)
+        .StartsAt(Numbering.Start)
+        .IncrementsBy(increment: Numbering.Increment);
 
         // Business.Employees
         modelBuilder.Entity<Employee>(entity =>
         {
+            // Schema
             entity.ToTable("Employees", "Business");
+
 
             // ID (Key)
             entity.HasKey(e => e.Id);
@@ -211,7 +295,7 @@ public partial class AppDbContext
             entity.HasIndex(e => e.Number)
                 .IsUnique();
 
-            // Status (Relation)
+            // EmployeeStatus (Relation)
             entity.HasOne(e => e.Status)
                 .WithMany(e => e.Employees)
                 .HasForeignKey(e => e.StatusId)
@@ -228,12 +312,6 @@ public partial class AppDbContext
 
             // DeletedAt (Property)
             entity.Property(e => e.DeletedAt);
-
-            // User <-> Employee (Relation)
-            entity.HasOne(e => e.User)
-                .WithOne(e => e.Employee)
-                .HasForeignKey<Employee>(e => e.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // CreatedBy (Relation)
             entity.HasOne(e => e.CreatedBy)
@@ -253,29 +331,49 @@ public partial class AppDbContext
                 .HasForeignKey(e => e.DeletedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //Department(Relation)
+            // User (Relation)
+            entity.HasOne(e => e.User)
+                .WithOne(e => e.Employee)
+                .HasForeignKey<Employee>(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Branch (Relation)
+            entity.HasOne(e => e.Branch)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.BranchId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Company (Relation)
+            entity.HasOne(e => e.Company)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Department (Relation)
             entity.HasOne(e => e.Department)
                 .WithMany(e => e.Employees)
                 .HasForeignKey(e => e.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // CountryId (Relation)
+            // Country (Relation)
             entity.HasOne(e => e.Country)
                 .WithMany(e => e.Employees)
                 .HasForeignKey(e => e.CountryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Sector (Relation)
+            entity.HasOne(e => e.Sector)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.SectorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // PhotoUrl (Property)
-            entity.Property(e => e.PhotoUrl);
+            entity.Property(e => e.PhotoUrl)
+                .HasMaxLength(500);
 
             // JobTitle (Property)
-            entity.Property(e => e.JobTitle);
-
-            //Branch(Relation)
-            entity.HasOne(e => e.Branch)
-                .WithMany(e => e.Employees)
-                .HasForeignKey(e => e.BranchId)
-                .OnDelete(DeleteBehavior.Restrict);
+            entity.Property(e => e.JobTitle)
+                .HasMaxLength(200);
 
             // RowVersion (Property)
             entity.Property(e => e.RowVersion)
@@ -291,6 +389,7 @@ public partial class AppDbContext
         // Business.EmployeeStatuses
         modelBuilder.Entity<EmployeeStatus>(entity =>
         {
+            // Schema
             entity.ToTable("EmployeeStatuses", "Business");
 
             // ID (Key)
@@ -334,7 +433,7 @@ public partial class AppDbContext
         // Business.Tickets
         modelBuilder.Entity<Ticket>(entity =>
         {
-            // Table name
+            // Schema
             entity.ToTable("Tickets", "Business");
 
             // ID (Key)
@@ -424,6 +523,18 @@ public partial class AppDbContext
                 .HasForeignKey(e => e.ClosedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // TicketStatus (Relation)
+            entity.HasOne(e => e.Status)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(e => e.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketPriority (Relation)
+            entity.HasOne(e => e.Priority)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(e => e.PriorityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // ClosedAt (Property)
             entity.Property(e => e.ClosedAt);
 
@@ -442,7 +553,7 @@ public partial class AppDbContext
         // Business.TicketStatuses
         modelBuilder.Entity<TicketStatus>(entity =>
         {
-            // Table name
+            // Schema
             entity.ToTable("TicketStatuses", "Business");
 
             // Id (Key)
@@ -479,7 +590,7 @@ public partial class AppDbContext
         // Business.TicketPriorities
         modelBuilder.Entity<TicketPriority>(entity =>
         {
-            // Table name
+            // Schema
             entity.ToTable("TicketPriorities", "Business");
 
             // ID (Key)
@@ -516,7 +627,7 @@ public partial class AppDbContext
         // Business.TicketHistory
         modelBuilder.Entity<TicketHistory>(entity =>
         {
-            // Table name
+            // Schema
             entity.ToTable("TicketHistory", "Business");
 
             // ID
@@ -557,7 +668,7 @@ public partial class AppDbContext
         // Business.SeedHistory
         modelBuilder.Entity<SeedHistory>(entity =>
         {
-            // Table name
+            // Schema
             entity.ToTable("SeedHistory", "Business");
 
             // ID (Composite key)

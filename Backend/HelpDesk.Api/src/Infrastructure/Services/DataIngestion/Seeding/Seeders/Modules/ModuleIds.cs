@@ -2,8 +2,6 @@
 
 public static class ModuleIds
 {
-    // 6 Modules
-
     public static readonly Guid Users =
         new("8F42D75F-423E-402D-B67E-568B97339A86");
 

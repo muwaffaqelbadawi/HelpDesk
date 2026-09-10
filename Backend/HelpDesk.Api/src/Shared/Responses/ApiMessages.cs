@@ -11,7 +11,6 @@ public static class ApiMessages
     // Api health messages
     public const string ApiHealthy = "HelpDesk API is healthy.";
 
-
     // Authentication messages
     public const string PasswordChanged = "Password changed successfully.";
     public const string ForgotPassword = "If the email exists, a reset link has been sent.";
@@ -33,6 +32,9 @@ public static class ApiMessages
 
     // Permission messages
     public const string PermissionsRetrieved = "Permissions retrieved successfully.";
+
+    // Module messages
+    public const string ModulesRetrieved = "Modules retrieved successfully.";
 
     // Ticket messages
     public const string TicketRetrieved = "Ticket retrieved successfully.";

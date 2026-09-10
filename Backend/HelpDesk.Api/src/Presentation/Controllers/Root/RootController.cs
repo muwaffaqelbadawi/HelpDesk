@@ -16,7 +16,7 @@ public sealed class RootController(IDateTimeService dateTimeService) : Controlle
     {
         return Ok(new ApiResponse<ApiInfo>(
             message: ApiMessages.ApiInfo,
-            time: dateTimeService.UtcNow,
+            time: dateTimeService,
             data: new ApiInfo
             {
                 Name = "HelpDesk API",
@@ -32,7 +32,7 @@ public sealed class RootController(IDateTimeService dateTimeService) : Controlle
     {
         return Ok(new ApiResponse<ApiHealth>(
             message: ApiMessages.ApiHealthy,
-            time: dateTimeService.UtcNow,
+            time: dateTimeService,
             data: new ApiHealth
             {
                 Status = "Healthy"

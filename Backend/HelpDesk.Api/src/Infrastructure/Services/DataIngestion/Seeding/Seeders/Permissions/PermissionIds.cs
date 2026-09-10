@@ -2,8 +2,6 @@
 
 public static class PermissionIds
 {
-    // 5 permissions
-
     public static readonly Guid View =
         new("EDDFA767-AFF5-400F-8134-33252E2CB3C2");
 

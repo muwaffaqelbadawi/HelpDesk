@@ -5,4 +5,8 @@ public sealed record CreateUserAccountBody(
     string Email,
     string PhoneNumber,
     string FullEnName,
-    string FullArName);
+    string FullArName,
+    string JobTitle,
+    Guid DepartmentId,
+    Guid SectorId,
+    Guid CountryId);

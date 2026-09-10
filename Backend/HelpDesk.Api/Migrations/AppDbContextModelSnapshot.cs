@@ -17,7 +17,7 @@ namespace HelpDesk.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.19")
+                .HasAnnotation("ProductVersion", "9.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -65,6 +65,45 @@ namespace HelpDesk.Migrations
                         .IsUnique();
 
                     b.ToTable("Branches", "Business");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Company", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Companies", "Business");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Country", b =>
@@ -190,7 +229,6 @@ namespace HelpDesk.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FullArName")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -205,7 +243,8 @@ namespace HelpDesk.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("JobTitle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Number")
                         .IsRequired()
@@ -213,13 +252,8 @@ namespace HelpDesk.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("PositionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProfessionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -246,6 +280,8 @@ namespace HelpDesk.Migrations
 
                     b.HasIndex("BranchId");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("CountryId");
 
                     b.HasIndex("CreatedById");
@@ -256,6 +292,8 @@ namespace HelpDesk.Migrations
 
                     b.HasIndex("Number")
                         .IsUnique();
+
+                    b.HasIndex("SectorId");
 
                     b.HasIndex("StatusId");
 
@@ -304,6 +342,45 @@ namespace HelpDesk.Migrations
                         .IsUnique();
 
                     b.ToTable("EmployeeStatuses", "Business");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Sector", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Sectors", "Business");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.SeedHistory", b =>
@@ -391,12 +468,6 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid?>("TicketPriorityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("TicketStatusId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -423,10 +494,6 @@ namespace HelpDesk.Migrations
                     b.HasIndex("PriorityId");
 
                     b.HasIndex("StatusId");
-
-                    b.HasIndex("TicketPriorityId");
-
-                    b.HasIndex("TicketStatusId");
 
                     b.HasIndex("UpdatedById");
 
@@ -1103,6 +1170,11 @@ namespace HelpDesk.Migrations
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Company", "Company")
+                        .WithMany("Employees")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Country", "Country")
                         .WithMany("Employees")
                         .HasForeignKey("CountryId")
@@ -1125,6 +1197,11 @@ namespace HelpDesk.Migrations
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Sector", "Sector")
+                        .WithMany("Employees")
+                        .HasForeignKey("SectorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.EmployeeStatus", "Status")
                         .WithMany("Employees")
                         .HasForeignKey("StatusId")
@@ -1143,6 +1220,8 @@ namespace HelpDesk.Migrations
 
                     b.Navigation("Branch");
 
+                    b.Navigation("Company");
+
                     b.Navigation("Country");
 
                     b.Navigation("CreatedBy");
@@ -1150,6 +1229,8 @@ namespace HelpDesk.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Sector");
 
                     b.Navigation("Status");
 
@@ -1187,22 +1268,14 @@ namespace HelpDesk.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketPriority", "Priority")
-                        .WithMany()
+                        .WithMany("Tickets")
                         .HasForeignKey("PriorityId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketStatus", "Status")
-                        .WithMany()
+                        .WithMany("Tickets")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketPriority", null)
-                        .WithMany("Tickets")
-                        .HasForeignKey("TicketPriorityId");
-
-                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketStatus", null)
-                        .WithMany("Tickets")
-                        .HasForeignKey("TicketStatusId");
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "UpdatedBy")
                         .WithMany("UpdatedTickets")
@@ -1414,6 +1487,11 @@ namespace HelpDesk.Migrations
                     b.Navigation("Employees");
                 });
 
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Company", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Country", b =>
                 {
                     b.Navigation("Employees");
@@ -1425,6 +1503,11 @@ namespace HelpDesk.Migrations
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.EmployeeStatus", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Sector", b =>
                 {
                     b.Navigation("Employees");
                 });

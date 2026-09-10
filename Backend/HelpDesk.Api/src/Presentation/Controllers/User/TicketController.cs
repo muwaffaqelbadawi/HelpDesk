@@ -5,33 +5,21 @@ using HelpDesk.src.Features.Tickets.GetByIdOwned;
 using HelpDesk.src.Features.Tickets.GetOwned;
 using HelpDesk.src.Features.Tickets.Update;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.src.Presentation.Controllers.User;
 
-public sealed class TicketController : ControllerBase
+public sealed class TicketController(IDateTimeService dateTimeService)
+    : ControllerBase
 {
     // Self-Service
-
-    private readonly IWebHostEnvironment _environment;
-    private readonly IDateTimeService _dateTimeService;
-
-    public TicketController(
-        IWebHostEnvironment environment,
-        IDateTimeService dateTimeService)
-    {
-        _environment = environment;
-        _dateTimeService = dateTimeService;
-    }
 
     // GetCurrent (self-tickets)
     [HttpGet("me/tickets")]
     [Authorize]
     public async Task<IActionResult> GetCurrentTickets(
-        [FromQuery] PagedQuery query,
         [FromServices] IQueryHandler<OwnedTicketResponse> handler,
         CancellationToken cancellationToken)
     {
@@ -39,13 +27,13 @@ public sealed class TicketController : ControllerBase
 
         return Ok(new ApiResponse<OwnedTicketResponse>(
             message: ApiMessages.TicketsRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
     // GetByIdOwned
     [Authorize]
-    [HttpGet("me/tickets{ticketId:guid}", Name = nameof(GetByIdOwnedTicket))]
+    [HttpGet("me/tickets/{ticketId:guid}", Name = nameof(GetByIdOwnedTicket))]
     public async Task<IActionResult> GetByIdOwnedTicket(
         [FromServices] IQueryHandler<GetByIdOwnedTicketQuery, GetByIdOwnedTicketResponse> handler,
         [FromRoute] Guid ticketId,
@@ -57,7 +45,7 @@ public sealed class TicketController : ControllerBase
 
         return Ok(new ApiResponse<GetByIdOwnedTicketResponse>(
             message: ApiMessages.TicketRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -76,7 +64,7 @@ public sealed class TicketController : ControllerBase
 
         var value = new ApiResponse<CreateTicketResponse>(
             message: ApiMessages.TicketCreated,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result);
 
         return CreatedAtRoute(
@@ -105,7 +93,7 @@ public sealed class TicketController : ControllerBase
 
         return Ok(new ApiResponse<UpdateTicketResponse>(
             message: ApiMessages.TicketUpdated,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -136,7 +124,7 @@ public sealed class TicketController : ControllerBase
 
         return Ok(new ApiResponse<AssignedTicketsResponse>(
             message: ApiMessages.TicketsRetrieved,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 }

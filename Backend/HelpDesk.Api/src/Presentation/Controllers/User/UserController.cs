@@ -13,33 +13,22 @@ namespace HelpDesk.src.Presentation.Controllers.User;
 [ApiController]
 [Route("api/users")]
 [Authorize]
-public sealed class UserController : ControllerBase
+public sealed class UserController(IDateTimeService dateTimeService)
+    : ControllerBase
 {
     // Self-Service
-
-    private readonly IWebHostEnvironment _environment;
-    private readonly IDateTimeService _dateTimeService;
-
-    public UserController(
-        IWebHostEnvironment environment,
-        IDateTimeService dateTimeService)
-    {
-        _environment = environment;
-        _dateTimeService = dateTimeService;
-    }
 
     // GetCurrent
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentUserAccount(
         [FromServices] IQueryHandler<CurrentUserAccountResponse> handler,
-        [FromServices] IDateTimeService dateTimeService,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(cancellationToken);
 
         return Ok(new ApiResponse<CurrentUserAccountResponse>(
-            message: "User fetched successfully.",
-            time: dateTimeService.UtcNow,
+            message: ApiMessages.UserRetrieved,
+            time: dateTimeService,
             data: result));
     }
 
@@ -64,8 +53,6 @@ public sealed class UserController : ControllerBase
         return NoContent();
     }
 
-    // ----------------------------------------------------------------------------------
-
     // Roles
 
     // GetCurrent
@@ -77,12 +64,10 @@ public sealed class UserController : ControllerBase
         var result = await handler.HandleAsync(cancellationToken);
 
         return Ok(new ApiResponse<CurrentRolesResponse>(
-            message: "Roles retrieved successfully.",
-            time: _dateTimeService.UtcNow,
+            message: ApiMessages.RolesRetrieved,
+            time: dateTimeService,
             data: result));
     }
-
-    // ----------------------------------------------------------------------------------
 
     // Permissions
 
@@ -95,12 +80,10 @@ public sealed class UserController : ControllerBase
         var result = await handler.HandleAsync(cancellationToken);
 
         return Ok(new ApiResponse<CurrentPermissionsResponse>(
-            message: "Permissions retrieved successfully.",
-            time: _dateTimeService.UtcNow,
+            message: ApiMessages.PermissionsRetrieved,
+            time: dateTimeService,
             data: result));
     }
-
-    // ----------------------------------------------------------------------------------
 
     // Modules
 
@@ -113,8 +96,8 @@ public sealed class UserController : ControllerBase
         var result = await handler.HandleAsync(cancellationToken);
 
         return Ok(new ApiResponse<CurrentModulesResponse>(
-            message: "Modules retrieved successfully.",
-            time: _dateTimeService.UtcNow,
+            message: ApiMessages.ModulesRetrieved,
+            time: dateTimeService,
             data: result));
     }
 }

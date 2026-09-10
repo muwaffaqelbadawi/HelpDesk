@@ -8,28 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.Responses.Readers;
 
-public sealed class TicketReader : ITicketReader
+public sealed class TicketReader(AppDbContext dbContext)
+    : ITicketReader
 {
-    private readonly AppDbContext _dbContext;
-
-    public TicketReader(
-        AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     // Pagination logic
     public async Task<PagedResult<TicketData>> GetAllAsync(
         GetTicketsQuery query,
         CancellationToken cancellationToken = default)
     {
-        var queryable = _dbContext.Tickets.AsQueryable();
+        var queryable = dbContext.Tickets.AsQueryable();
 
         var totalCount = await queryable.CountAsync(cancellationToken);
 
         var totalPages = TotalPages.Calculate(totalCount, query.PageSize);
 
         var tickets = await queryable
+            .AsNoTracking()
             .OrderByDescending(t => t.CreatedAt)
             .Skip(query.Offset)
             .Take(query.PageSize)
@@ -45,13 +39,13 @@ public sealed class TicketReader : ITicketReader
     }
 
     // Search logic
-    public async Task<IReadOnlyList<TicketData>> GetAsync(
+    public async Task<IReadOnlyCollection<TicketData>> GetAsync(
         string? search,
         int offset,
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var query = _dbContext.Tickets
+        var query = dbContext.Tickets
             .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -73,10 +67,22 @@ public sealed class TicketReader : ITicketReader
         Guid ticketId,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Tickets
+        return await dbContext.Tickets
             .AsNoTracking()
             .Where(t => t.Id == ticketId)
             .SelectTicketData()
             .SingleAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<TicketData>> GetOwnedTicketsAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.CreatedById == userId)
+            .OrderByDescending(t => t.CreatedAt)
+            .SelectTicketData()
+            .ToListAsync(cancellationToken);
     }
 }

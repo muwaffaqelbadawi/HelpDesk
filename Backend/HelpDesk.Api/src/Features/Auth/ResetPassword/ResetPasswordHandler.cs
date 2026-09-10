@@ -70,13 +70,14 @@ public sealed class ResetPasswordHandler :
                 throw new AuthenticationFailedException("Reset token is invalid or expired.");
             }
 
-            throw new PasswordResetFailedException(new()
-            {
-                ["password"] =
-                [
-                    result.Errors.First().Description
-                ],
-            });
+            throw new PasswordResetFailedException(
+                errors: new()
+                {
+                    ["password"] =
+                    [
+                        result.Errors.First().Description
+                    ],
+                });
         }
 
         user.LastPasswordChangedAt = _dateTimeService.UtcNow;

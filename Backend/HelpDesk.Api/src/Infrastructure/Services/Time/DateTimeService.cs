@@ -2,16 +2,9 @@
 
 namespace HelpDesk.src.Infrastructure.Services.Time;
 
-public sealed class DateTimeService : IDateTimeService
+public sealed class DateTimeService(TimeProvider timeProvider)
+    : IDateTimeService
 {
-    private readonly TimeProvider _timeProvider;
-
-    public DateTimeService(
-        TimeProvider timeProvider)
-    {
-        _timeProvider = timeProvider;
-    }
-
-    public DateTimeOffset UtcNow => _timeProvider.GetUtcNow();
-    public DateTime UtcNowDateTime => _timeProvider.GetUtcNow().UtcDateTime;
+    public DateTimeOffset UtcNow => timeProvider.GetUtcNow();
+    public DateTime UtcNowDateTime => timeProvider.GetUtcNow().UtcDateTime;
 }

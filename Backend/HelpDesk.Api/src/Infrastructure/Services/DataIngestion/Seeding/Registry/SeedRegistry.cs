@@ -1,10 +1,12 @@
 ﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Branches;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Companies;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.EmployeeStatuses;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Modules;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Permissions;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.RolePermissionModules;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Roles;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Sectors;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketPriorities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketStatuses;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
@@ -54,6 +56,26 @@ public static class SeedRegistry
             Key: "Business.Branches",
             Scope: nameof(BranchSeederService),
             Version: "v1");
+
+    public static readonly SeederIdentity Sectors =
+        new(
+            Key: "Business.Sectors",
+            Scope: nameof(SectorSeederService),
+            Version: "v1");
+
+
+
+
+    public static readonly SeederIdentity Companies =
+        new(
+            Key: "Business.Companies",
+            Scope: nameof(CompanySeederService),
+            Version: "v1");
+
+
+
+
+
 
     public static readonly SeederIdentity EmployeeStatuses =
         new(

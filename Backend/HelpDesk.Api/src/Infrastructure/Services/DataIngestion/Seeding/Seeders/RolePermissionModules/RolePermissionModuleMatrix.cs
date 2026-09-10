@@ -14,19 +14,4 @@ public static class RolePermissionModuleMatrix
             RoleIds.SuperAdmin,
             permission,
             module);
-
-    public static IReadOnlyCollection<RolePermissionModuleLookupSeed> Admin { get; } =
-    [
-
-    ];
-
-    public static IReadOnlyCollection<RolePermissionModuleLookupSeed> Support { get; } =
-    [
-
-    ];
-
-    public static IReadOnlyCollection<RolePermissionModuleLookupSeed> Agent { get; } =
-    [
-
-    ];
 }

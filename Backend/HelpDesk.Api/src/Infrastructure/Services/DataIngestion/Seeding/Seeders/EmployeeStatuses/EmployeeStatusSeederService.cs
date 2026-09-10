@@ -2,31 +2,19 @@
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Registry;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.EmployeeStatuses;
 
-public sealed class EmployeeStatusSeederService : IDataSeeder
+public sealed class EmployeeStatusSeederService(
+    AppDbContext dbContext,
+    ILookupNormalizer normalizer,
+    IDateTimeService dateTimeService,
+    ILogger<DepartmentSeederService> logger) : IDataSeeder
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILookupNormalizer _normalizer;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<EmployeeStatusSeederService> _logger;
-
-    public EmployeeStatusSeederService(
-        AppDbContext dbContext,
-        ILookupNormalizer normalizer,
-        IDateTimeService dateTimeService,
-        ILogger<EmployeeStatusSeederService> logger)
-    {
-        _dbContext = dbContext;
-        _normalizer = normalizer;
-        _dateTimeService = dateTimeService;
-        _logger = logger;
-    }
-
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
@@ -37,7 +25,7 @@ public sealed class EmployeeStatusSeederService : IDataSeeder
         var scope = identity.Scope;
 
         // Check SeedHistory
-        var exists = await _dbContext.SeedHistories
+        var exists = await dbContext.SeedHistories
             .AnyAsync(e =>
                 e.Key == key &&
                 e.Version == version &&
@@ -47,16 +35,22 @@ public sealed class EmployeeStatusSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, scope, version);
+            logger.SeedAlreadyApplied(
+                key: key,
+                scope: scope,
+                version: version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, scope, version);
+        logger.ApplyingSeed(
+            key: key,
+            scope: scope,
+            version: version);
 
         // Load existing entities into Dictionary
-        var existingStatuses = await _dbContext.EmployeeStatuses
+        var existingStatuses = await dbContext.EmployeeStatuses
             .ToDictionaryAsync(
                 x => x.Code,
                 cancellationToken);
@@ -64,11 +58,11 @@ public sealed class EmployeeStatusSeederService : IDataSeeder
         // AddRange(new entities)
         foreach (var seed in EmployeeStatusLookup.Statuses)
         {
-            var normalizedName = _normalizer.NormalizeName(seed.Name);
+            var normalizedName = normalizer.NormalizeName(seed.Name);
 
             if (!existingStatuses.TryGetValue(seed.Code, out var existing))
             {
-                _dbContext.EmployeeStatuses.Add(
+                dbContext.EmployeeStatuses.Add(
                 new EmployeeStatus
                 {
                     Id = seed.Id,
@@ -90,19 +84,22 @@ public sealed class EmployeeStatusSeederService : IDataSeeder
         }
 
         // Add SeedHistory
-        _dbContext.SeedHistories.Add(
+        dbContext.SeedHistories.Add(
             new SeedHistory
             {
                 Key = key,
                 Version = version,
                 Scope = scope,
-                AppliedAt = _dateTimeService.UtcNow
+                AppliedAt = dateTimeService.UtcNow
             });
 
         // Log (3)
-        _logger.SeedApplied(key, scope, version);
+        logger.SeedApplied(
+            key: key,
+            scope: scope,
+            version: version);
 
         // SaveChanges once
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

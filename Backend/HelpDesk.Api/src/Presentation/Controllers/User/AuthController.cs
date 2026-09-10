@@ -4,7 +4,6 @@ using HelpDesk.src.Features.Auth.ForgotPassword.ResetForgottenPassword;
 using HelpDesk.src.Features.Auth.Login;
 using HelpDesk.src.Features.Auth.Logout;
 using HelpDesk.src.Features.Auth.RefreshToken;
-using HelpDesk.src.Features.Auth.Register;
 using HelpDesk.src.Features.Auth.RevokeToken;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.Interfaces;
@@ -18,35 +17,13 @@ namespace HelpDesk.src.Presentation.Controllers.User;
 [ApiController]
 [Route("api/auth")]
 [Authorize]
-public sealed class AuthController : ControllerBase
+public sealed class AuthController(
+    IWebHostEnvironment environment,
+    IDateTimeService dateTimeService)
+        : ControllerBase
 {
     //self-service actions
     // Require only that the user is authenticated no special permissions.
-
-    private readonly IWebHostEnvironment _environment;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<AuthController> _logger;
-
-    public AuthController(
-        IWebHostEnvironment environment,
-        IDateTimeService dateTimeService,
-        ILogger<AuthController> logger)
-    {
-        _environment = environment;
-        _dateTimeService = dateTimeService;
-        _logger = logger;
-    }
-
-    // Register
-    [HttpPost("register")]
-    [AllowAnonymous]
-    public Task<IActionResult> Register(
-        [FromServices] ICommandHandler<RegisterCommand, RegisterResponse> handler,
-        [FromBody] RegisterBody body,
-        CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 
     // Login
     [HttpPost("login")]
@@ -63,11 +40,11 @@ public sealed class AuthController : ControllerBase
         var result = await handler.HandleAsync(command, cancellationToken);
 
         // Set a new token cookies
-        Response.SetTokenCookies(result.Token, _environment);
+        Response.SetTokenCookies(result.Token, environment);
 
         return Ok(new ApiResponse<LoginResponse>(
             message: ApiMessages.Login,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -75,7 +52,6 @@ public sealed class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(
         [FromServices] ICommandHandler<LogoutCommand, LogoutResponse> handler,
-        [FromBody] LogoutBody body,
         CancellationToken cancellationToken)
     {
         var command = new LogoutCommand();
@@ -87,7 +63,7 @@ public sealed class AuthController : ControllerBase
 
         return Ok(new ApiResponse<LogoutResponse>(
             message: ApiMessages.Logout,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 
@@ -98,7 +74,7 @@ public sealed class AuthController : ControllerBase
         CancellationToken cancellationToken)
     {
         // Read from cookie (no body needed)
-        var refreshTokenValue = Request.Cookies["refresh_token"];
+        var refreshTokenValue = Request.Cookies["refreshtoken"];
 
         if (string.IsNullOrEmpty(refreshTokenValue))
         {
@@ -111,11 +87,11 @@ public sealed class AuthController : ControllerBase
         var result = await handler.HandleAsync(command, cancellationToken);
 
         // set new cookies
-        Response.SetTokenCookies(result.Token, _environment);
+        Response.SetTokenCookies(result.Token, environment);
 
         return Ok(new ApiResponse<RefreshTokenResponse>(
            message: ApiMessages.TokenRefreshed,
-           time: _dateTimeService.UtcNow,
+           time: dateTimeService,
            data: result));
     }
 
@@ -134,11 +110,11 @@ public sealed class AuthController : ControllerBase
         var result = await handler.HandleAsync(command, cancellationToken);
 
         // Overwrite cookies with fresh tokens (keep session alive)
-        Response.SetTokenCookies(result.Token, _environment);
+        Response.SetTokenCookies(result.Token, environment);
 
         return Ok(new ApiResponse<UserAccountData>(
            message: ApiMessages.PasswordChanged,
-           time: _dateTimeService.UtcNow,
+           time: dateTimeService,
            data: result.UserAccountData));
     }
 
@@ -156,7 +132,7 @@ public sealed class AuthController : ControllerBase
 
         return Ok(new ApiResponse<UserAccountData>(
            message: ApiMessages.ForgotPassword,
-           time: _dateTimeService.UtcNow,
+           time: dateTimeService,
            data: null));
     }
 
@@ -176,7 +152,7 @@ public sealed class AuthController : ControllerBase
 
         return Ok(new ApiResponse<UserAccountData>(
            message: ApiMessages.ForgottenPasswordReset,
-           time: _dateTimeService.UtcNow,
+           time: dateTimeService,
            data: result.UserAccountData));
     }
 
@@ -193,7 +169,7 @@ public sealed class AuthController : ControllerBase
 
         return Ok(new ApiResponse<RevokeTokenResponse>(
             message: ApiMessages.RevokedTokens,
-            time: _dateTimeService.UtcNow,
+            time: dateTimeService,
             data: result));
     }
 }

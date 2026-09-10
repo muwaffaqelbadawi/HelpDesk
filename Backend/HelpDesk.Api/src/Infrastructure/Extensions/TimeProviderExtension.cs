@@ -3,18 +3,17 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
-public static class TimeProviderServicesExtension
+public static class TimeProviderExtension
 {
-    public static WebApplicationBuilder AddTimeProviderServices(
+    public static WebApplicationBuilder AddTimeProvider(
         this WebApplicationBuilder builder)
     {
-        // Register TimeProvider as Singleton
+        // Register TimeProvider as Singleton service
         builder.Services.AddSingleton(TimeProvider.System);
 
-        // Register DateTimeService as Singleton
+        // Register DateTimeService as Singleton service
         builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
 
         return builder;
     }
-
 }

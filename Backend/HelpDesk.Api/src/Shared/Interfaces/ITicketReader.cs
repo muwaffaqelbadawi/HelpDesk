@@ -12,7 +12,7 @@ public interface ITicketReader
         CancellationToken cancellationToken = default);
 
     // Search logic
-    Task<IReadOnlyList<TicketData>> GetAsync(
+    Task<IReadOnlyCollection<TicketData>> GetAsync(
         string? search,
         int offset,
         int pageSize,
@@ -22,4 +22,8 @@ public interface ITicketReader
     Task<TicketData> GetByIdAsync(
         Guid ticketId,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<TicketData>> GetOwnedTicketsAsync(
+        Guid userId,
+        CancellationToken cancellationToken);
 }

@@ -9,25 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
 
-public sealed class UserStatusSeederService : IDataSeeder
+public sealed class UserStatusSeederService(
+    AppDbContext dbContext,
+    ILookupNormalizer normalizer,
+    IDateTimeService dateTimeService,
+    ILogger<UserStatusSeederService> logger) : IDataSeeder
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILookupNormalizer _normalizer;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly ILogger<UserStatusSeederService> _logger;
-
-    public UserStatusSeederService(
-        AppDbContext dbContext,
-        ILookupNormalizer normalizer,
-        IDateTimeService dateTimeService,
-        ILogger<UserStatusSeederService> logger)
-    {
-        _dbContext = dbContext;
-        _normalizer = normalizer;
-        _dateTimeService = dateTimeService;
-        _logger = logger;
-    }
-
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
@@ -38,7 +25,7 @@ public sealed class UserStatusSeederService : IDataSeeder
         var scope = identity.Scope;
 
         // Check SeedHistory
-        var exists = await _dbContext.SeedHistories
+        var exists = await dbContext.SeedHistories
             .AnyAsync(e =>
                 e.Key == key &&
                 e.Version == version &&
@@ -48,16 +35,22 @@ public sealed class UserStatusSeederService : IDataSeeder
         if (exists)
         {
             // Log (1)
-            _logger.SeedAlreadyApplied(key, scope, version);
+            logger.SeedAlreadyApplied(
+                key: key,
+                scope: scope,
+                version: version);
 
             return;
         }
 
         // Log (2)
-        _logger.ApplyingSeed(key, scope, version);
+        logger.ApplyingSeed(
+            key: key,
+            scope: scope,
+            version: version);
 
         // Load existing entities into Dictionary
-        var existingStatuses = await _dbContext.UserStatuses
+        var existingStatuses = await dbContext.UserStatuses
             .ToDictionaryAsync(
                 x => x.Code,
                 cancellationToken);
@@ -65,11 +58,11 @@ public sealed class UserStatusSeederService : IDataSeeder
         // AddRange(new entities)
         foreach (var seed in UserStatusLookup.Statuses)
         {
-            var normalizedName = _normalizer.NormalizeName(seed.Name);
+            var normalizedName = normalizer.NormalizeName(seed.Name);
 
             if (!existingStatuses.TryGetValue(seed.Code, out var existing))
             {
-                _dbContext.UserStatuses.Add(
+                dbContext.UserStatuses.Add(
                 new ApplicationUserStatus
                 {
                     Id = seed.Id,
@@ -91,19 +84,22 @@ public sealed class UserStatusSeederService : IDataSeeder
         }
 
         // Add SeedHistory
-        _dbContext.SeedHistories.Add(
+        dbContext.SeedHistories.Add(
             new SeedHistory
             {
                 Key = key,
                 Version = version,
                 Scope = scope,
-                AppliedAt = _dateTimeService.UtcNow
+                AppliedAt = dateTimeService.UtcNow
             });
 
         // Log (3)
-        _logger.SeedApplied(key, scope, version);
+        logger.SeedApplied(
+            key: key,
+            scope: scope,
+            version: version);
 
         // SaveChanges once
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -33,8 +33,6 @@ public partial class AppDbContext
     // RefreshTokens
     public DbSet<ApplicationRefreshToken> RefreshTokens { get; set; } = null!;
 
-
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -57,7 +55,7 @@ public partial class AppDbContext
             entity.HasIndex(e => e.NormalizedEmail)
                 .IsUnique();
 
-            // Status (Relation)
+            // UserStatus (Relation)
             entity.HasOne(e => e.Status)
                 .WithMany(e => e.Users)
                 .HasForeignKey(e => e.StatusId)

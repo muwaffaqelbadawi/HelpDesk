@@ -1,16 +1,8 @@
 ﻿namespace HelpDesk.src.Shared.Exceptions;
 
-public class ValidationException : Exception
+public class ValidationException(Dictionary<string, string[]> errors)
+    : Exception(
+        message: "One or more validation errors occurred.")
 {
-    // Bad Request 400
-    // Wrong input
-    // Remember ">" in YouTube Music API
-
-    public Dictionary<string, string[]> Errors { get; }
-
-    public ValidationException(Dictionary<string, string[]> errors)
-        : base("One or more validation errors occurred.")
-    {
-        Errors = errors;
-    }
+    public Dictionary<string, string[]> Errors { get; } = errors;
 }
