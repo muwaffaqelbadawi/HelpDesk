@@ -2,6 +2,7 @@
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Dtos;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Registry;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -13,8 +14,11 @@ public sealed class ModuleSeederService(
     AppDbContext dbContext,
     ILookupNormalizer normalizer,
     IDateTimeService dateTimeService,
-    ILogger<ModuleSeederService> logger) : IDataSeeder
+    ILogger<ModuleSeederService> logger) : ISeederService
 {
+    // Schema: Auth
+    public int Order => DataSeederOrder.Auth;
+
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {

@@ -79,7 +79,7 @@ public static class ScrutorExtension
         // Register IDataSeeder
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
-            .AddClasses(classes => classes.AssignableTo<IDataSeeder>())
+            .AddClasses(classes => classes.AssignableTo<ISeederService>())
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 

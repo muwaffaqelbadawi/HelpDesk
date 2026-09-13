@@ -43,8 +43,6 @@ public partial class AppDbContext
             // Table name
             entity.ToTable("Users", "Auth");
 
-            // Login Identity (NormalizedUserName, NormalizedEmail)
-
             // NormalizedUserName (Index)
             entity.HasIndex(e => e.NormalizedUserName)
                 .HasDatabaseName("UserNameIndex")

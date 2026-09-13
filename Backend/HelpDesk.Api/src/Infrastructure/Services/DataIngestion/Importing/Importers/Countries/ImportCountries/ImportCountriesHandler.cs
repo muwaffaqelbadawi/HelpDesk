@@ -15,7 +15,8 @@ public sealed class ImportCountriesHandler(
         var result = await countryImporter.ImportAsync(cancellationToken);
 
         logger.LogInformation(
-            "Countries imported successfully. Imported: {Count}",
+            "Countries imported successfully." +
+            "Imported: {Count}",
             result.ImportedCount);
 
         return result;

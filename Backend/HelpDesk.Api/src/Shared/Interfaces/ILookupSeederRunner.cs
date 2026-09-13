@@ -2,6 +2,5 @@
 
 public interface ILookupSeederRunner
 {
-    Task SeedAsync(
-        CancellationToken cancellationToken);
+    Task SeedAsync(CancellationToken cancellationToken = default);
 }

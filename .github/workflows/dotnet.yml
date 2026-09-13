@@ -14,7 +14,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v7
 
@@ -22,6 +21,7 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 9.0.318
+
       - name: Restore dependencies
         working-directory: Backend
         run: dotnet restore HelpDesk.slnx
@@ -30,6 +30,44 @@ jobs:
         working-directory: Backend
         run: dotnet build HelpDesk.slnx --no-restore --configuration Release --verbosity normal
 
+      - name: Start SQL Server
+        run: |
+          docker run -d \
+            --name helpdesk-sqlserver-ci \
+            -e ACCEPT_EULA=Y \
+            -e MSSQL_SA_PASSWORD="${{ secrets.SQLSERVER_SA_PASSWORD }}" \
+            -p 1433:1433 \
+            mcr.microsoft.com/mssql/server:2025-latest
+
+      - name: Wait for SQL Server
+        run: |
+          for i in {1..30}; do
+            if docker exec helpdesk-sqlserver-ci \
+              /opt/mssql-tools18/bin/sqlcmd \
+              -S localhost \
+              -U sa \
+              -P "${{ secrets.SQLSERVER_SA_PASSWORD }}" \
+              -C \
+              -Q "SELECT 1" > /dev/null 2>&1; then
+              echo "SQL Server is ready."
+              exit 0
+            fi
+
+            echo "Waiting for SQL Server... ($i/30)"
+            sleep 2
+          done
+
+          echo "SQL Server failed to become ready."
+          docker logs helpdesk-sqlserver-ci
+          exit 1
+
       - name: Test
         working-directory: Backend
+        env:
+          ConnectionStrings__IntegrationTestConnection: >-
+            Server=localhost,1433;
+            Database=HelpDesk_IntegrationTests;
+            User Id=sa;
+            Password=${{ secrets.SQLSERVER_SA_PASSWORD }};
+            TrustServerCertificate=True;
         run: dotnet test HelpDesk.slnx --no-build --configuration Release --verbosity normal

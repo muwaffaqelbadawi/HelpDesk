@@ -2,19 +2,12 @@
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Runner;
 
-public sealed class LookupSeederRunner : ILookupSeederRunner
+public sealed class LookupSeederRunner(IEnumerable<ISeederService> seeders)
+    : ILookupSeederRunner
 {
-    private readonly IEnumerable<IDataSeeder> _seeders;
-
-    public LookupSeederRunner(
-        IEnumerable<IDataSeeder> seeders)
-    {
-        _seeders = seeders;
-    }
-
     public async Task SeedAsync(CancellationToken cancellationToken)
     {
-        foreach (var seeder in _seeders)
+        foreach (var seeder in seeders.OrderBy(x => x.Order))
         {
             await seeder.SeedAsync(cancellationToken);
         }

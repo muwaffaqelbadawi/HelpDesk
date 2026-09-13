@@ -1,3 +1,3 @@
 ﻿namespace HelpDesk.src.Shared.AssemblyMarker;
 
-internal sealed class ApplicationAssemblyMarker;
+public sealed class ApplicationAssemblyMarker;

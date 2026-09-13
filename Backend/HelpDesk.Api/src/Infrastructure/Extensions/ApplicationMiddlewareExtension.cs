@@ -15,7 +15,7 @@ public static class ApplicationMiddlewareExtension
         await app.InitializeDatabaseAsync();
 
         app
-            .UseScrutorTestsServices() // Test the Scrutor registration of services
+            .UseScrutorTestsServices()
             .UseApplicationLogging()
             .UseExceptionHandling()
             .UseSwaggerDocumentation()

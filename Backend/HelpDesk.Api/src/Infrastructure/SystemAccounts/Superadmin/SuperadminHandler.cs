@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.SystemAccounts.Superadmin;
 
-public sealed class SuperadminHandler :
-    ICommandHandler<SuperadminCommand, SuperadminResponse>
+public sealed class SuperadminHandler
+    : ICommandHandler<SuperadminCommand, SuperadminResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
@@ -76,6 +76,7 @@ public sealed class SuperadminHandler :
         // Create superadmin object (in memory)
         var superadmin = new ApplicationUser
         {
+            Id = Guid.NewGuid(),
             UserName = command.UserName,
             Email = command.Email,
             StatusId = UserStatusIds.Active,

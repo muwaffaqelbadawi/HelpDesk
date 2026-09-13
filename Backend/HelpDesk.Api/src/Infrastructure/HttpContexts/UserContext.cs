@@ -25,11 +25,7 @@ public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
     {
         get
         {
-            var value = httpContextAccessor.HttpContext?
-                .User
-                .FindFirstValue(ClaimTypes.NameIdentifier);
-
-            return !Guid.TryParse(value, out var guid)
+            return !Guid.TryParse(UserId, out var guid)
                 ? throw new UnauthorizedAccessException("Invalid user identifier.")
                 : guid;
         }

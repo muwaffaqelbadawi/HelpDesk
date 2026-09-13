@@ -1,6 +1,8 @@
 ﻿namespace HelpDesk.src.Shared.Interfaces;
 
-public interface IDataSeeder
+public interface ISeederService
 {
+    int Order { get; }
+
     Task SeedAsync(CancellationToken cancellationToken = default);
 }

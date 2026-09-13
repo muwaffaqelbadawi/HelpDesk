@@ -272,11 +272,6 @@ public partial class AppDbContext
             // ID (Key)
             entity.HasKey(e => e.Id);
 
-            // ID (Property)
-            entity.Property(e => e.Id)
-                .HasDefaultValueSql("NEWSEQUENTIALID()")
-                .ValueGeneratedOnAdd();
-
             // FullEnName (Property)
             entity.Property(e => e.FullEnName)
                 .HasMaxLength(200)
@@ -438,12 +433,6 @@ public partial class AppDbContext
 
             // ID (Key)
             entity.HasKey(e => e.Id);
-
-            // ID (Property)
-            entity.Property(e => e.Id)
-                .IsRequired()
-                .HasDefaultValueSql("NEWSEQUENTIALID()")
-                .ValueGeneratedOnAdd();
 
             // Number (Property)
             entity.Property(e => e.Number)

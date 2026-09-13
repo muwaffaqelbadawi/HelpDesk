@@ -1,19 +1,9 @@
-﻿using HelpDesk.src.Shared.Interfaces;
-
-namespace HelpDesk.src.Infrastructure.Extensions;
+﻿namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class SeedAdminServiceExtension
 {
-    public static async Task<WebApplication> SeedAdminAsync(
-        this WebApplication app,
-        CancellationToken cancellationToken = default)
+    public static Task SeedAdminAsync()
     {
-        using var scope = app.Services.CreateScope();
-
-        var bootstrapper = scope.ServiceProvider.GetRequiredService<ISuperadminSeedRunner>();
-
-        await bootstrapper.BootstrapAsync(cancellationToken);
-
-        return app;
+        throw new NotImplementedException();
     }
 }

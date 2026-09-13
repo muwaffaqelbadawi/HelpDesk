@@ -2,6 +2,7 @@
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Dtos;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Registry;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,14 +12,17 @@ namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Rol
 public sealed class RolePermissionModulesSeederService(
     AppDbContext dbContext,
     IDateTimeService dateTimeService,
-    ILogger<RolePermissionModulesSeederService> logger) : IDataSeeder
+    ILogger<RolePermissionModulesSeederService> logger) : ISeederService
 {
+    // Schema: Auth (dependency on Roles, Permissions, and Modules)
+    public int Order => DataSeederOrder.RolePermissionModules;
+
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
         var identity = SeedRegistry.RolePermissionModules;
 
-        var key = identity.Key; ;
+        var key = identity.Key;
         var version = identity.Version;
         var scope = identity.Scope;
 

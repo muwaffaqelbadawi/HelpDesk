@@ -18,7 +18,8 @@ public sealed class DataImportOptionsValidator
         if (Path.IsPathRooted(options.RelativePath))
         {
             return ValidateOptionsResult.Fail(
-                $"{nameof(options.RelativePath)} must be relative to the application content root.");
+                $"{nameof(options.RelativePath)}" +
+                $"must be relative to the application content root.");
         }
 
         return ValidateOptionsResult.Success;

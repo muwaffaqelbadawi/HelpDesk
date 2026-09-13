@@ -8,10 +8,19 @@ public static class KestrelServicesExtension
     public static WebApplicationBuilder AddCustomKestrelServices(
         this WebApplicationBuilder builder)
     {
-        var kestrelSection = builder.Configuration.GetSection("Kestrel:Certificates:Default");
+        if (builder.Environment.IsEnvironment("Testing"))
+        {
+            return builder;
+        }
+
+        var kestrelSection = builder.Configuration
+            .GetSection("Kestrel:Certificates:Default");
 
         var kestrelOptions = kestrelSection.Get<KestrelOptions>()
-            ?? throw new InvalidOperationException("Kestrel certificate options are not configured. Expected configuration section 'Kestrel:Certificates:Default'.");
+            ?? throw new InvalidOperationException(
+                "Kestrel certificate options are not configured." +
+                "Expected configuration section" +
+                "'Kestrel:Certificates:Default'.");
 
         var certificatePath = Path.GetFullPath(kestrelOptions.Pem);
         var keyPath = Path.GetFullPath(kestrelOptions.Key);
@@ -19,14 +28,16 @@ public static class KestrelServicesExtension
         if (!File.Exists(certificatePath))
         {
             throw new FileNotFoundException(
-                 "Certificate was not found. Expected file: DevCertificate/cert.pem in the repo root.",
+                 "Certificate was not found." +
+                 "Expected file: DevCertificate/cert.pem in the repo root.",
                 certificatePath);
         }
 
         if (!File.Exists(keyPath))
         {
             throw new FileNotFoundException(
-                 "Certificate key was not found. Expected file: DevCertificate/key.pem in the repo root.",
+                 "Certificate key was not found." +
+                 "Expected file: DevCertificate/key.pem in the repo root.",
                 keyPath);
         }
 

@@ -2,6 +2,5 @@
 
 public interface ISuperadminSeedRunner
 {
-    Task BootstrapAsync(
-        CancellationToken cancellationToken);
+    Task SeedAsync(CancellationToken cancellationToken = default);
 }

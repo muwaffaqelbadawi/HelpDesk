@@ -3,12 +3,11 @@ using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Core;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Dtos;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries.ImportCountries;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries;
+namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries.ImportCountries;
 
 public sealed class CountryImporter
     : DataImporter<ImportCountriesSource, Country>,
@@ -53,8 +52,7 @@ public sealed class CountryImporter
             cancellationToken);
     }
 
-    protected override IReadOnlyCollection<ImportCountriesSource> Deserialize(
-        string source)
+    protected override IReadOnlyCollection<ImportCountriesSource> Deserialize(string source)
     {
         return JsonSerializer.Deserialize<List<ImportCountriesSource>>(
                 source,

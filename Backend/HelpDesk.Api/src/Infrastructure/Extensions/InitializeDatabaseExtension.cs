@@ -8,7 +8,7 @@ public static class InitializeDatabaseExtension
     {
         await app.ApplyMigrationsAsync(cancellationToken);
         await app.SeedDatabaseAsync(cancellationToken);
-        await app.SeedAdminAsync(cancellationToken);
+        //await app.SeedAdminAsync(cancellationToken);
 
         return app;
     }

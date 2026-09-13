@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Core;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries.ImportCountries;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Options;
 

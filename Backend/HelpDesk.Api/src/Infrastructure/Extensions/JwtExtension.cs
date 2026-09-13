@@ -11,9 +11,11 @@ public static class JwtExtension
     public static WebApplicationBuilder AddJwtConfigs(
        this WebApplicationBuilder builder)
     {
+        var jwtSection = builder.Configuration.GetSection("Jwt");
+
         builder.Services
             .AddOptions<JwtOptions>()
-            .Bind(builder.Configuration.GetSection("Jwt"))
+            .Bind(jwtSection)
             .ValidateOnStart();
 
         return builder;
@@ -24,10 +26,12 @@ public static class JwtExtension
     {
         builder.AddJwtConfigs();
 
-        var jwtSection = builder.Configuration.GetSection("jwt");
+        var jwtSection = builder.Configuration.GetSection("Jwt");
 
         var jwtOptions = jwtSection.Get<JwtOptions>()
-            ?? throw new InvalidOperationException("JWT options are not configured. Expected configuration section 'Jwt'.");
+            ?? throw new InvalidOperationException(
+                "JWT options are not configured." +
+                "Expected configuration section 'Jwt'.");
 
         builder.Services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

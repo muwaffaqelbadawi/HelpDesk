@@ -1,6 +1,7 @@
 ﻿using HelpDesk.Infrastructure.Logging;
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Dtos;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Registry;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -12,8 +13,11 @@ public sealed class CompanySeederService(
     AppDbContext dbContext,
     ILookupNormalizer normalizer,
     IDateTimeService dateTimeService,
-    ILogger<CompanySeederService> logger) : IDataSeeder
+    ILogger<CompanySeederService> logger) : ISeederService
 {
+    // Schema: Business
+    public int Order => DataSeederOrder.Business;
+
     public async Task SeedAsync(
         CancellationToken cancellationToken = default)
     {
