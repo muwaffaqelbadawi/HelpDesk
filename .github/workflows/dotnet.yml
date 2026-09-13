@@ -62,7 +62,10 @@ jobs:
           exit 1
 
       - name: Show .NET SDK
-        run: dotnet --version
+        run: |
+          dotnet --version
+          dotnet --list-sdks
+          dotnet --info
 
       - name: Test
         working-directory: Backend
