@@ -19,7 +19,7 @@ public static class DBContextServicesExtension
                 builder.Configuration.GetConnectionString("AppDBConnection")));
 
         // SQL Server sequence
-        builder.Services.AddScoped<INumberingService, NumberService>();
+        builder.Services.AddScoped<INumberingService, NumberingService>();
 
         return builder;
     }

@@ -1,10 +1,11 @@
-﻿using HelpDesk.src.Infrastructure.Services.SQLServerSequence;
+﻿namespace HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Shared.Interfaces;
 
 public interface INumberingService
 {
-    Task<string> GetNextNumberAsync(
-    NumberType type,
-    CancellationToken cancellationToken);
+    Task<string> GetNextTicketNumberAsync(
+        CancellationToken cancellationToken);
+
+    Task<string> GetNextEmployeeNumberAsync(
+        CancellationToken cancellationToken);
 }

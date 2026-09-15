@@ -28,6 +28,9 @@ public static class UserExtension
         // Register PhoneNumberRules as scoped service
         services.AddScoped<IPhoneNumberRules, PhoneNumberRules>();
 
+        // Register UserSessionRepository as scoped service
+        services.AddScoped<IUserSessionRepository, UserSessionRepository>();
+
         return services;
     }
 }

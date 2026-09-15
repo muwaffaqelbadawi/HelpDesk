@@ -3,7 +3,6 @@ using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.EmployeeStatuses;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
-using HelpDesk.src.Infrastructure.Services.SQLServerSequence;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
@@ -60,8 +59,7 @@ public sealed class CreateUserAccountTests
         // Mock numbering service to return a specific employee number
         var employeeNumber = "123456";
 
-        numberingService.GetNextNumberAsync(
-                NumberType.Employee,
+        numberingService.GetNextEmployeeNumberAsync(
                 Arg.Any<CancellationToken>())
             .Returns(employeeNumber);
 
@@ -100,7 +98,7 @@ public sealed class CreateUserAccountTests
             .Returns(true);
 
         // Mock PhoneNumber service to return a specific phone number
-        var phoneNumber = "123-4567-89";
+        var phoneNumber = "+966112345678";
 
         phoneNumberRules
             .IsValidPhoneNumber(phoneNumber)
@@ -135,6 +133,8 @@ public sealed class CreateUserAccountTests
                 createdUser = callInfo.Arg<ApplicationUser>();
             });
 
+        //var department = 
+
         // Prepare expected user account data for assertion
         var expectedUserAccountData = new UserAccountData
         {
@@ -146,9 +146,9 @@ public sealed class CreateUserAccountTests
                 EmployeeNumber = employeeNumber,
                 FullEnName = command.FullEnName,
                 FullArName = command.FullArName,
-                DepartmentId = departmentId,
-                SectorId = sectorId,
-                CountryId = countryId,
+                Department = string.Empty,
+                Sector = string.Empty,
+                Country = string.Empty,
             }
         };
 

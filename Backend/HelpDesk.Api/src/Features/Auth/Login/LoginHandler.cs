@@ -8,17 +8,23 @@ public sealed class LoginHandler :
     private readonly IIdentityResolver _identityResolver;
     private readonly ITokenService _tokenService;
     private readonly IUserReader _userReader;
+    private readonly IDateTimeService _dateTimeService;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<LoginHandler> _logger;
 
     public LoginHandler(
         IIdentityResolver identityResolver,
         ITokenService tokenService,
         IUserReader userReader,
+        IDateTimeService dateTimeService,
+        IDomainEventDispatcher dispatcher,
         ILogger<LoginHandler> logger)
     {
         _identityResolver = identityResolver;
         _tokenService = tokenService;
         _userReader = userReader;
+        _dateTimeService = dateTimeService;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -46,11 +52,21 @@ public sealed class LoginHandler :
             userId: user.Id,
             cancellationToken: cancellationToken);
 
-        // Add someone login to your account email later
-
         _logger.LogInformation(
             "User {userId} logged in successfully",
             user.Id);
+
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new UserLoggedInEvent(
+                UserId: user.Id,
+                OccurredAt: _dateTimeService.UtcNow),
+            cancellationToken: cancellationToken);
+
+
+
+
+        // Add someone login to your account email later
 
         return new LoginResponse(
             UserAccountData: userAccountData,

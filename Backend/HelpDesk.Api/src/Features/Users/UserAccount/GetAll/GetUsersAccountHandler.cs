@@ -5,21 +5,13 @@ using HelpDesk.src.Shared.Responses.Data;
 
 namespace HelpDesk.src.Features.Users.UserAccount.GetAll;
 
-public sealed class GetUsersAccountHandler :
+public sealed class GetUsersAccountHandler(IUserReader userReader) :
     IQueryHandler<GetUsersQuery, PagedResult<UserAccountData>>
 {
-    private readonly IUserReader _userReader;
-
-    public GetUsersAccountHandler(
-        IUserReader userRepository)
-    {
-        _userReader = userRepository;
-    }
-
     public async Task<PagedResult<UserAccountData>> HandleAsync(
         GetUsersQuery query,
         CancellationToken cancellationToken)
     {
-        return await _userReader.GetAllAsync(query, cancellationToken);
+        return await userReader.GetAllAsync(query, cancellationToken);
     }
 }

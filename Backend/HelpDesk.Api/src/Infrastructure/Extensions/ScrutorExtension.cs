@@ -93,8 +93,8 @@ public static class ScrutorExtension
             .AddCommandHandler()
             .AddQueryHandler()
             .AddScrutorDecorate()
-            .AddDataSeeder()
-            .AddDomainEventHandler();
+            .AddDomainEventHandler()
+            .AddDataSeeder();
 
         return builder;
     }

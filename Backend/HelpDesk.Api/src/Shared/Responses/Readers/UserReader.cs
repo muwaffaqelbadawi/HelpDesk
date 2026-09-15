@@ -8,22 +8,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.Responses.Readers;
 
-public sealed class UserReader : IUserReader
+public sealed class UserReader(AppDbContext dbContext) : IUserReader
 {
-    private readonly AppDbContext _dbContext;
-
-    public UserReader(
-        AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     // Pagination logic
     public async Task<PagedResult<UserAccountData>> GetAllAsync(
         GetUsersQuery query,
         CancellationToken cancellationToken = default)
     {
-        var queryable = _dbContext.Users.AsQueryable();
+        var queryable = dbContext.Users
+            .AsNoTracking()
+            .AsQueryable();
 
         var totalCount = await queryable.CountAsync(cancellationToken);
 
@@ -51,7 +45,7 @@ public sealed class UserReader : IUserReader
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var query = _dbContext.Users
+        var query = dbContext.Users
             .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -79,7 +73,7 @@ public sealed class UserReader : IUserReader
         CancellationToken cancellationToken)
     {
         // User reader
-        return await _dbContext.Users
+        return await dbContext.Users
             .AsNoTracking()
             .Where(u => u.Id == userId)
             .SelectUserAccount()

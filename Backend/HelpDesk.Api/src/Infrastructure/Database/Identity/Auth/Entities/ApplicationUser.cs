@@ -53,8 +53,8 @@ public sealed class ApplicationUser : IdentityUser<Guid>
 
 
     // Profile
-    public string? TimeZone { get; set; }
-    public UserLanguage? PreferredLanguage { get; set; }
+    public string TimeZone { get; set; } = null!;
+    public UserLanguage PreferredLanguage { get; set; }
 
 
     // Concurrency

@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Features.Tickets.Create;
-using HelpDesk.src.Infrastructure.Events;
+using HelpDesk.src.Shared.Events.DomainEvents;
 using HelpDesk.src.Shared.Interfaces;
 using NSubstitute;
 using Xunit;
@@ -16,7 +16,7 @@ public sealed class DomainEventDispatcherTests
 
         // Mock dependencies (substitutes)
         var serviceProvider = Substitute.For<IServiceProvider>();
-        var handler = Substitute.For<IDomainEventHandler<TicketCreated>>();
+        var handler = Substitute.For<IDomainEventHandler<TicketCreatedEvent>>();
 
         // userId
         var userId = Guid.NewGuid();
@@ -32,14 +32,14 @@ public sealed class DomainEventDispatcherTests
         // occurredAt
         var occurredAt = now;
 
-        var @event = new TicketCreated(
+        var @event = new TicketCreatedEvent(
             userId,
             ticketId,
             occurredAt);
 
         serviceProvider
             .GetService(
-                typeof(IEnumerable<IDomainEventHandler<TicketCreated>>))
+                typeof(IEnumerable<IDomainEventHandler<TicketCreatedEvent>>))
             .Returns(new[] { handler });
 
         // SUT (System Under Test)
@@ -54,7 +54,7 @@ public sealed class DomainEventDispatcherTests
         // Assert
 
         // Verify the Handle was called once.
-        await handler.Received(1).Handle(
+        await handler.Received(1).HandleAsync(
             @event,
             Arg.Any<CancellationToken>());
     }

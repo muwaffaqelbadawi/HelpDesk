@@ -4,7 +4,7 @@ namespace HelpDesk.src.Features.Tickets.Create;
 
 // Represents the fact that a ticket was created
 // A ticket was successfully created.
-public sealed record TicketCreated(
+public sealed record TicketCreatedEvent(
     Guid UserId,
     Guid TicketId,
     DateTimeOffset OccurredAt) : IDomainEvent;

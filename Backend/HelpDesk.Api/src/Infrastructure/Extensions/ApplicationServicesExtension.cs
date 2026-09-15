@@ -14,6 +14,7 @@ public static class ApplicationServicesExtension
             .AddControllers()
             .AddBackgroundServices()
             .AddJwtOptions()
+            .AddUserSessionConfigs()
             .AddAuthentication()
             .AddAuthorization()
             .AddTimeProvider()

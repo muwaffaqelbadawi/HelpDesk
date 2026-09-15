@@ -14,6 +14,16 @@ public static class EmployeeQueries
             EmployeeNumber = e.Number,
             FullEnName = e.FullEnName,
             FullArName = e.FullArName,
+
+            Department = e.Department != null
+                        ? e.Department.Name
+                        : null,
+
+            Sector = e.Sector != null
+                    ? e.Sector.Name
+                    : null,
+
+            Country = e.Country.Name,
             RowVersion = e.RowVersion
         });
     }

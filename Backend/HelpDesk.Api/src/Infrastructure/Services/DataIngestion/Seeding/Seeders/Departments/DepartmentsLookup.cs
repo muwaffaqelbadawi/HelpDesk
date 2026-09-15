@@ -8,13 +8,13 @@ public static class DepartmentsLookup
     [
         new(
             Id: DepartmentsIds.HumanResources,
-            Name: "HumanResources",
+            Name: "Human Resources",
             Code: "HR",
             SortOrder: 0),
 
         new(
             Id: DepartmentsIds.InformationTechnology,
-            Name: "InformationTechnology",
+            Name: "Information Technology",
             Code: "IT",
             SortOrder: 1),
 
@@ -50,7 +50,7 @@ public static class DepartmentsLookup
 
         new(
             Id: DepartmentsIds.CustomerService,
-            Name: "CustomerService",
+            Name: "Customer Service",
             Code: "CS",
             SortOrder: 7),
 
@@ -74,13 +74,13 @@ public static class DepartmentsLookup
 
         new(
             Id: DepartmentsIds.ResearchAndDevelopment,
-            Name: "ResearchAndDevelopment",
+            Name: "Research & Development",
             Code: "RND",
             SortOrder: 11),
 
         new(
             Id: DepartmentsIds.QualityAssurance,
-            Name: "QualityAssurance",
+            Name: "Quality Assurance",
             Code: "QA",
             SortOrder: 12),
 
@@ -104,7 +104,7 @@ public static class DepartmentsLookup
 
         new(
             Id: DepartmentsIds.SupplyChain,
-            Name: "SupplyChain",
+            Name: "Supply Chain",
             Code: "SCM",
             SortOrder: 16),
     ];

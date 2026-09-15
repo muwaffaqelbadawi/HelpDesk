@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Infrastructure.Events;
+namespace HelpDesk.src.Shared.Events.DomainEvents;
 
 public sealed class DomainEventDispatcher(
     IServiceProvider serviceProvider) : IDomainEventDispatcher
@@ -19,7 +19,7 @@ public sealed class DomainEventDispatcher(
 
         foreach (var handler in handlers.OfType<object>())
         {
-            await ((dynamic)handler).Handle(
+            await ((dynamic)handler).HandleAsync(
                 (dynamic)@event,
                 cancellationToken);
         }

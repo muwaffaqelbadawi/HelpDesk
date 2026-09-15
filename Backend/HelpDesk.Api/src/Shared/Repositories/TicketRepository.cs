@@ -4,22 +4,15 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Shared.Repositories;
 
-public sealed class TicketRepository : ITicketRepository
+public sealed class TicketRepository(AppDbContext dbContext)
+    : ITicketRepository
 {
-    private readonly AppDbContext _dbContext;
-
-    public TicketRepository(
-        AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task AddAsync(
         Ticket ticket,
         CancellationToken cancellationToken)
     {
-        _dbContext.Tickets.Add(ticket);
+        dbContext.Tickets.Add(ticket);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

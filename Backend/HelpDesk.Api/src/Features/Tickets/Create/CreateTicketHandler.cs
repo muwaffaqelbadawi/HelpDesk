@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketPriorities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketStatuses;
-using HelpDesk.src.Infrastructure.Services.SQLServerSequence;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Tickets.Create;
@@ -48,8 +47,7 @@ public sealed class CreateTicketHandler :
         var now = _dateTimeService.UtcNow;
 
         // Numbering service
-        var ticketNumber = await _numberingService.GetNextNumberAsync(
-            NumberType.Ticket,
+        var ticketNumber = await _numberingService.GetNextTicketNumberAsync(
             cancellationToken);
 
         // Ticket
@@ -75,11 +73,12 @@ public sealed class CreateTicketHandler :
             ticket.Id,
             cancellationToken);
 
-        _logger.LogInformation("Ticket created successfully.");
+        _logger.LogInformation("Ticket created successfully: {ticket}.",
+            ticket.Id);
 
-        // Dispatch event
+        // Domain event
         await _dispatcher.DispatchAsync(
-            @event: new TicketCreated(
+            @event: new TicketCreatedEvent(
                 UserId: userId,
                 TicketId: ticket.Id,
                 OccurredAt: now),

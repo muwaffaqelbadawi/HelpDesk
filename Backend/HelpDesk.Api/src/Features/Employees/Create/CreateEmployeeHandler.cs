@@ -1,5 +1,4 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
-using HelpDesk.src.Infrastructure.Services.SQLServerSequence;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Employees.Create;
@@ -25,8 +24,7 @@ public sealed class CreateEmployeeHandler :
         CreateEmployeeCommand request,
         CancellationToken cancellationToken)
     {
-        var employeeNumber = await _numberingService.GetNextNumberAsync(
-            NumberType.Employee,
+        var employeeNumber = await _numberingService.GetNextEmployeeNumberAsync(
             cancellationToken);
 
         // Create a new employee

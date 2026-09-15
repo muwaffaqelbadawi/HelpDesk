@@ -30,7 +30,7 @@ public sealed class TicketCreatedHandlerTests
         // occurredAt
         var occurredAt = now;
 
-        var @event = new TicketCreated(
+        var @event = new TicketCreatedEvent(
             UserId: userId,
             TicketId: ticketId,
             OccurredAt: occurredAt);
@@ -40,7 +40,7 @@ public sealed class TicketCreatedHandlerTests
         var sut = new TicketCreatedHandler(historyWriter);
 
         // Act
-        await sut.Handle(@event, CancellationToken.None);
+        await sut.HandleAsync(@event, CancellationToken.None);
 
         // Assert
 

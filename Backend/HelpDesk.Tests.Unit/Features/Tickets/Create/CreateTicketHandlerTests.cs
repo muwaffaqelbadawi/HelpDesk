@@ -2,7 +2,6 @@
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketPriorities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketStatuses;
-using HelpDesk.src.Infrastructure.Services.SQLServerSequence;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.Extensions.Logging;
@@ -44,8 +43,7 @@ public sealed class CreateTicketHandlerTests
 
         // Mock numbering service to return a specific ticket number
         var ticketNumber = "TKT-000001";
-        numberingService.GetNextNumberAsync(
-                NumberType.Ticket,
+        numberingService.GetNextTicketNumberAsync(
                 Arg.Any<CancellationToken>())
             .Returns(ticketNumber);
 
@@ -123,7 +121,7 @@ public sealed class CreateTicketHandlerTests
 
         // Verify the dispatcher was called once.
         await dispatcher.Received(1).DispatchAsync(
-            Arg.Is<TicketCreated>(e =>
+            Arg.Is<TicketCreatedEvent>(e =>
                 e.TicketId == createdTicket.Id),
             Arg.Any<CancellationToken>());
     }

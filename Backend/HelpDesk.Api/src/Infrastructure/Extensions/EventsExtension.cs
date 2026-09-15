@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Infrastructure.Events;
+﻿using HelpDesk.src.Shared.Events.DomainEvents;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Extensions;

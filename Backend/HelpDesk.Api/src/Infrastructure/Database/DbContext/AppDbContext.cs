@@ -33,6 +33,10 @@ public partial class AppDbContext
     // RefreshTokens
     public DbSet<ApplicationRefreshToken> RefreshTokens { get; set; } = null!;
 
+    // UserSession
+    public DbSet<ApplicationUserSession> UserSessions { get; set; } = null!;
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -122,10 +126,12 @@ public partial class AppDbContext
                 .HasDefaultValue(false);
 
             // TimeZone (Property)
-            entity.Property(e => e.TimeZone);
+            entity.Property(e => e.TimeZone)
+                .HasDefaultValue("Asia/Riyadh");
 
             // PreferredLanguage (Property)
-            entity.Property(e => e.PreferredLanguage);
+            entity.Property(e => e.PreferredLanguage)
+                .HasDefaultValue(UserLanguage.English);
 
             // RowVersion (Property)
             entity.Property(e => e.RowVersion)

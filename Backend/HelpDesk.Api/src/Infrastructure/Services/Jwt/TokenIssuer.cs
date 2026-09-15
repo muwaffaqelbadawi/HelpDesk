@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Options;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace HelpDesk.src.Infrastructure.Services.Jwt;
 
@@ -37,7 +37,11 @@ public sealed class TokenIssuer : ITokenIssuer
 
         // now
         var now = _dateTimeService.UtcNow;
+
+        // access token expiration
         var accessTokenExpiresAt = now.Add(_jwtOptions.AccessTokenLifetime);
+
+        // refresh token expiration
         var refreshTokenExpiresAt = now.Add(_jwtOptions.RefreshTokenLifetime);
 
         return new TokenResult(
