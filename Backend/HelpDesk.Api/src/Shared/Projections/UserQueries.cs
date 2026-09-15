@@ -20,14 +20,6 @@ public static class UserQueries
                     ? nameof(UserLanguage.English)
                     : nameof(UserLanguage.Arabic),
 
-                //IpAddress = u.Sessions
-                //    .Where(s =>
-                //        !s.IsDeleted &&
-                //        (s.ExpiresAt == null || s.ExpiresAt > DateTimeOffset.UtcNow))
-                //    .OrderByDescending(s => s.LastActivityAt)
-                //    .Select(s => s.IpAddress)
-                //    .FirstOrDefault()!,
-
                 Roles = u.UserRoles
                     .Where(ur => ur.RemovedAt == null)
                     .Select(ur => ur.Role.Name ?? string.Empty)
