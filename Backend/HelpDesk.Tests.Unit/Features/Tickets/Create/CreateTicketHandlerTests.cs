@@ -1,5 +1,6 @@
 ﻿using HelpDesk.src.Features.Tickets.Create;
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
+using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketPriorities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketStatuses;
 using HelpDesk.src.Shared.Interfaces;
@@ -19,6 +20,7 @@ public sealed class CreateTicketHandlerTests
 
         // Mock dependencies (substitutes)
         var userContext = Substitute.For<IUserContext>();
+        var userProvider = Substitute.For<IUserProvider>();
         var ticketRepository = Substitute.For<ITicketRepository>();
         var ticketReader = Substitute.For<ITicketReader>();
         var numberingService = Substitute.For<INumberingService>();
@@ -30,6 +32,7 @@ public sealed class CreateTicketHandlerTests
         // Real handler instance with mocked dependencies
         var handler = new CreateTicketHandler(
             userContext,
+            userProvider,
             ticketRepository,
             ticketReader,
             numberingService,
@@ -51,6 +54,7 @@ public sealed class CreateTicketHandlerTests
         var now = new DateTimeOffset(
             2026, 8, 13, 14, 30, 0,
             TimeSpan.Zero);
+
         dateTimeService.UtcNow.Returns(now);
 
         // Create a command with ticket details
@@ -87,6 +91,12 @@ public sealed class CreateTicketHandlerTests
                 Arg.Any<CancellationToken>())
             .Returns(expectedTicketData);
 
+        // Mock user provider to return the expected user
+        userProvider
+            .GetUserAsync(
+                userId.ToString())
+            .Returns(new ApplicationUser());
+
         // Act
         // One specific action
         var result = await handler.HandleAsync(
@@ -96,7 +106,6 @@ public sealed class CreateTicketHandlerTests
         // Assert
         // Verify that the result is not null
         Assert.NotNull(result);
-
         Assert.NotEqual(Guid.Empty, createdTicket!.Id);
         Assert.Equal(ticketNumber, createdTicket.Number);
         Assert.Equal(command.TicketTitle, createdTicket.Title);

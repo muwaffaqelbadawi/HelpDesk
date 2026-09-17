@@ -11,21 +11,21 @@ public sealed class ForgotPasswordHandler :
     ICommandHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IQueueEmailService _queueEmailService;
     private readonly CorsOptions _corsOptions;
+    private readonly IQueueEmailService _queueEmailService;
     private readonly IUserContext _userContext;
     private readonly ILogger<ForgotPasswordHandler> _logger;
 
     public ForgotPasswordHandler(
         UserManager<ApplicationUser> userManager,
-        IQueueEmailService queueEmailService,
         IOptions<CorsOptions> corsOptions,
+        IQueueEmailService queueEmailService,
         IUserContext userContext,
         ILogger<ForgotPasswordHandler> logger)
     {
         _userManager = userManager;
-        _queueEmailService = queueEmailService;
         _corsOptions = corsOptions.Value;
+        _queueEmailService = queueEmailService;
         _userContext = userContext;
         _logger = logger;
     }
@@ -45,8 +45,18 @@ public sealed class ForgotPasswordHandler :
                 Message: "If the email is associated with an account, a password reset email has been sent.");
         }
 
+
+
+
+
+
+
+
+        // Reset password email
+
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
+        // Build change password link
         var baseUrl = _corsOptions.Origins.Single();
 
         var resetLink = PasswordResetLink.Build(
@@ -78,7 +88,8 @@ public sealed class ForgotPasswordHandler :
             cancellationToken: cancellationToken);
 
         // Successful log
-        _logger.LogInformation("Password reset email queued for user {UserId}", user.Id);
+        _logger.LogInformation("Password reset email queued for user {UserId}",
+            user.Id);
 
         return new ForgotPasswordResponse(
             Message: "If the email is associated with an account, a password reset email has been sent.");

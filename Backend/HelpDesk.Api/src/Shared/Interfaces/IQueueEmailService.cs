@@ -22,8 +22,8 @@ public interface IQueueEmailService
         Guid userId,
         string userName,
         string recipientEmail,
-        string fullName,
         string tempPassword,
+        string changePasswordLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken);
@@ -33,6 +33,18 @@ public interface IQueueEmailService
         string userName,
         string recipientEmail,
         string tempPassword,
+        string changePasswordLink,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken);
+
+    Task LoginEmail(
+        Guid userId,
+        string userName,
+        string recipientEmail,
+        string ipAddress,
+        string browser,
+        string resetLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken);

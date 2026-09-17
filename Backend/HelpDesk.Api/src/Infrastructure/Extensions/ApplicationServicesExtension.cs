@@ -14,7 +14,7 @@ public static class ApplicationServicesExtension
             .AddControllers()
             .AddBackgroundServices()
             .AddJwtOptions()
-            .AddUserSessionConfigs()
+            .AddUserSession()
             .AddAuthentication()
             .AddAuthorization()
             .AddTimeProvider()
@@ -29,7 +29,7 @@ public static class ApplicationServicesExtension
             .AddDataImporters()
             .AddScrutor()
             .AddCommandPipeline()
-            .AddApplicationOptions();
+            .AddOptions();
 
         return builder;
     }

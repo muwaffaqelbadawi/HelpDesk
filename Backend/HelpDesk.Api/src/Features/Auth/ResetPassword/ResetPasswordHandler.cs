@@ -1,10 +1,7 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Projections;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Auth.ResetPassword;
 
@@ -13,24 +10,27 @@ public sealed class ResetPasswordHandler :
 {
     private readonly IUserContext _userContext;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly AppDbContext _dbContext;
     private readonly ITokenService _tokenService;
+    private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<ResetPasswordHandler> _logger;
 
     public ResetPasswordHandler(
         IUserContext userContext,
         UserManager<ApplicationUser> userManager,
-        AppDbContext dbContext,
         ITokenService tokenService,
+        IUserReader userReader,
         IDateTimeService dateTimeService,
+        IDomainEventDispatcher dispatcher,
         ILogger<ResetPasswordHandler> logger)
     {
         _userContext = userContext;
         _userManager = userManager;
-        _dbContext = dbContext;
         _tokenService = tokenService;
+        _userReader = userReader;
         _dateTimeService = dateTimeService;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -84,6 +84,7 @@ public sealed class ResetPasswordHandler :
         user.LastPasswordChangedById = currentUserId;
         user.MustChangePassword = true;
 
+        // Update the user entity in the database
         await _userManager.UpdateAsync(user);
 
         // Issue new token
@@ -91,17 +92,25 @@ public sealed class ResetPasswordHandler :
             user,
             cancellationToken);
 
+        // Get user
+        var userAccountData = await _userReader.GetByIdAsync(
+            userId: user.Id,
+            cancellationToken: cancellationToken);
+
+        // Successful log
         _logger.LogInformation(
-            "Admin {AdminId} reset password for user {UserId}",
-            currentUserId,
-            user.Id);
+            "User {UserId} password was reset successfully by admin: {admin}",
+            user.Id,
+            currentUserId);
 
-        var userAccountData = await _dbContext.Users
-            .AsNoTracking()
-            .Where(u => u.Id == user.Id)
-            .SelectUserAccount()
-            .SingleAsync(cancellationToken);
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new PasswordResetEvent(
+                User: user,
+                OccurredAt: _dateTimeService.UtcNow),
+            cancellationToken: cancellationToken);
 
+        // Return response
         return new ResetPasswordResponse(
             UserAccountData: userAccountData,
             Token: token);

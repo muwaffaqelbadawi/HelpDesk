@@ -11,8 +11,9 @@ public sealed class ExceptionMiddleware(
     RequestDelegate next,
     IWebHostEnvironment env)
 {
-    public async Task Invoke(
+    public async Task InvokeAsync(
         HttpContext context,
+        IApiContext apiContext,
         IUserContext userContext)
     {
         try
@@ -26,6 +27,7 @@ public sealed class ExceptionMiddleware(
                 HelpDeskValidationException => StatusCodes.Status400BadRequest,
                 FluentValidationException => StatusCodes.Status400BadRequest,
                 DataAnnotationsValidationException => StatusCodes.Status400BadRequest,
+                AuthenticationRequiredException => StatusCodes.Status401Unauthorized,
                 AuthenticationFailedException => StatusCodes.Status401Unauthorized,
                 ForbiddenException => StatusCodes.Status403Forbidden,
                 NotFoundException => StatusCodes.Status404NotFound,
@@ -40,19 +42,22 @@ public sealed class ExceptionMiddleware(
             bool isDevelopment = env.IsDevelopment();
 
             var response = CreateErrorResponse(
-                ex,
-                context,
-                traceId,
-                correlationId,
-                isDevelopment);
+                exception: ex,
+                httpContext: context,
+                apiContext: apiContext,
+                traceId: traceId,
+                correlationId: correlationId,
+                isDevelopment: isDevelopment);
 
-            await context.Response.WriteAsJsonAsync(response);
+            // declared-type vs runtime-type
+            await context.Response.WriteAsJsonAsync((object)response);
         }
     }
 
     private static ProblemDetails CreateErrorResponse(
         Exception exception,
         HttpContext httpContext,
+        IApiContext apiContext,
         string traceId,
         string correlationId,
         bool isDevelopment)
@@ -60,7 +65,7 @@ public sealed class ExceptionMiddleware(
         var status = httpContext.Response.StatusCode;
         var details = exception.Message;
         var path = httpContext.Request.Path;
-        var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
+        var baseUrl = apiContext.BaseUrl;
 
         return isDevelopment
             ? exception switch
@@ -68,7 +73,7 @@ public sealed class ExceptionMiddleware(
                 HelpDeskValidationException ex => new ValidationProblemDetails(ex.Errors)
                 {
                     Type = $"{baseUrl}/errors/validation",
-                    Title = "One or more validation errors occurred.",
+                    Title = nameof(ValidationException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -86,7 +91,7 @@ public sealed class ExceptionMiddleware(
                               group => group.Key, group => group.ToArray()))
                 {
                     Type = $"{baseUrl}/errors/validation",
-                    Title = "One or more validation errors occurred.",
+                    Title = nameof(ValidationException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -100,7 +105,21 @@ public sealed class ExceptionMiddleware(
                 DataAnnotationsValidationException => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/validation",
-                    Title = "One or more validation errors occurred.",
+                    Title = nameof(ValidationException),
+                    Status = status,
+                    Detail = details,
+                    Instance = path,
+                    Extensions =
+                    {
+                        ["traceId"] = traceId,
+                        ["correlationId"] = correlationId
+                    }
+                },
+
+                AuthenticationRequiredException => new ProblemDetails
+                {
+                    Type = $"{baseUrl}/errors/authentication",
+                    Title = nameof(AuthenticationRequiredException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -114,7 +133,7 @@ public sealed class ExceptionMiddleware(
                 AuthenticationFailedException => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/unauthorized",
-                    Title = "Unauthorized",
+                    Title = nameof(AuthenticationFailedException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -128,7 +147,7 @@ public sealed class ExceptionMiddleware(
                 ForbiddenException => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/forbidden",
-                    Title = "Forbidden",
+                    Title = nameof(ForbiddenException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -142,7 +161,7 @@ public sealed class ExceptionMiddleware(
                 NotFoundException => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/not-found",
-                    Title = "Not Found",
+                    Title = nameof(NotFoundException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -156,7 +175,7 @@ public sealed class ExceptionMiddleware(
                 ConcurrencyException => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/concurrency-conflict",
-                    Title = "Concurrency Conflict",
+                    Title = nameof(ConcurrencyException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -170,7 +189,7 @@ public sealed class ExceptionMiddleware(
                 ConflictException => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/conflict",
-                    Title = "Conflict",
+                    Title = nameof(ConflictException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -184,7 +203,7 @@ public sealed class ExceptionMiddleware(
                 BusinessRuleViolationException => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/unprocessable-entity",
-                    Title = "Unprocessable Entity",
+                    Title = nameof(BusinessRuleViolationException),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -198,7 +217,7 @@ public sealed class ExceptionMiddleware(
                 Exception => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/internal-server-error",
-                    Title = "Internal Server Error",
+                    Title = nameof(Exception),
                     Status = status,
                     Detail = details,
                     Instance = path,
@@ -212,7 +231,7 @@ public sealed class ExceptionMiddleware(
                 _ => new ProblemDetails
                 {
                     Type = $"{baseUrl}/errors/unknown-error",
-                    Title = "Unexpected Error",
+                    Title = nameof(Exception),
                     Status = status,
                     Detail = details,
                     Instance = path,

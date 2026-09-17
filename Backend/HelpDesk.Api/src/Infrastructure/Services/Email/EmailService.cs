@@ -7,39 +7,28 @@ using MimeKit.Text;
 
 namespace HelpDesk.src.Infrastructure.Services.Email;
 
-public sealed class EmailService : IEmailService
+public sealed class EmailService(
+    IOptions<SmtpSettings> smtpSettings,
+    IEmailTemplateRenderer templateRenderer,
+    ILogger<EmailService> logger) : IEmailService
 {
-    private readonly SmtpSettings _smtpSettings;
-    private readonly IEmailTemplateRenderer _templateRenderer;
-    private readonly ILogger<EmailService> _logger;
-
-    public EmailService(
-        IOptions<SmtpSettings> smtpOptions,
-        IEmailTemplateRenderer templateRenderer,
-        ILogger<EmailService> logger)
-    {
-        _smtpSettings = smtpOptions.Value;
-        _templateRenderer = templateRenderer;
-        _logger = logger;
-    }
-
     public async Task SendWelcomeEmailAsync(
         Guid userId,
         string userName,
-        string fullName,
         string recipientEmail,
         string tempPassword,
+        string changePasswordLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken)
     {
-        var body = await _templateRenderer.RenderAsync(
-            "WelcomeEmail.html",
-            new Dictionary<string, string>
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.WelcomeEmail,
+            placeholders: new Dictionary<string, string>
             {
                 ["userName"] = userName,
-                ["fullName"] = fullName,
-                ["tempPassword"] = tempPassword
+                ["tempPassword"] = tempPassword,
+                ["changePasswordLink"] = changePasswordLink
             });
 
         await SendEmailAsync(
@@ -57,22 +46,55 @@ public sealed class EmailService : IEmailService
         string userName,
         string recipientEmail,
         string tempPassword,
+        string changePasswordLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken = default)
     {
-        var body = await _templateRenderer.RenderAsync(
-            "SuperadminWelcomeEmail.html",
-            new Dictionary<string, string>
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.SuperadminWelcomeEmail,
+            placeholders: new Dictionary<string, string>
             {
                 ["userName"] = userName,
-                ["tempPassword"] = tempPassword
+                ["tempPassword"] = tempPassword,
+                ["changePasswordLink"] = changePasswordLink
             });
 
         await SendEmailAsync(
             userId: userId,
             recipientEmail: recipientEmail,
             subject: EmailSubject.SuperadminWelcomeEmail,
+            htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
+            cancellationToken: cancellationToken);
+    }
+
+    public async Task SendLoginEmailAsync(
+        Guid userId,
+        string userName,
+        string recipientEmail,
+        string ipAddress,
+        string browser,
+        string resetLink,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken = default)
+    {
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.LoginEmail,
+            placeholders: new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["ipAddress"] = ipAddress,
+                ["browser"] = browser,
+                ["resetLink"] = resetLink
+            });
+
+        await SendEmailAsync(
+            userId: userId,
+            recipientEmail: recipientEmail,
+            subject: EmailSubject.LoginEmail,
             htmlBody: body,
             traceId: traceId,
             correlationId: correlationId,
@@ -88,9 +110,9 @@ public sealed class EmailService : IEmailService
         string correlationId,
         CancellationToken cancellationToken = default)
     {
-        var body = await _templateRenderer.RenderAsync(
-            "ConfirmationEmail.html",
-            new Dictionary<string, string>
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.ConfirmationEmail,
+            placeholders: new Dictionary<string, string>
             {
                 ["userName"] = userName,
                 ["confirmationLink"] = confirmationLink
@@ -115,9 +137,9 @@ public sealed class EmailService : IEmailService
         string correlationId,
         CancellationToken cancellationToken = default)
     {
-        var body = await _templateRenderer.RenderAsync(
-            "PasswordResetCode.html",
-            new Dictionary<string, string>
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.PasswordResetCode,
+            placeholders: new Dictionary<string, string>
             {
                 ["userName"] = userName,
                 ["resetCode"] = resetCode
@@ -142,9 +164,9 @@ public sealed class EmailService : IEmailService
         string correlationId,
         CancellationToken cancellationToken = default)
     {
-        var body = await _templateRenderer.RenderAsync(
-            "PasswordResetLink.html",
-            new Dictionary<string, string>
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.PasswordResetLink,
+            placeholders: new Dictionary<string, string>
             {
                 ["userName"] = userName,
                 ["resetLink"] = resetLink
@@ -167,7 +189,9 @@ public sealed class EmailService : IEmailService
         string correlationId,
         CancellationToken cancellationToken = default)
     {
-        var body = await _templateRenderer.RenderAsync("TestEmail.html");
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.TestEmail,
+            placeholders: []);
 
         await SendEmailAsync(
             userId: userId,
@@ -190,7 +214,9 @@ public sealed class EmailService : IEmailService
     {
         var message = new MimeMessage();
 
-        message.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.SenderEmail));
+        message.From.Add(new MailboxAddress(
+            smtpSettings.Value.SenderName,
+            smtpSettings.Value.SenderEmail));
 
         message.To.Add(MailboxAddress.Parse(recipientEmail));
 
@@ -206,25 +232,25 @@ public sealed class EmailService : IEmailService
         try
         {
             await smtp.ConnectAsync(
-                _smtpSettings.Host,
-                _smtpSettings.Port,
-                _smtpSettings.UseSsl
-                ? SecureSocketOptions.StartTls
-                : SecureSocketOptions.None,
+                smtpSettings.Value.Host,
+                smtpSettings.Value.Port,
+                smtpSettings.Value.UseSsl
+                    ? SecureSocketOptions.StartTls
+                    : SecureSocketOptions.None,
                 cancellationToken);
 
-            if (!string.IsNullOrWhiteSpace(_smtpSettings.Username) &&
-                !string.IsNullOrWhiteSpace(_smtpSettings.Password))
+            if (!string.IsNullOrWhiteSpace(smtpSettings.Value.Username) &&
+                !string.IsNullOrWhiteSpace(smtpSettings.Value.Password))
             {
                 await smtp.AuthenticateAsync(
-                    _smtpSettings.Username,
-                    _smtpSettings.Password,
+                    smtpSettings.Value.Username,
+                    smtpSettings.Value.Password,
                     cancellationToken);
             }
 
             await smtp.SendAsync(message);
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Email sent successfully for user {UserId}. TraceId: {TraceId}, CorrelationId: {CorrelationId}",
                 userId,
                 traceId,
@@ -232,7 +258,7 @@ public sealed class EmailService : IEmailService
         }
         catch (Exception ex)
         {
-            _logger.LogError(
+            logger.LogError(
                 ex,
                 "Failed to send email for user {UserId}. TraceId: {TraceId}, CorrelationId: {CorrelationId}.",
                 userId,

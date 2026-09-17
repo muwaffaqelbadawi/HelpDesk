@@ -52,22 +52,19 @@ public sealed class LoginHandler :
             userId: user.Id,
             cancellationToken: cancellationToken);
 
+        // Successful log
         _logger.LogInformation(
             "User {userId} logged in successfully",
             user.Id);
 
         // Domain event
         await _dispatcher.DispatchAsync(
-            @event: new UserLoggedInEvent(
-                UserId: user.Id,
+            @event: new LoginEvent(
+                User: user,
                 OccurredAt: _dateTimeService.UtcNow),
             cancellationToken: cancellationToken);
 
-
-
-
-        // Add someone login to your account email later
-
+        // Return response
         return new LoginResponse(
             UserAccountData: userAccountData,
             Token: token);

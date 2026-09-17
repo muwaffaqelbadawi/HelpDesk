@@ -1,9 +1,9 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Features.Tickets.Create;
+namespace HelpDesk.src.Infrastructure.SystemAccounts.Superadmin;
 
-public sealed record TicketCreatedEvent(
+public sealed record class SuperadminCreatedEvent(
     ApplicationUser User,
     DateTimeOffset OccurredAt,
-     Guid TicketId) : IDomainEvent;
+    string TempPassword) : IDomainEvent;

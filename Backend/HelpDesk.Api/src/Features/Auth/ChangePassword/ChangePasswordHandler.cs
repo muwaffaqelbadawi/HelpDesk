@@ -41,12 +41,11 @@ public sealed class ChangePasswordHandler :
         ChangePasswordCommand command,
         CancellationToken cancellationToken)
     {
-        //self - service change
         var userId = _userContext.UserId;
 
         // Resolve currentUser with ID
         var user = await _userProvider.GetUserAsync(userId)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
+            ?? throw new AuthenticationRequiredException();
 
         // Change password
         var changePasswordResult = await _userManager.ChangePasswordAsync(
@@ -59,7 +58,7 @@ public sealed class ChangePasswordHandler :
         {
             _logger.LogWarning(
                 "Failed to change password for user: {UserId}. Errors: {Errors}",
-                userId.ToString(),
+                userId,
                 string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)));
 
             throw new PasswordChangeFailedException(
@@ -88,12 +87,22 @@ public sealed class ChangePasswordHandler :
         // Success log
         _logger.LogInformation("User {UserId} changed password and received new tokens", userId);
 
+
+
+
+
+
+
+        // Should be moved to user reader
         var userAccountData = await _dbContext.Users
             .AsNoTracking()
             .Where(u => u.Id == guidUserId)
             .SelectUserAccount()
             .SingleAsync(cancellationToken);
 
+
+
+        // Return response
         return new ChangePasswordResponse(
             UserAccountData: userAccountData,
             Token: token);

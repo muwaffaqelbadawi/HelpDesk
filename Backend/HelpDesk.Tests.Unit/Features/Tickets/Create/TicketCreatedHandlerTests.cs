@@ -1,5 +1,6 @@
 ﻿using HelpDesk.src.Features.Tickets.Create;
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
+using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 using NSubstitute;
 using Xunit;
@@ -30,8 +31,15 @@ public sealed class TicketCreatedHandlerTests
         // occurredAt
         var occurredAt = now;
 
+        // User
+        var user = new ApplicationUser
+        {
+            Id = userId
+        };
+
+        // Domain event
         var @event = new TicketCreatedEvent(
-            UserId: userId,
+            User: user,
             TicketId: ticketId,
             OccurredAt: occurredAt);
 
@@ -46,10 +54,10 @@ public sealed class TicketCreatedHandlerTests
 
         // Verify the WriteAsync was called once.
         await historyWriter.Received(1).WriteAsync(
-            userId: userId,
-            ticketId: ticketId,
-            type: TicketHistoryTypes.Created,
-            occurredAt: occurredAt,
-            cancellationToken: Arg.Any<CancellationToken>());
+            userId,
+            ticketId,
+            TicketHistoryTypes.Created,
+            now,
+            Arg.Any<CancellationToken>());
     }
 }

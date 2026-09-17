@@ -82,7 +82,7 @@ public sealed class RefreshTokenHandler :
         var stringUserId = _userContext.UserId;
 
         var user = await _userProvider.GetUserAsync(stringUserId)
-            ?? throw new AuthorizationFailedException("Unauthorized user.");
+            ?? throw new AuthenticationRequiredException();
 
         // Issue new token
         var token = await _tokenService.IssueAfterRefreshAsync(

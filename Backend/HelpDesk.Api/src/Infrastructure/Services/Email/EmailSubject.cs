@@ -8,4 +8,5 @@ public static class EmailSubject
     public const string ConfirmationEmail = "Confirm your email";
     public const string PasswordResetCode = "Your password reset code";
     public const string PasswordResetLink = "Reset your password";
+    public const string LoginEmail = "New login detected";
 }

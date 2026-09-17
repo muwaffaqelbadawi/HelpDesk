@@ -1,9 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Infrastructure.Logging;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +17,8 @@ public sealed class SuperadminHandler
     private readonly ITemporaryPasswordGenerator _passwordGenerator;
     private readonly IDateTimeService _dateTimeService;
     private readonly ISuperadminReader _superadminReader;
-    private readonly IQueueEmailService _queueEmailService;
-    private readonly IUserContext _userContext;
+    private readonly IUserProvider _userProvider;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<SuperadminHandler> _logger;
 
     public SuperadminHandler(
@@ -30,8 +28,8 @@ public sealed class SuperadminHandler
         ITemporaryPasswordGenerator passwordGenerator,
         IDateTimeService dateTimeService,
         ISuperadminReader superadminReader,
-        IQueueEmailService queueEmailService,
-        IUserContext userContext,
+        IUserProvider userProvider,
+        IDomainEventDispatcher dispatcher,
         ILogger<SuperadminHandler> logger)
     {
         _userManager = userManager;
@@ -40,8 +38,8 @@ public sealed class SuperadminHandler
         _passwordGenerator = passwordGenerator;
         _dateTimeService = dateTimeService;
         _superadminReader = superadminReader;
-        _queueEmailService = queueEmailService;
-        _userContext = userContext;
+        _userProvider = userProvider;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -50,13 +48,13 @@ public sealed class SuperadminHandler
        CancellationToken cancellationToken)
     {
         // Find existing superadmin by normalized name
-        var superAdmin = await _userManager.Users
+        var existingSuperadmin = await _userManager.Users
             .SingleOrDefaultAsync(
                 u => u.NormalizedUserName == "SUPERADMIN",
                 cancellationToken);
 
         // Ensure this is the very first user
-        if (superAdmin is not null)
+        if (existingSuperadmin is not null)
         {
             _logger.LogInformation(
                 "Bootstrap superadmin already exists. Skipping seeding.");
@@ -64,13 +62,14 @@ public sealed class SuperadminHandler
             return new SuperadminResponse(
                 SuperadminData: new SuperadminAccountData
                 {
-                    UserId = superAdmin.Id,
-                    UserName = superAdmin.UserName!,
-                    Email = superAdmin.Email!,
+                    UserId = existingSuperadmin.Id,
+                    UserName = existingSuperadmin.UserName!,
+                    Email = existingSuperadmin.Email!,
                     Roles = ["SuperAdmin"]
                 });
         }
 
+        // now
         var now = _dateTimeService.UtcNow;
 
         // Create superadmin object (in memory)
@@ -126,32 +125,22 @@ public sealed class SuperadminHandler
             cancellationToken: cancellationToken);
 
         // Successful log
-        _logger.SuperadminCreatedLog(
-            message: ApiMessages.SuperadminCreated,
-            userId: superadminAccountData.UserId,
-            userName: superadminAccountData.UserName,
-            email: superadminAccountData.Email,
-            mustChangePassword: superadminAccountData.MustChangePassword,
-            roles: superadminAccountData.Roles);
-
-        var traceId = _userContext.TraceId;
-        var correlationId = _userContext.CorrelationId;
-
-        // In the production environment for Superadmin Prefer controlled
-        // bootstrap/provisioning process SSO
-        await _queueEmailService.SuperadminWelcomeEmail(
-            userId: superadmin.Id,
-            userName: superadmin.UserName,
-            recipientEmail: superadmin.Email,
-            tempPassword: tempPassword,
-            traceId: traceId,
-            correlationId: correlationId,
-            cancellationToken: cancellationToken);
-
-        _logger.LogInformation("Superadmin welcome email for user {user} queued successfully.",
+        _logger.LogInformation("Superadmin {superadmin} was created successfully",
             superadmin.Id);
 
-        // Should be changed to SuperadminData
+        // Retrieve current superadmin from database for domain event
+        var user = await _userProvider.GetUserAsync(superadmin.Id.ToString())
+            ?? throw new AuthenticationRequiredException();
+
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new SuperadminCreatedEvent(
+                User: user,
+                OccurredAt: now,
+                TempPassword: tempPassword),
+            cancellationToken: cancellationToken);
+
+        // Return response
         return new SuperadminResponse(
             SuperadminData: superadminAccountData);
     }

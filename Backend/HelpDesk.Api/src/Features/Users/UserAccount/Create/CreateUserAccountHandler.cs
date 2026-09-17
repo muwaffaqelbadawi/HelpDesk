@@ -21,7 +21,7 @@ public sealed class CreateUserAccountHandler :
     private readonly INumberingService _numberingService;
     private readonly IDateTimeService _dateTimeService;
     private readonly IApplicationOptions _applicationOptions;
-    private readonly IQueueEmailService _queueEmailService;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<CreateUserAccountHandler> _logger;
 
     public CreateUserAccountHandler(
@@ -36,7 +36,7 @@ public sealed class CreateUserAccountHandler :
         INumberingService numberingService,
         IDateTimeService dateTimeService,
         IApplicationOptions applicationOptions,
-        IQueueEmailService queueEmailService,
+        IDomainEventDispatcher dispatcher,
         ILogger<CreateUserAccountHandler> logger)
     {
         _userContext = userContext;
@@ -50,7 +50,7 @@ public sealed class CreateUserAccountHandler :
         _numberingService = numberingService;
         _dateTimeService = dateTimeService;
         _applicationOptions = applicationOptions;
-        _queueEmailService = queueEmailService;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -65,6 +65,8 @@ public sealed class CreateUserAccountHandler :
         var employeeNumber = await _numberingService.GetNextEmployeeNumberAsync(
             cancellationToken);
 
+        var now = _dateTimeService.UtcNow;
+
         // Create a new employee
         var employee = new Employee
         {
@@ -75,7 +77,7 @@ public sealed class CreateUserAccountHandler :
             JobTitle = command.JobTitle,
             StatusId = EmployeeStatusIds.Active,
             CreatedById = currentUserId,
-            CreatedAt = _dateTimeService.UtcNow,
+            CreatedAt = now,
         };
 
         // Validate department
@@ -84,10 +86,7 @@ public sealed class CreateUserAccountHandler :
             throw new ValidationException(
                 errors: new()
                 {
-                    ["departmentId"] =
-                    [
-                        "The selected department is unavailable."
-                    ],
+                    ["department"] = ["The selected department is unavailable."],
                 });
         }
 
@@ -97,10 +96,7 @@ public sealed class CreateUserAccountHandler :
             throw new ValidationException(
                 errors: new()
                 {
-                    ["sectorId"] =
-                    [
-                        "The selected sector is unavailable."
-                    ],
+                    ["sector"] = ["The selected sector is unavailable."],
                 });
         }
 
@@ -110,10 +106,7 @@ public sealed class CreateUserAccountHandler :
             throw new ValidationException(
                 errors: new()
                 {
-                    ["countryId"] =
-                    [
-                        "The selected country is unavailable."
-                    ],
+                    ["country"] = ["The selected country is unavailable."],
                 });
         }
 
@@ -133,7 +126,7 @@ public sealed class CreateUserAccountHandler :
             LastPasswordChangedAt = null,
             MustChangePassword = true,
             CreatedById = currentUserId,
-            CreatedAt = _dateTimeService.UtcNow,
+            CreatedAt = now,
             TimeZone = _applicationOptions.DefaultTimeZone,
             PreferredLanguage = _applicationOptions.DefaultLanguage
         };
@@ -144,10 +137,7 @@ public sealed class CreateUserAccountHandler :
             throw new ValidationException(
                 errors: new()
                 {
-                    ["phoneNumber"] =
-                    [
-                        "The entered number is invalid."
-                    ],
+                    ["phoneNumber"] = ["The entered phone number is invalid."],
                 });
         }
 
@@ -167,27 +157,19 @@ public sealed class CreateUserAccountHandler :
             userId: user.Id,
             cancellationToken: cancellationToken);
 
-        // Success log
-        _logger.LogInformation("User {user} created successfully with temporary password",
+        // Successful log
+        _logger.LogInformation("User {user} created successfully",
             user.Id);
 
-        var traceId = _userContext.TraceId;
-        var correlationId = _userContext.CorrelationId;
-
-        // Send welcome email
-        await _queueEmailService.WelcomeEmail(
-            userId: user.Id,
-            userName: user.UserName,
-            recipientEmail: user.Email,
-            fullName: userAccountData.Employee?.FullEnName ?? "User",
-            tempPassword: tempPassword,
-            traceId: traceId,
-            correlationId: correlationId,
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new UserAccountCreatedEvent(
+                User: user,
+                OccurredAt: now,
+                TempPassword: tempPassword),
             cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Welcome email for user {user} queued successfully.",
-            user.Id);
-
+        // Return response
         return new CreateUserAccountResponse(
             UserAccountData: userAccountData);
     }

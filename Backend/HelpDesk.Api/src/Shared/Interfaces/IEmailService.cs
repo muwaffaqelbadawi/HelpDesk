@@ -5,9 +5,9 @@ public interface IEmailService
     Task SendWelcomeEmailAsync(
         Guid userId,
         string userName,
-        string fullName,
         string recipientEmail,
         string tempPassword,
+        string changePasswordLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken = default);
@@ -17,6 +17,7 @@ public interface IEmailService
         string userName,
         string recipientEmail,
         string tempPassword,
+        string changePasswordLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken = default);
@@ -51,6 +52,18 @@ public interface IEmailService
     Task SendTestEmailAsync(
         Guid userId,
         string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken = default);
+
+
+    Task SendLoginEmailAsync(
+        Guid userId,
+        string userName,
+        string recipientEmail,
+        string ipAddress,
+        string browser,
+        string resetLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken = default);

@@ -32,6 +32,7 @@ public sealed class CreateUserAccountTests
         var dateTimeService = Substitute.For<IDateTimeService>();
         var applicationOptions = Substitute.For<IApplicationOptions>();
         var queueEmailService = Substitute.For<IQueueEmailService>();
+        var dispatcher = Substitute.For<IDomainEventDispatcher>();
         var logger = Substitute.For<ILogger<CreateUserAccountHandler>>();
 
         // SUT (System Under Test)
@@ -48,7 +49,7 @@ public sealed class CreateUserAccountTests
             numberingService,
             dateTimeService,
             applicationOptions,
-            queueEmailService,
+            dispatcher,
             logger);
 
         // Mock user context to return a specific user admin ID
@@ -132,8 +133,6 @@ public sealed class CreateUserAccountTests
                 createdEmployee = callInfo.Arg<Employee>();
                 createdUser = callInfo.Arg<ApplicationUser>();
             });
-
-        //var department = 
 
         // Prepare expected user account data for assertion
         var expectedUserAccountData = new UserAccountData
@@ -221,7 +220,7 @@ public sealed class CreateUserAccountTests
         var numberingService = Substitute.For<INumberingService>();
         var dateTimeService = Substitute.For<IDateTimeService>();
         var applicationOptions = Substitute.For<IApplicationOptions>();
-        var queueEmailService = Substitute.For<IQueueEmailService>();
+        var dispatcher = Substitute.For<IDomainEventDispatcher>();
         var logger = Substitute.For<ILogger<CreateUserAccountHandler>>();
 
         // SUT (System Under Test)
@@ -238,7 +237,7 @@ public sealed class CreateUserAccountTests
             numberingService,
             dateTimeService,
             applicationOptions,
-            queueEmailService,
+            dispatcher,
             logger);
 
         // What you want to test set to false.
@@ -273,7 +272,7 @@ public sealed class CreateUserAccountTests
             .Returns(true);
 
         // Mock PhoneNumber service to return a specific phone number
-        var phoneNumber = "123-4567-89";
+        var phoneNumber = "+966112345678";
 
         phoneNumberRules
             .IsValidPhoneNumber(phoneNumber)
@@ -296,10 +295,10 @@ public sealed class CreateUserAccountTests
             () => handler.HandleAsync(command, CancellationToken.None));
 
         // Assert
-        Assert.Contains("departmentId", ex.Errors.Keys);
+        Assert.Contains("department", ex.Errors.Keys);
         Assert.Contains(
             "The selected department is unavailable.",
-            ex.Errors["departmentId"]);
+            ex.Errors["department"]);
 
         // Assert that AddAsync was not called
         await userRepository.DidNotReceive().AddAsync(
@@ -326,7 +325,7 @@ public sealed class CreateUserAccountTests
         var numberingService = Substitute.For<INumberingService>();
         var dateTimeService = Substitute.For<IDateTimeService>();
         var applicationOptions = Substitute.For<IApplicationOptions>();
-        var queueEmailService = Substitute.For<IQueueEmailService>();
+        var dispatcher = Substitute.For<IDomainEventDispatcher>();
         var logger = Substitute.For<ILogger<CreateUserAccountHandler>>();
 
         // SUT (System Under Test)
@@ -343,7 +342,7 @@ public sealed class CreateUserAccountTests
             numberingService,
             dateTimeService,
             applicationOptions,
-            queueEmailService,
+            dispatcher,
             logger);
 
         // What you want to test set to false.
@@ -378,7 +377,7 @@ public sealed class CreateUserAccountTests
             .Returns(true);
 
         // Mock PhoneNumber service to return a specific phone number
-        var phoneNumber = "123-4567-89";
+        var phoneNumber = "+966112345678";
 
         phoneNumberRules
             .IsValidPhoneNumber(phoneNumber)
@@ -401,11 +400,11 @@ public sealed class CreateUserAccountTests
             () => handler.HandleAsync(command, CancellationToken.None));
 
         // Assert
-        Assert.Contains("sectorId", ex.Errors.Keys);
+        Assert.Contains("sector", ex.Errors.Keys);
 
         Assert.Contains(
             "The selected sector is unavailable.",
-            ex.Errors["sectorId"]);
+            ex.Errors["sector"]);
 
         // Assert that AddAsync was not called
         await userRepository.DidNotReceive().AddAsync(
@@ -431,7 +430,7 @@ public sealed class CreateUserAccountTests
         var numberingService = Substitute.For<INumberingService>();
         var dateTimeService = Substitute.For<IDateTimeService>();
         var applicationOptions = Substitute.For<IApplicationOptions>();
-        var queueEmailService = Substitute.For<IQueueEmailService>();
+        var dispatcher = Substitute.For<IDomainEventDispatcher>();
         var logger = Substitute.For<ILogger<CreateUserAccountHandler>>();
 
         // SUT (System Under Test)
@@ -448,7 +447,7 @@ public sealed class CreateUserAccountTests
             numberingService,
             dateTimeService,
             applicationOptions,
-            queueEmailService,
+            dispatcher,
             logger);
 
         // What you want to test set to false.
@@ -483,7 +482,7 @@ public sealed class CreateUserAccountTests
             .Returns(false);
 
         // Mock PhoneNumber service to return a specific phone number
-        var phoneNumber = "123-4567-89";
+        var phoneNumber = "+966112345678";
 
         phoneNumberRules
             .IsValidPhoneNumber(phoneNumber)
@@ -506,11 +505,11 @@ public sealed class CreateUserAccountTests
             () => handler.HandleAsync(command, CancellationToken.None));
 
         // Assert
-        Assert.Contains("countryId", ex.Errors.Keys);
+        Assert.Contains("country", ex.Errors.Keys);
 
         Assert.Contains(
             "The selected country is unavailable.",
-            ex.Errors["countryId"]);
+            ex.Errors["country"]);
 
         // Assert that AddAsync was not called
         await userRepository.DidNotReceive().AddAsync(
@@ -536,7 +535,7 @@ public sealed class CreateUserAccountTests
         var numberingService = Substitute.For<INumberingService>();
         var dateTimeService = Substitute.For<IDateTimeService>();
         var applicationOptions = Substitute.For<IApplicationOptions>();
-        var queueEmailService = Substitute.For<IQueueEmailService>();
+        var dispatcher = Substitute.For<IDomainEventDispatcher>();
         var logger = Substitute.For<ILogger<CreateUserAccountHandler>>();
 
         // SUT (System Under Test)
@@ -553,7 +552,7 @@ public sealed class CreateUserAccountTests
             numberingService,
             dateTimeService,
             applicationOptions,
-            queueEmailService,
+            dispatcher,
             logger);
 
         // What you want to test set to false.
@@ -588,7 +587,7 @@ public sealed class CreateUserAccountTests
             .Returns(true);
 
         // Mock PhoneNumber service to return a specific phone number
-        var phoneNumber = "123-4567-89";
+        var phoneNumber = "+966112345678";
 
         phoneNumberRules
             .IsValidPhoneNumber(phoneNumber)
@@ -610,10 +609,10 @@ public sealed class CreateUserAccountTests
         var ex = await Assert.ThrowsAsync<ValidationException>(
             () => handler.HandleAsync(command, CancellationToken.None));
 
+        // Assert
         Assert.Contains("phoneNumber", ex.Errors.Keys);
-
         Assert.Contains(
-            "The entered number is invalid.",
+            "The entered phone number is invalid.",
             ex.Errors["phoneNumber"]);
 
         // Assert that AddAsync was not called

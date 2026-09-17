@@ -1,4 +1,5 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +14,10 @@ public sealed class PermissionService(
     public async Task<IReadOnlyCollection<string>> GetUserPermissionsAsync(
         CancellationToken cancellationToken)
     {
-        //self - service change
         var userId = userContext.UserId;
 
-        // Current user
         var user = await userProvider.GetUserAsync(userId)
-            ?? throw new UnauthorizedAccessException("Authenticated user not found.");
+            ?? throw new AuthenticationRequiredException();
 
         // Get user roles
         var roles = await userProvider.GetRoleNamesAsync(user);

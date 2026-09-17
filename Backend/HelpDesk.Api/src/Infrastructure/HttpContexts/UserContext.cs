@@ -1,22 +1,22 @@
 ﻿using System.Diagnostics;
 using System.Security.Claims;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.HttpContexts;
 
-public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
-    : IUserContext
+public sealed class UserContext(IHttpContextAccessor context) : IUserContext
 {
     public string UserId
     {
         get
         {
-            var userId = httpContextAccessor.HttpContext?
+            var userId = context.HttpContext?
                 .User
                 .FindFirstValue(ClaimTypes.NameIdentifier);
 
             return string.IsNullOrWhiteSpace(userId)
-                ? throw new UnauthorizedAccessException("Authenticated user not found.")
+                ? throw new AuthenticationRequiredException()
                 : userId;
         }
     }
@@ -26,7 +26,7 @@ public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
         get
         {
             return !Guid.TryParse(UserId, out var guid)
-                ? throw new UnauthorizedAccessException("Invalid user identifier.")
+                ? throw new AuthenticationRequiredException()
                 : guid;
         }
     }
@@ -34,7 +34,7 @@ public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
     public Guid ToGuidId(string id)
     {
         return !Guid.TryParse(id, out var guid)
-            ? throw new UnauthorizedAccessException("Invalid user identifier.")
+            ? throw new AuthenticationRequiredException()
             : guid;
     }
 
@@ -43,19 +43,19 @@ public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
         get
         {
             var userName =
-                httpContextAccessor.HttpContext?
+                context.HttpContext?
                     .User
                     .Identity?
                     .Name;
 
             return string.IsNullOrWhiteSpace(userName)
-                ? throw new UnauthorizedAccessException("Authenticated user not found.")
+                ? throw new AuthenticationRequiredException()
                 : userName;
         }
     }
 
     public string? UserAgent =>
-        httpContextAccessor.HttpContext?
+        context.HttpContext?
             .Request
             .Headers
             .UserAgent
@@ -71,29 +71,28 @@ public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
         : "Unknown";
 
     public string? IpAddress =>
-       httpContextAccessor.HttpContext?
+       context.HttpContext?
            .Connection
            .RemoteIpAddress?
            .ToString();
 
-    // for distributed tracing
     public string TraceId =>
         Activity.Current?.TraceId.ToString()
         ?? Guid.NewGuid().ToString();
 
     public string CorrelationId =>
-        httpContextAccessor.HttpContext?.TraceIdentifier
+        context.HttpContext?.TraceIdentifier
         ?? Guid.NewGuid().ToString();
 
     public bool IsAuthenticated =>
-        httpContextAccessor.HttpContext?
+        context.HttpContext?
             .User
             .Identity?
             .IsAuthenticated
         ?? false;
 
     public bool HasClaims =>
-        httpContextAccessor
+        context
             .HttpContext?
             .User
             .Claims is null;

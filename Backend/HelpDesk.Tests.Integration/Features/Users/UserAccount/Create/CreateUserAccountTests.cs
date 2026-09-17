@@ -64,7 +64,7 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
             UserName: "johndo",
             Email: "johndo@example.com",
             PhoneNumber: phone,
-            FullEnName: "John Doe",
+            FullEnName: "John Do",
             FullArName: "جون دو",
             JobTitle: "Software engineer",
             DepartmentId: DepartmentsIds.InformationTechnology,
