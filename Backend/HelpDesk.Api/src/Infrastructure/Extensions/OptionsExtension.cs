@@ -15,9 +15,6 @@ public static class OptionsExtension
         // Register AddScoped service as scoped service
         builder.Services.AddScoped<IApiContext, ApiContext>();
 
-        // Register PasswordResetOptions service as singleton service
-        builder.Services.AddSingleton<IPasswordResetOptions, PasswordResetOptions>();
-
         return builder;
     }
 }

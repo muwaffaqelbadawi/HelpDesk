@@ -21,7 +21,8 @@ public sealed class LoginEmailHandler(
         LoginEvent @event,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("LoginEmailHandler: Handling login event for user {UserId}",
+        logger.LogInformation("{handler}: Handling login event for user {UserId}",
+            nameof(LoginEmailHandler),
             @event.User.Id);
 
         // password reset token

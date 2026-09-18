@@ -9,8 +9,6 @@ public static class ScrutorTestsMiddlewareExtension
 
         //var sessionHandler = app.Services.GetService<IDomainEventHandler<LogInEvent>>();
 
-        //Console.WriteLine($"sessionHandler: {sessionHandler}");
-
         return app;
     }
 }
