@@ -24,6 +24,7 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "polyfills": ["zone.js"],
             "assets": [
               {
                 "glob": "**/*",
@@ -67,8 +68,8 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "ssl": true,
-            "sslCert": "../../DevCertificate/localhost+1.pem",
-            "sslKey": "../../DevCertificate/localhost+1-key.pem"
+            "sslCert": "../../DevCertificate/cert.pem",
+            "sslKey": "../../DevCertificate/key.pem"
           },
           "configurations": {
             "production": {
@@ -81,7 +82,20 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "buildTarget": "HelpDesk.Client:build:development",
+            "runner": "karma"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "HelpDesk.Client:build:production"
+            },
+            "development": {
+              "buildTarget": "HelpDesk.Client:build:development"
+            }
+          }
         }
       }
     }

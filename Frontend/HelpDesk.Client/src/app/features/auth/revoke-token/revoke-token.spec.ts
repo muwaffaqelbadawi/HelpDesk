@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RevokeToken } from './revoke-token';
+import { RevokeTokenComponent } from './revoke-token';
 
-describe('RevokeToken', () => {
-  let component: RevokeToken;
-  let fixture: ComponentFixture<RevokeToken>;
+describe('RevokeTokenComponent', () => {
+  let component: RevokeTokenComponent;
+  let fixture: ComponentFixture<RevokeTokenComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RevokeToken]
-    })
-    .compileComponents();
+      imports: [RevokeTokenComponent],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(RevokeToken);
+    fixture = TestBed.createComponent(RevokeTokenComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RefreshPassword } from './refresh-token';
+import { RefreshTokenComponent } from './refresh-token';
 
-describe('RefreshPassword', () => {
-  let component: RefreshPassword;
-  let fixture: ComponentFixture<RefreshPassword>;
+describe('RefreshToken', () => {
+  let component: RefreshTokenComponent;
+  let fixture: ComponentFixture<RefreshTokenComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RefreshPassword],
+      imports: [RefreshTokenComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RefreshPassword);
+    fixture = TestBed.createComponent(RefreshTokenComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
