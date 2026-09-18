@@ -62,5 +62,8 @@
     "@parcel/watcher@2.6.0": true,
     "lmdb@3.4.2": true,
     "msgpackr-extract@3.0.4": true
+  },
+  "overrides": {
+    "hono": "4.13.5"
   }
 }
