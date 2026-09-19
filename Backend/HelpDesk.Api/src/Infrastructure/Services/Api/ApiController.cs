@@ -3,11 +3,11 @@ using HelpDesk.src.Shared.Responses;
 using HelpDesk.src.Shared.Responses.Root;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HelpDesk.src.Presentation.Controllers.Root;
+namespace HelpDesk.src.Infrastructure.Services.Api;
 
 [ApiController]
 [Route("/")]
-public sealed class RootController(IDateTimeService dateTimeService) : ControllerBase
+public sealed class ApiController(IDateTimeService dateTimeService) : ControllerBase
 {
     // Api info
 

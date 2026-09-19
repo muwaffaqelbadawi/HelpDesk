@@ -4,7 +4,7 @@ using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HelpDesk.src.Presentation.Controllers.DataImport;
+namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Core;
 
 [ApiController]
 [Route("import-data")]

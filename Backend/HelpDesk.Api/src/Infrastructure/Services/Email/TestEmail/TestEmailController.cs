@@ -1,9 +1,8 @@
-﻿using HelpDesk.src.Infrastructure.Services.Email.TestEmail;
-using HelpDesk.src.Shared.Interfaces;
+﻿using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HelpDesk.src.Presentation.Controllers.Test;
+namespace HelpDesk.src.Infrastructure.Services.Email.TestEmail;
 
 [ApiController]
 [Route("api/test-email")]
