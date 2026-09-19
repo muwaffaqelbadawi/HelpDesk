@@ -5,6 +5,13 @@ updates:
     directory: "/Backend"
     schedule:
       interval: "weekly"
+      ignore:
+        - dependency-name: "Microsoft.*"
+          versions: [">=10.0.0"]
+        - dependency-name: "Serilog.*"
+          versions: [">=10.0.0"]
+        - dependency-name: "Swashbuckle.*"
+          versions: [">=10.0.0"]
 
   - package-ecosystem: "npm"
     directory: "/Frontend"
