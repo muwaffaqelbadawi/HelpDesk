@@ -1,4 +1,4 @@
-# 🏷️ HelpDesk
+# HelpDesk
 
 [![.NET CI](https://github.com/muwaffaqelbadawi/HelpDesk/actions/workflows/dotnet.yml/badge.svg)](https://github.com/muwaffaqelbadawi/HelpDesk/actions/workflows/dotnet.yml)
 [![Angular CI](https://github.com/muwaffaqelbadawi/HelpDesk/actions/workflows/frontend.yml/badge.svg)](https://github.com/muwaffaqelbadawi/HelpDesk/actions/workflows/frontend.yml)
