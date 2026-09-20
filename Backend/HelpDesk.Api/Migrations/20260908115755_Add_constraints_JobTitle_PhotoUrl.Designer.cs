@@ -840,7 +840,7 @@ namespace HelpDesk.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("MustChangePassword")
+                    b.Property<bool>("MustResetPassword")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);

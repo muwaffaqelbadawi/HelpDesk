@@ -20,7 +20,7 @@ public sealed class ApplicationUser : IdentityUser<Guid>
 
 
     // Flag set user must change their password
-    public bool MustChangePassword { get; set; }
+    public bool MustResetPassword { get; set; }
 
 
     // Login Tracking/Auditing

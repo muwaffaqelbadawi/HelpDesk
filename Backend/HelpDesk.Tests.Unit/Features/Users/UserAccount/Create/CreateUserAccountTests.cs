@@ -139,7 +139,7 @@ public sealed class CreateUserAccountTests
         {
             UserName = command.UserName,
             Email = command.Email,
-            MustChangePassword = true,
+            MustResetPassword = true,
             Employee = new EmployeeData
             {
                 EmployeeNumber = employeeNumber,
@@ -184,7 +184,7 @@ public sealed class CreateUserAccountTests
         Assert.Equal(command.PhoneNumber, createdUser.PhoneNumber);
         Assert.Equal(UserStatusIds.Active, createdUser.StatusId);
         Assert.Null(createdUser.LastPasswordChangedAt);
-        Assert.True(createdUser.MustChangePassword);
+        Assert.True(createdUser.MustResetPassword);
         Assert.Equal(currentUserId, createdUser.CreatedById);
         Assert.Equal(now, createdUser.CreatedAt);
 

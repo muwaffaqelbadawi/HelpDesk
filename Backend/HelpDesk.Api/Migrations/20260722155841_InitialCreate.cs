@@ -315,7 +315,7 @@ namespace HelpDesk.Migrations
                     StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LastPasswordChangedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     LastPasswordChangedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MustChangePassword = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    MustResetPassword = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     LastLoginAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),

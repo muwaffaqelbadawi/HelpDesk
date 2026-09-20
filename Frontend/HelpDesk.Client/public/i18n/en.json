@@ -1,14 +1,29 @@
 {
   "AUTH": {
-    "ChangePassword": {
+    "CHANGE_PASSWORD": {
       "TITLE": "Change password",
       "CURRENT_PASSWORD": "Current password",
       "NEW_PASSWORD": "New password",
-      "CONFIRM_NEW_PASSWORD": "Confirm new password",
+      "TYPE_PASSWORD": "Type password",
+      "SUBMIT": "Submit",
       "PASSWORDS_DO_NOT_MATCH": "Passwords do not match",
-      "SUBMIT": "Change password",
-      "CHANGE_PASSWORD_SUCCESS": "Password changed successfully",
-      "CHANGE_PASSWORD_ERROR": "Failed to change password"
+      "SUCCESS": "Password changed successfully",
+      "ERROR": "Failed to change password",
+      "BACK_TO_LOGIN": "Back to login",
+      "RESET_LINK_SENT": "If this email exists, a reset link will be sent"
+    },
+    "RESET_PASSWORD": {
+      "TITLE": "Reset password",
+      "CURRENT_PASSWORD": "Current password",
+      "NEW_PASSWORD": "New password",
+      "CONFIRM_PASSWORD": "Confirm password",
+      "TYPE_PASSWORD": "Type password",
+      "SUBMIT": "Submit",
+      "PASSWORDS_DO_NOT_MATCH": "Passwords do not match",
+      "SUCCESS": "Password changed successfully",
+      "ERROR": "Failed to change password",
+      "BACK_TO_LOGIN": "Back to login",
+      "RESET_LINK_SENT": "If this email exists, a reset link will be sent"
     },
     "FORGOT_PASSWORD": {
       "TITLE": "Forgot password",
@@ -64,16 +79,6 @@
       "WEAK_PASSWORD": "Password is too weak",
       "SUCCESS": "Account created successfully. Please check your email to verify your account.",
       "ERROR": "An error occurred while creating the account. Please try again later."
-    },
-    "RESET_PASSWORD": {
-      "TITLE": "Reset password",
-      "EMAIL": "Email",
-      "SUBMIT": "Send reset link",
-      "EMAIL_NOT_FOUND": "Email not found",
-      "RESET_LINK_SENT": "If this email exists, a reset link will be sent",
-      "SUCCESS": "Password reset successfully",
-      "ERROR": "Failed to reset password",
-      "BACK_TO_LOGIN": "Back to login"
     },
     "REVOKE_TOKEN": {
       "TITLE": "Revoke token",

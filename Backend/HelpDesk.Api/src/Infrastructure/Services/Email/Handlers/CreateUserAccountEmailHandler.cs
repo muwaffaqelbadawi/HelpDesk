@@ -21,8 +21,8 @@ public sealed class CreateUserAccountEmailHandler(
         UserAccountCreatedEvent @event,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("CreateUserAccountEmailHandler:" +
-            "Handling user account created event for user {UserId}",
+        logger.LogInformation("{handler}: Handling login event for user {UserId}",
+            nameof(CreateUserAccountEmailHandler),
             @event.User.Id);
 
         var userName = @event.User.UserName;
@@ -50,10 +50,12 @@ public sealed class CreateUserAccountEmailHandler(
         var passwordResetToken = await userManager
             .GeneratePasswordResetTokenAsync(@event.User);
 
-        // Build change password link
+        logger.LogInformation("This is what you want {token}", passwordResetToken);
+
+        // Build reset password link
         var baseUrl = corsOptions.Value.Origins.Single();
 
-        var changePasswordLink = ChangePasswordLink.Build(
+        var resetPasswordLink = ResetPasswordLink.Build(
             baseUrl: baseUrl,
             userId: @event.User.Id,
             token: passwordResetToken);
@@ -63,7 +65,7 @@ public sealed class CreateUserAccountEmailHandler(
             userName: userName,
             recipientEmail: email,
             tempPassword: @event.TempPassword,
-            changePasswordLink: changePasswordLink,
+            resetPasswordLink: resetPasswordLink,
             traceId: userContext.TraceId,
             correlationId: userContext.CorrelationId,
             cancellationToken: cancellationToken);

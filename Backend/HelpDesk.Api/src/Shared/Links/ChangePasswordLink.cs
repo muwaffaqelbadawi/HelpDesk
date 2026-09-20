@@ -9,7 +9,7 @@ public static class ChangePasswordLink
     {
         var encodedToken = Uri.EscapeDataString(token);
 
-        return $"{baseUrl.TrimEnd('/')}/change-password" +
+        return $"{baseUrl.TrimEnd('/')}/auth/change-password" +
                $"?userId={userId}&token={encodedToken}";
     }
 }

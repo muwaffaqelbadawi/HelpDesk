@@ -69,8 +69,8 @@ public partial class AppDbContext
             // LastPasswordChangedById (Property)
             entity.Property(e => e.LastPasswordChangedById);
 
-            // MustChangePassword (Property)
-            entity.Property(e => e.MustChangePassword)
+            // MustResetPassword (Property)
+            entity.Property(e => e.MustResetPassword)
                 .HasDefaultValue(true);
 
             // LastLoginAt (Property)

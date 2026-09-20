@@ -17,7 +17,7 @@ public sealed class EmailService(
         string userName,
         string recipientEmail,
         string tempPassword,
-        string changePasswordLink,
+        string resetPasswordLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken)
@@ -28,7 +28,7 @@ public sealed class EmailService(
             {
                 ["userName"] = userName,
                 ["tempPassword"] = tempPassword,
-                ["changePasswordLink"] = changePasswordLink
+                ["resetPasswordLink"] = resetPasswordLink
             });
 
         await SendEmailAsync(
@@ -76,7 +76,7 @@ public sealed class EmailService(
         string recipientEmail,
         string ipAddress,
         string browser,
-        string resetLink,
+        string changePasswordLink,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken = default)
@@ -88,7 +88,7 @@ public sealed class EmailService(
                 ["userName"] = userName,
                 ["ipAddress"] = ipAddress,
                 ["browser"] = browser,
-                ["resetLink"] = resetLink
+                ["changePasswordLink"] = changePasswordLink
             });
 
         await SendEmailAsync(

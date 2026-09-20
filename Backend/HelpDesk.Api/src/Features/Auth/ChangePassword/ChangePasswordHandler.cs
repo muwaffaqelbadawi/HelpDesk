@@ -75,7 +75,7 @@ public sealed class ChangePasswordHandler :
 
         user.LastPasswordChangedAt = _dateTimeService.UtcNow;
         user.LastPasswordChangedById = guidUserId;
-        user.MustChangePassword = false;
+        user.MustResetPassword = false;
 
         await _userManager.UpdateAsync(user);
 

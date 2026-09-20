@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.Links;
 
-public static class PasswordResetLink
+public static class ResetPasswordLink
 {
     public static string Build(
         string baseUrl,
@@ -9,7 +9,7 @@ public static class PasswordResetLink
     {
         var encodedToken = Uri.EscapeDataString(token);
 
-        return $"{baseUrl.TrimEnd('/')}/reset-password" +
+        return $"{baseUrl.TrimEnd('/')}/auth/reset-password" +
                $"?userId={userId}&token={encodedToken}";
     }
 }

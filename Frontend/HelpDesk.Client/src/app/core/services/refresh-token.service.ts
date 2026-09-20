@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, finalize, map, shareReplay } from 'rxjs';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../auth/services/auth.service';
 import { RefreshTokenResponse } from '../../features/auth/refresh-token/refresh-token-response';
 import { ApiResponse } from '../http/models/api-response';
 

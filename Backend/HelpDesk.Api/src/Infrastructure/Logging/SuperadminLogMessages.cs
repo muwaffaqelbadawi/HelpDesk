@@ -5,7 +5,7 @@ public static partial class SuperadminLogMessages
     [LoggerMessage(
     EventId = 1004,
     Level = LogLevel.Information,
-    Message = "Message: {message} UserId: {userId} UserName: {userName} Email: {email} MustChangePassword: {mustChangePassword} Roles: {roles}")]
+    Message = "Message: {message} UserId: {userId} UserName: {userName} Email: {email} MustResetPassword: {mustChangePassword} Roles: {roles}")]
     public static partial void SuperadminCreatedLog(
         this ILogger logger,
         string message,

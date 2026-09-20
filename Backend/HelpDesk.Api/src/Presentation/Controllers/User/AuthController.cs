@@ -4,6 +4,7 @@ using HelpDesk.src.Features.Auth.ForgotPassword.ResetForgottenPassword;
 using HelpDesk.src.Features.Auth.Login;
 using HelpDesk.src.Features.Auth.Logout;
 using HelpDesk.src.Features.Auth.RefreshToken;
+using HelpDesk.src.Features.Auth.ResetPassword.User;
 using HelpDesk.src.Features.Auth.RevokeToken;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.Interfaces;
@@ -171,5 +172,36 @@ public sealed class AuthController(
             message: ApiMessages.RevokedTokens,
             time: dateTimeService,
             data: result));
+    }
+
+
+
+
+
+
+
+
+
+
+    // Reset Password
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword(
+        [FromServices] ICommandHandler<ResetPasswordCommand, ResetPasswordResponse> handler,
+        [FromServices] IDateTimeService dateTimeService,
+        [FromBody] ResetPasswordBody body,
+        CancellationToken cancellationToken)
+    {
+        var command = new ResetPasswordCommand(
+            UserId: body.UserId,
+            ResetToken: body.ResetToken,
+            NewPassword: body.NewPassword);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        return Ok(new ApiResponse<UserAccountData>(
+            message: ApiMessages.PasswordReset,
+            time: dateTimeService,
+            data: result.UserAccountData));
     }
 }

@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.ResetPassword;
+﻿using HelpDesk.src.Features.Auth.ResetPassword.Admin;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using HelpDesk.src.Shared.Responses.Data;
@@ -16,15 +16,15 @@ public sealed class AdminAuthController : ControllerBase
 
     // Reset Password
     [Authorize(Policy = "Permission:Users.Reset-Password")]
-    [HttpPost("users/{userId:guid}/reset-password", Name = "ResetPassword")]
-    public async Task<IActionResult> ResetPassword(
-        [FromServices] ICommandHandler<ResetPasswordCommand, ResetPasswordResponse> handler,
+    [HttpPost("users/{userId:guid}/reset-password")]
+    public async Task<IActionResult> AdminResetPassword(
+        [FromServices] ICommandHandler<AdminResetPasswordCommand, AdminResetPasswordResponse> handler,
         [FromServices] IDateTimeService dateTimeService,
         [FromRoute] Guid userId,
-        [FromBody] ResetPasswordBody body,
+        [FromBody] AdminResetPasswordBody body,
         CancellationToken cancellationToken)
     {
-        var command = new ResetPasswordCommand(userId, body.NewPassword);
+        var command = new AdminResetPasswordCommand(userId, body.NewPassword);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 

@@ -25,7 +25,7 @@ public static class UserQueries
                     .Select(ur => ur.Role.Name ?? string.Empty)
                     .ToList(),
 
-                MustChangePassword = u.MustChangePassword,
+                MustResetPassword = u.MustResetPassword,
                 RowVersion = u.RowVersion,
 
                 Employee = u.Employee != null

@@ -9,7 +9,7 @@ public sealed record UserAccountData
     public string PreferredLanguage { get; set; } = null!;
     public string IpAddress { get; set; } = null!;
     public IReadOnlyCollection<string> Roles { get; init; } = [];
-    public bool MustChangePassword { get; init; }
+    public bool MustResetPassword { get; init; }
     public byte[]? RowVersion { get; init; } = null!;
     public EmployeeData? Employee { get; init; }
 }

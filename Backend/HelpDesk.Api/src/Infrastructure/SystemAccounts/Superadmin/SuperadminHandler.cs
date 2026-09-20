@@ -79,7 +79,7 @@ public sealed class SuperadminHandler
             UserName = command.UserName,
             Email = command.Email,
             StatusId = UserStatusIds.Active,
-            MustChangePassword = true,
+            MustResetPassword = true,
             LastPasswordChangedAt = null,
             CreatedById = null,
             CreatedAt = now,

@@ -71,7 +71,7 @@ public sealed class ResetForgottenPasswordHandler :
 
         user.LastPasswordChangedAt = _dateTimeService.UtcNow;
         user.LastPasswordChangedById = user.Id;
-        user.MustChangePassword = false;
+        user.MustResetPassword = false;
 
         await _userManager.UpdateAsync(user);
 

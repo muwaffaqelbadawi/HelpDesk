@@ -13,7 +13,7 @@ public static class SuperadminQueries
             UserId = u.Id,
             UserName = u.UserName ?? string.Empty,
             Email = u.Email ?? string.Empty,
-            MustChangePassword = u.MustChangePassword,
+            MustResetPassword = u.MustResetPassword,
             Roles = u.UserRoles
                 .Where(ur => ur.UserId == u.Id && ur.RemovedAt == null)
                 .Select(ur => ur.Role.Name ?? string.Empty)

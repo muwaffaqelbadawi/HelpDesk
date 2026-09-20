@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.Responses.Data;
 
-namespace HelpDesk.src.Features.Auth.ResetPassword;
+namespace HelpDesk.src.Features.Auth.ResetPassword.User;
 
 public sealed record ResetPasswordResponse(
     UserAccountData UserAccountData,

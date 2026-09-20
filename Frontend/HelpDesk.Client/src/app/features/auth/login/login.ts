@@ -50,7 +50,6 @@ export class LoginComponent {
       .subscribe({
         next: (response) => {
           this.authState.setSession(response.userAccountData);
-
           this.router.navigate(['/']);
         },
         error: (error) => this.handleLoginError(error),
@@ -91,10 +90,6 @@ export class LoginComponent {
 
   get currentLanguage(): string | null {
     return this.languageService.currentLanguage;
-  }
-
-  toggleLanguage(): void {
-    this.languageService.setLanguage(this.currentLanguage === 'ar' ? 'en' : 'ar');
   }
 
   private handleLoginError(error: unknown): void {

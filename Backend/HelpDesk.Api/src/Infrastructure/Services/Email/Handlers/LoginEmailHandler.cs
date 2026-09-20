@@ -29,10 +29,10 @@ public sealed class LoginEmailHandler(
         var passwordResetToken = await userManager
             .GeneratePasswordResetTokenAsync(@event.User);
 
-        // Build password reset link
+        // Build change password link
         var baseUrl = corsOptions.Value.Origins.Single();
 
-        var resetLink = PasswordResetLink.Build(
+        var changePasswordLink = ChangePasswordLink.Build(
             baseUrl: baseUrl,
             userId: @event.User.Id,
             token: passwordResetToken);
@@ -85,7 +85,7 @@ public sealed class LoginEmailHandler(
             recipientEmail: email,
             ipAddress: ipAddress,
             browser: browser,
-            resetLink: resetLink,
+            changePasswordLink: changePasswordLink,
             traceId: userContext.TraceId,
             correlationId: userContext.CorrelationId,
             cancellationToken: cancellationToken);

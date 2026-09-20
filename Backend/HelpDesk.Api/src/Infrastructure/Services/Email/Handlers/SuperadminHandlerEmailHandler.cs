@@ -24,8 +24,8 @@ public sealed class SuperadminHandlerEmailHandler(
         // In the production environment for Superadmin Prefer controlled
         // bootstrap/provisioning process SSO
 
-        logger.LogInformation("SuperadminHandlerEmailHandler:" +
-            "Handling user account created event for user {UserId}",
+        logger.LogInformation("{handler}: Handling login event for user {UserId}",
+            nameof(SuperadminHandlerEmailHandler),
             @event.User.Id);
 
         var userName = @event.User.UserName;

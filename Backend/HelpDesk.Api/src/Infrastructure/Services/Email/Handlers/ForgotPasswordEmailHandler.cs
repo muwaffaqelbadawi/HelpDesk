@@ -32,7 +32,7 @@ public sealed class ForgotPasswordEmailHandler(
         // Build password reset link
         var baseUrl = corsOptions.Value.Origins.Single();
 
-        var resetLink = PasswordResetLink.Build(
+        var resetLink = ResetPasswordLink.Build(
             baseUrl: baseUrl,
             userId: @event.User.Id,
             token: passwordResetToken);
