@@ -7,7 +7,7 @@ public interface ITicketWriter
     Task WriteAsync(
         Guid userId,
         Guid ticketId,
-        TicketHistoryTypes type,
+        TicketHistoryType type,
         DateTimeOffset occurredAt,
         CancellationToken cancellationToken = default);
 }

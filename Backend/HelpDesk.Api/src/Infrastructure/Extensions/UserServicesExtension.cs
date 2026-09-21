@@ -1,11 +1,12 @@
-﻿using HelpDesk.src.Shared.DomainRules.Users.CreateUserAccount;
+﻿using HelpDesk.src.Shared.DataAccess.Readers;
+using HelpDesk.src.Shared.DataAccess.Writers;
+using HelpDesk.src.Shared.DomainRules.Users.CreateUserAccount;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Repositories;
-using HelpDesk.src.Shared.Responses.Readers;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
-public static class UserExtension
+public static class UserServicesExtension
 {
     public static IServiceCollection AddUserServices(
         this IServiceCollection services)
@@ -27,6 +28,9 @@ public static class UserExtension
 
         // Register PhoneNumberRules as scoped service
         services.AddScoped<IPhoneNumberRules, PhoneNumberRules>();
+
+        // UserWriter
+        services.AddScoped<IUserWriter, UserWriter>();
 
         return services;
     }

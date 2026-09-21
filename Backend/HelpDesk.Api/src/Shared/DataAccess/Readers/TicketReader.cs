@@ -6,7 +6,7 @@ using HelpDesk.src.Shared.Queries;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelpDesk.src.Shared.Responses.Readers;
+namespace HelpDesk.src.Shared.DataAccess.Readers;
 
 public sealed class TicketReader(AppDbContext dbContext)
     : ITicketReader

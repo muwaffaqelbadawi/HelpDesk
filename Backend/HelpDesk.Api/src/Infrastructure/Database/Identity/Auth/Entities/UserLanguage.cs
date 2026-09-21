@@ -2,6 +2,6 @@
 
 public enum UserLanguage
 {
-    English = 0,
-    Arabic = 1
+    English,
+    Arabic
 }

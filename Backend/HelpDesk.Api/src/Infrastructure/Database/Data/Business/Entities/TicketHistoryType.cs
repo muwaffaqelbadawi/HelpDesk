@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 
-public enum TicketHistoryTypes
+public enum TicketHistoryType
 {
     Created,
     Updated,

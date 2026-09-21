@@ -1,7 +1,7 @@
-﻿using HelpDesk.src.Shared.Histories.Writers;
+﻿using HelpDesk.src.Shared.DataAccess.Readers;
+using HelpDesk.src.Shared.DataAccess.Writers;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Repositories;
-using HelpDesk.src.Shared.Responses.Readers;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 

@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.src.Shared.Responses.Root;
+﻿namespace HelpDesk.src.Infrastructure.Services.Api;
 
 public sealed record ApiInfo
 {

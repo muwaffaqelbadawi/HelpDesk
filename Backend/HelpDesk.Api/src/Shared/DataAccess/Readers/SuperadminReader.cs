@@ -4,10 +4,10 @@ using HelpDesk.src.Shared.Projections;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelpDesk.src.Shared.Responses.Readers;
+namespace HelpDesk.src.Shared.DataAccess.Readers;
 
-public sealed class SuperadminReader(
-    AppDbContext dbContext) : ISuperadminReader
+public sealed class SuperadminReader(AppDbContext dbContext)
+    : ISuperadminReader
 {
     public async Task<SuperadminAccountData> GetSuperadminAsync(
         Guid userId,

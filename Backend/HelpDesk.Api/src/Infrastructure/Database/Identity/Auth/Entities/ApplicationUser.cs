@@ -86,6 +86,8 @@ public sealed class ApplicationUser : IdentityUser<Guid>
     public ICollection<Employee> DeletedEmployees { get; set; } = [];
 
 
-    // UserSession
+    // Navigation properties
+
     public ICollection<ApplicationUserSession> Sessions { get; set; } = [];
+    public ICollection<ApplicationUserHistory> Histories { get; set; } = [];
 }

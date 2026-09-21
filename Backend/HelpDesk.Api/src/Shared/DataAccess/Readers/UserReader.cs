@@ -6,9 +6,10 @@ using HelpDesk.src.Shared.Queries;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelpDesk.src.Shared.Responses.Readers;
+namespace HelpDesk.src.Shared.DataAccess.Readers;
 
-public sealed class UserReader(AppDbContext dbContext) : IUserReader
+public sealed class UserReader(AppDbContext dbContext)
+    : IUserReader
 {
     // Pagination logic
     public async Task<PagedResult<UserAccountData>> GetAllAsync(

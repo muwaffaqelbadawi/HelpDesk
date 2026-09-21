@@ -56,7 +56,7 @@ public sealed class TicketCreatedHandlerTests
         await historyWriter.Received(1).WriteAsync(
             userId,
             ticketId,
-            TicketHistoryTypes.Created,
+            TicketHistoryType.Created,
             now,
             Arg.Any<CancellationToken>());
     }

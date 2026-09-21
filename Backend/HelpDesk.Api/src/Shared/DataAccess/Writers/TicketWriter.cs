@@ -2,14 +2,15 @@
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Shared.Histories.Writers;
+namespace HelpDesk.src.Shared.DataAccess.Writers;
 
-public sealed class TicketWriter(AppDbContext dbContext) : ITicketWriter
+public sealed class TicketWriter(AppDbContext dbContext)
+    : ITicketWriter
 {
     public async Task WriteAsync(
         Guid userId,
         Guid ticketId,
-        TicketHistoryTypes type,
+        TicketHistoryType type,
         DateTimeOffset occurredAt,
         CancellationToken cancellationToken = default)
     {
@@ -21,10 +22,10 @@ public sealed class TicketWriter(AppDbContext dbContext) : ITicketWriter
             UserId = userId,
             Description = type switch
             {
-                TicketHistoryTypes.Created => "Ticket created",
-                TicketHistoryTypes.Updated => "Ticket updated",
-                TicketHistoryTypes.Assigned => "Ticket assigned",
-                TicketHistoryTypes.Closed => "Ticket closed",
+                TicketHistoryType.Created => "Ticket created",
+                TicketHistoryType.Updated => "Ticket updated",
+                TicketHistoryType.Assigned => "Ticket assigned",
+                TicketHistoryType.Closed => "Ticket closed",
                 _ => null
             },
             OldValueId = null,

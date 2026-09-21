@@ -15,7 +15,7 @@ public sealed class TicketCreatedHandler(
         return historyWriter.WriteAsync(
             userId: @event.User.Id,
             ticketId: @event.TicketId,
-            type: TicketHistoryTypes.Created,
+            type: TicketHistoryType.Created,
             occurredAt: @event.OccurredAt,
             cancellationToken: cancellationToken);
     }

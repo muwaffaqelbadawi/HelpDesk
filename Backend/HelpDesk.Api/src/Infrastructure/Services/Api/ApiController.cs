@@ -1,6 +1,5 @@
 ﻿using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
-using HelpDesk.src.Shared.Responses.Root;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.src.Infrastructure.Services.Api;

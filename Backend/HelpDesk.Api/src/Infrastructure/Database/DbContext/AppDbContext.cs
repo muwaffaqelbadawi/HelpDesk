@@ -33,8 +33,11 @@ public partial class AppDbContext
     // RefreshTokens
     public DbSet<ApplicationRefreshToken> RefreshTokens { get; set; } = null!;
 
-    // UserSession
+    // Auth.UserSessions
     public DbSet<ApplicationUserSession> UserSessions { get; set; } = null!;
+
+    // Auth.UserHistories
+    public DbSet<ApplicationUserHistory> UserHistories { get; set; } = null!;
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -89,10 +92,7 @@ public partial class AppDbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             // CreatedAt (Property)
-            entity.Property(e => e.CreatedAt)
-                .IsRequired()
-                .HasColumnType("datetimeoffset")
-                .HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.Property(e => e.CreatedAt);
 
             // UpdatedBy (Relation)
             entity.HasOne(e => e.UpdatedBy)
@@ -427,11 +427,11 @@ public partial class AppDbContext
                 !e.User.IsDeleted);
         });
 
-        // Auth.RefreshTokens
+        // Auth.UserSessions
         modelBuilder.Entity<ApplicationUserSession>(entity =>
         {
             // Schema
-            entity.ToTable("UserSession", "Auth");
+            entity.ToTable("UserSessions", "Auth");
 
             // ID
             entity.HasKey(e => e.Id);
@@ -457,6 +457,9 @@ public partial class AppDbContext
             // CreatedAt
             entity.Property(e => e.CreatedAt);
 
+            // DeletedById (Property)
+            entity.Property(e => e.DeletedById);
+
             // DeletedBy (Relation)
             entity.HasOne(e => e.DeletedBy)
                 .WithMany()
@@ -475,6 +478,50 @@ public partial class AppDbContext
 
             // ExpiresAt
             entity.Property(e => e.ExpiresAt);
+
+            // UserSession query filter (IsDeleted)
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // Auth.UserHistories
+        modelBuilder.Entity<ApplicationUserHistory>(entity =>
+        {
+            // Schema
+            entity.ToTable("UserHistories", "Auth");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // UserId (Property)
+            entity.Property(e => e.UserId);
+
+            // Type (Property)
+            entity.Property(e => e.Type);
+
+            // CreatedAt (Property)
+            entity.Property(e => e.OccurredAt);
+
+            // Description (Property)
+            entity.Property(e => e.Description)
+                .HasMaxLength(200);
+
+            // UserHistory (Relation)
+            entity.HasOne(e => e.User)
+                .WithMany(e => e.Histories)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DeletedById (Property)
+            entity.Property(e => e.DeletedById);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany()
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DeletedAt (Property)
+            entity.Property(e => e.DeletedAt);
 
             // UserSession query filter (IsDeleted)
             entity.HasQueryFilter(e => !e.IsDeleted);

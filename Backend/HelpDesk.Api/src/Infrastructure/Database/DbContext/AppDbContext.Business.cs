@@ -297,10 +297,7 @@ public partial class AppDbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             // CreatedAt (Property)
-            entity.Property(e => e.CreatedAt)
-                .IsRequired()
-                .HasColumnType("datetimeoffset")
-                .HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.Property(e => e.CreatedAt);
 
             // UpdatedAt (Property)
             entity.Property(e => e.UpdatedAt);
@@ -468,10 +465,7 @@ public partial class AppDbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             // CreatedAt (Property)
-            entity.Property(e => e.CreatedAt)
-                .IsRequired()
-                .HasColumnType("datetimeoffset")
-                .HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.Property(e => e.CreatedAt);
 
             // AssignedBy (Relation)
             entity.HasOne(e => e.AssignedBy)
@@ -623,8 +617,10 @@ public partial class AppDbContext
             entity.HasKey(e => e.Id);
 
             // Type (Property)
-            entity.Property(e => e.Type)
-                .HasMaxLength(100);
+            entity.Property(e => e.Type);
+
+            // CreatedAt (Property)
+            entity.Property(e => e.OccurredAt);
 
             // Description (Property)
             entity.Property(e => e.Description)
@@ -637,12 +633,6 @@ public partial class AppDbContext
             // NewValueId (Property)
             entity.Property(e => e.NewValueId)
                 .HasMaxLength(200);
-
-            // CreatedAt (Property)
-            entity.Property(e => e.OccurredAt)
-                .IsRequired()
-                .HasColumnType("datetimeoffset")
-                .HasDefaultValueSql("SYSUTCDATETIME()");
 
             entity.HasOne(e => e.Ticket)
                 .WithMany(e => e.Histories)
