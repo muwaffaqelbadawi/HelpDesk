@@ -50,8 +50,6 @@ public sealed class CreateUserAccountEmailHandler(
         var passwordResetToken = await userManager
             .GeneratePasswordResetTokenAsync(@event.User);
 
-        logger.LogInformation("This is what you want {token}", passwordResetToken);
-
         // Build reset password link
         var baseUrl = corsOptions.Value.Origins.Single();
 

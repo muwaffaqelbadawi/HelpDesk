@@ -57,7 +57,7 @@ public sealed class ResetPasswordHandler :
             _logger.LogWarning(
                 "Failed to reset password for user: {ser}." +
                 "Errors: {Errors}.",
-                userId,
+                user.Id,
                 string.Join(", ", result.Errors.Select(e => e.Description)));
 
             // Check for specific error types
@@ -100,7 +100,7 @@ public sealed class ResetPasswordHandler :
         // Successful log
         _logger.LogInformation(
             "User: {user} password was reset successfully.",
-            userId);
+            user.Id);
 
         // Domain event
         await _dispatcher.DispatchAsync(
