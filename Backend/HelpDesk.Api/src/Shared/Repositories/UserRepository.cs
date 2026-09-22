@@ -12,6 +12,11 @@ public sealed class UserRepository(
     ILogger<UserRepository> logger)
         : IUserRepository
 {
+    public async Task AddAsync(ApplicationUser user)
+    {
+        await userManager.UpdateAsync(user);
+    }
+
     public async Task AddAsync(
         ApplicationUser user,
         Employee employee,

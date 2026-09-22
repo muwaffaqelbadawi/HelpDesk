@@ -67,4 +67,13 @@ public interface IEmailService
         string traceId,
         string correlationId,
         CancellationToken cancellationToken = default);
+
+    Task PasswordResetSuccessfullyEmailAsync(
+        Guid userId,
+        string userName,
+        string resetTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken);
 }

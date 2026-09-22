@@ -10,7 +10,8 @@ namespace HelpDesk.src.Infrastructure.Services.Email;
 public sealed class EmailService(
     IOptions<SmtpSettings> smtpSettings,
     IEmailTemplateRenderer templateRenderer,
-    ILogger<EmailService> logger) : IEmailService
+    ILogger<EmailService> logger)
+        : IEmailService
 {
     public async Task SendWelcomeEmailAsync(
         Guid userId,
@@ -138,7 +139,7 @@ public sealed class EmailService(
         CancellationToken cancellationToken = default)
     {
         var body = await templateRenderer.RenderAsync(
-            templateName: TemplateName.PasswordResetCode,
+            templateName: TemplateName.PasswordResetCodeEmail,
             placeholders: new Dictionary<string, string>
             {
                 ["userName"] = userName,
@@ -148,7 +149,7 @@ public sealed class EmailService(
         await SendEmailAsync(
             userId: userId,
             recipientEmail: recipientEmail,
-            subject: EmailSubject.PasswordResetCode,
+            subject: EmailSubject.PasswordResetCodeEmail,
             htmlBody: body,
             traceId: traceId,
             correlationId: correlationId,
@@ -165,7 +166,7 @@ public sealed class EmailService(
         CancellationToken cancellationToken = default)
     {
         var body = await templateRenderer.RenderAsync(
-            templateName: TemplateName.PasswordResetLink,
+            templateName: TemplateName.PasswordResetLinkEmail,
             placeholders: new Dictionary<string, string>
             {
                 ["userName"] = userName,
@@ -175,7 +176,7 @@ public sealed class EmailService(
         await SendEmailAsync(
             userId: userId,
             recipientEmail: recipientEmail,
-            subject: EmailSubject.PasswordResetLink,
+            subject: EmailSubject.PasswordResetLinkEmail,
             htmlBody: body,
             traceId: traceId,
             correlationId: correlationId,
@@ -196,7 +197,34 @@ public sealed class EmailService(
         await SendEmailAsync(
             userId: userId,
             recipientEmail: recipientEmail,
-            subject: EmailSubject.TestEmailService,
+            subject: EmailSubject.TestEmail,
+            htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
+            cancellationToken: cancellationToken);
+    }
+
+    public async Task PasswordResetSuccessfullyEmailAsync(
+        Guid userId,
+        string userName,
+        string resetTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken)
+    {
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.PasswordResetSuccessfullyEmail,
+            placeholders: new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["resetTime"] = resetTime
+            });
+
+        await SendEmailAsync(
+            userId: userId,
+            recipientEmail: recipientEmail,
+            subject: EmailSubject.PasswordResetSuccessfullyEmail,
             htmlBody: body,
             traceId: traceId,
             correlationId: correlationId,

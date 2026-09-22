@@ -7,16 +7,24 @@ namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class CommandPipelineExtension
 {
-    public static WebApplicationBuilder AddCommandPipeline(
+    public static WebApplicationBuilder AddCommandHandlerPipeline(
         this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped(
-            typeof(ICommandBehavior<>),
+            typeof(ICommandHandlerBehavior<>),
             typeof(ValidationBehavior<>));
 
         builder.Services.AddScoped(
-            typeof(ICommandBehavior<,>),
+            typeof(ICommandHandlerBehavior<,>),
             typeof(ValidationBehavior<,>));
+
+        builder.Services.AddScoped(
+            typeof(ICommandHandlerBehavior<>),
+            typeof(PasswordResetBehavior<>));
+
+        builder.Services.AddScoped(
+            typeof(ICommandHandlerBehavior<,>),
+            typeof(PasswordResetBehavior<,>));
 
         builder.Services.AddValidatorsFromAssemblyContaining<ApplicationAssemblyMarker>();
 

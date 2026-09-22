@@ -143,4 +143,30 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
                 cancellationToken: cancellationToken);
         }, cancellationToken);
     }
+
+    public async Task PasswordResetSuccessfullyEmail(
+        Guid userId,
+        string userName,
+        string resetTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken)
+    {
+        await taskQueue.QueueBackgroundWorkItemAsync(async (services, cancellationToken) =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var emailSender = services.GetRequiredService<IEmailService>();
+
+            await emailSender.PasswordResetSuccessfullyEmailAsync(
+                userId: userId,
+                userName: userName,
+                resetTime: resetTime,
+                recipientEmail: recipientEmail,
+                traceId: traceId,
+                correlationId: correlationId,
+                cancellationToken: cancellationToken);
+        }, cancellationToken);
+    }
 }

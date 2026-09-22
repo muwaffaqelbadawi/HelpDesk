@@ -28,7 +28,7 @@ public static class ApplicationServicesExtension
             .AddCorsOptions()
             .AddDataImporters()
             .AddScrutor()
-            .AddCommandPipeline()
+            .AddCommandHandlerPipeline()
             .AddOptions();
 
         return builder;

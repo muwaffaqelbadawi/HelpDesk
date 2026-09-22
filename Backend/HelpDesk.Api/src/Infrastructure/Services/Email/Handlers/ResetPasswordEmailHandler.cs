@@ -5,18 +5,18 @@ using HelpDesk.src.Shared.Interfaces;
 namespace HelpDesk.src.Infrastructure.Services.Email.Handlers;
 
 public sealed class ResetPasswordEmailHandler(
-    //IQueueEmailService queueEmailService,
+    IQueueEmailService queueEmailService,
+    IUserContext userContext,
     ILogger<ResetPasswordEmailHandler> logger)
         : IDomainEventHandler<ResetPasswordEvent>
 {
-    public Task HandleAsync(
+    public async Task HandleAsync(
         ResetPasswordEvent @event,
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("{handler}: Handling login event for user {UserId}",
             nameof(ResetPasswordEmailHandler),
             @event.User.Id);
-
 
         var userName = @event.User.UserName;
         var email = @event.User.Email;
@@ -39,18 +39,16 @@ public sealed class ResetPasswordEmailHandler(
                 });
         }
 
-        // Send login email
-        //await queueEmailService.PasswordResetSuccessfullyEmail(
-        //    userId: @event.User.Id,
-        //    userName: userName,
-        //    recipientEmail: email,
-        //    traceId: userContext.TraceId,
-        //    correlationId: userContext.CorrelationId,
-        //    cancellationToken: cancellationToken);
+        await queueEmailService.PasswordResetSuccessfullyEmail(
+            userId: @event.User.Id,
+            userName: userName,
+            @event.OccurredAt.ToString("dd MMM yyyy, hh:mm tt zzz"),
+            recipientEmail: email,
+            traceId: userContext.TraceId,
+            correlationId: userContext.CorrelationId,
+            cancellationToken: cancellationToken);
 
         logger.LogInformation("Login email for user {user} queued successfully.",
             @event.User.Id);
-
-        throw new NotImplementedException();
     }
 }

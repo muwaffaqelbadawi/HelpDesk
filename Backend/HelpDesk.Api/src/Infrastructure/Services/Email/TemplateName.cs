@@ -8,11 +8,13 @@ public static class TemplateName
     // LoginEmail
     public const string LoginEmail = "LoginEmail.html";
 
-    // PasswordResetCode
-    public const string PasswordResetCode = "PasswordResetCode.html";
+    // PasswordResetCodeEmail
+    public const string PasswordResetCodeEmail = "PasswordResetCodeEmail.html";
 
-    // PasswordResetLink
-    public const string PasswordResetLink = "PasswordResetLink.html";
+    // PasswordResetLinkEmail
+    public const string PasswordResetLinkEmail = "PasswordResetLinkEmail.html";
+
+    public const string PasswordResetSuccessfullyEmail = "PasswordResetSuccessfullyEmail.html";
 
     // SuperadminWelcomeEmail
     public const string SuperadminWelcomeEmail = "SuperadminWelcomeEmail.html";

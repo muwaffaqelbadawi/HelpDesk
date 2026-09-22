@@ -33,6 +33,16 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
         var db = scope.ServiceProvider
             .GetRequiredService<AppDbContext>();
 
+        // Allow superadmin access
+        var superadmin = await db.Users
+            .SingleAsync(
+                x => x.NormalizedUserName == "SUPERADMIN",
+                CancellationToken.None);
+
+        superadmin.MustResetPassword = false;
+
+        await db.SaveChangesAsync(CancellationToken.None);
+
         // Query country ID
         var countryId = await db.Countries
             .Where(x => x.Alpha2Code == "SA")

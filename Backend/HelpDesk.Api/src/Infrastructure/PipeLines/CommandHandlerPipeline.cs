@@ -2,9 +2,9 @@
 
 namespace HelpDesk.src.Infrastructure.PipeLines;
 
-public sealed class CommandPipeline<TCommand>(
+public sealed class CommandHandlerPipeline<TCommand>(
     ICommandHandler<TCommand> handler,
-    IEnumerable<ICommandBehavior<TCommand>> behaviors)
+    IEnumerable<ICommandHandlerBehavior<TCommand>> behaviors)
         : ICommandHandler<TCommand>
 {
     public Task HandleAsync(
@@ -30,9 +30,9 @@ public sealed class CommandPipeline<TCommand>(
     }
 }
 
-public sealed class CommandPipeline<TCommand, TResponse>(
+public sealed class CommandHandlerPipeline<TCommand, TResponse>(
     ICommandHandler<TCommand, TResponse> handler,
-    IEnumerable<ICommandBehavior<TCommand, TResponse>> behaviors)
+    IEnumerable<ICommandHandlerBehavior<TCommand, TResponse>> behaviors)
         : ICommandHandler<TCommand, TResponse>
 {
     public Task<TResponse> HandleAsync(

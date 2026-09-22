@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using DataAnnotationsValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 using FluentValidationException = FluentValidation.ValidationException;
 using HelpDeskValidationException = HelpDesk.src.Shared.Exceptions.ValidationException;
 
@@ -26,8 +25,12 @@ public sealed class ExceptionMiddleware(
             {
                 HelpDeskValidationException => StatusCodes.Status400BadRequest,
                 FluentValidationException => StatusCodes.Status400BadRequest,
-                DataAnnotationsValidationException => StatusCodes.Status400BadRequest,
                 AuthenticationRequiredException => StatusCodes.Status401Unauthorized,
+
+
+                PasswordResetRequiredException => StatusCodes.Status403Forbidden,
+
+
                 AuthenticationFailedException => StatusCodes.Status401Unauthorized,
                 ForbiddenException => StatusCodes.Status403Forbidden,
                 NotFoundException => StatusCodes.Status404NotFound,
@@ -102,10 +105,10 @@ public sealed class ExceptionMiddleware(
                     }
                 },
 
-                DataAnnotationsValidationException => new ProblemDetails
+                PasswordResetRequiredException => new ProblemDetails
                 {
-                    Type = $"{baseUrl}/errors/validation",
-                    Title = nameof(ValidationException),
+                    Type = $"{baseUrl}/errors/forbidden",
+                    Title = nameof(PasswordResetRequiredException),
                     Status = status,
                     Detail = details,
                     Instance = path,

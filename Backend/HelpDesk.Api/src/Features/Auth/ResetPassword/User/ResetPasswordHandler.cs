@@ -10,6 +10,7 @@ public sealed class ResetPasswordHandler :
 {
     private readonly IUserProvider _userProvider;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
     private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
@@ -19,6 +20,7 @@ public sealed class ResetPasswordHandler :
     public ResetPasswordHandler(
         IUserProvider userProvider,
         UserManager<ApplicationUser> userManager,
+        IUserRepository userRepository,
         ITokenService tokenService,
         IUserReader userReader,
         IDateTimeService dateTimeService,
@@ -27,6 +29,7 @@ public sealed class ResetPasswordHandler :
     {
         _userProvider = userProvider;
         _userManager = userManager;
+        _userRepository = userRepository;
         _tokenService = tokenService;
         _userReader = userReader;
         _dateTimeService = dateTimeService;
@@ -80,12 +83,8 @@ public sealed class ResetPasswordHandler :
         user.LastPasswordChangedById = user.Id;
         user.MustResetPassword = false;
 
-
-
-
-        // Move it to repository
-        // Update the user entity in the database
-        await _userManager.UpdateAsync(user);
+        // User repo
+        await _userRepository.AddAsync(user);
 
         // Issue new token
         var token = await _tokenService.IssueAfterResetPasswordAsync(

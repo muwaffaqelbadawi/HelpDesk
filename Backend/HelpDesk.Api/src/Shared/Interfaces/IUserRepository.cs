@@ -5,6 +5,8 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IUserRepository
 {
+    Task AddAsync(ApplicationUser user);
+
     Task AddAsync(
         ApplicationUser user,
         Employee employee,

@@ -1,6 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.HttpContexts;
 using HelpDesk.src.Infrastructure.Services.Jwt;
+using HelpDesk.src.Infrastructure.Services.ResetPassword;
 using HelpDesk.src.Infrastructure.Services.Security;
 using HelpDesk.src.Infrastructure.Services.UserProviders;
 using HelpDesk.src.Shared.IdentityBuilders;
@@ -57,6 +58,12 @@ public static class AuthenticationServicesExtension
 
         // Register the RefreshTokenService as a scoped service
         builder.Services.AddScoped<ITokenService, TokenService>();
+
+        // Register PasswordResetPolicy as scoped service
+        builder.Services.AddScoped<IPasswordResetPolicy, PasswordResetPolicy>();
+
+        // IPasswordResetState as scoped service
+        builder.Services.AddScoped<IPasswordResetState, PasswordResetState>();
 
         return builder;
     }

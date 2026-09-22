@@ -48,4 +48,13 @@ public interface IQueueEmailService
         string traceId,
         string correlationId,
         CancellationToken cancellationToken);
+
+    Task PasswordResetSuccessfullyEmail(
+        Guid userId,
+        string userName,
+        string resetTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken);
 }

@@ -51,11 +51,11 @@ public static class ScrutorExtension
     {
         builder.Services.Decorate(
             typeof(ICommandHandler<>),
-            typeof(CommandPipeline<>));
+            typeof(CommandHandlerPipeline<>));
 
         builder.Services.Decorate(
             typeof(ICommandHandler<,>),
-            typeof(CommandPipeline<,>));
+            typeof(CommandHandlerPipeline<,>));
 
         return builder;
     }

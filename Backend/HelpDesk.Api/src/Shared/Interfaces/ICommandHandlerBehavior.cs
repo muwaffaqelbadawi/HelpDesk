@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.Interfaces;
 
-public interface ICommandBehavior<TCommand>
+public interface ICommandHandlerBehavior<TCommand>
 {
     // Behavior for handlers without response
     Task HandleAsync(
@@ -9,7 +9,7 @@ public interface ICommandBehavior<TCommand>
         CancellationToken cancellationToken);
 }
 
-public interface ICommandBehavior<TCommand, TResponse>
+public interface ICommandHandlerBehavior<TCommand, TResponse>
 {
     // Behavior for handlers with response
     Task<TResponse> HandleAsync(
