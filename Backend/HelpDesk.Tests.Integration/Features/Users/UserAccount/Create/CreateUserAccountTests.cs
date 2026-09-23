@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Users.UserAccount.Create;
+﻿using HelpDesk.src.Features.Users.UserAccount.Admin.Create;
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Sectors;

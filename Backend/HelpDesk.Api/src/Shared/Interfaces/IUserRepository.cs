@@ -12,4 +12,10 @@ public interface IUserRepository
         Employee employee,
         string tempPassword,
         CancellationToken cancellationToken);
+
+    Task DeleteAsync(
+        ApplicationUser user,
+        Guid currentUserId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
 }

@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Projections;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Auth.RefreshToken;
@@ -15,6 +14,8 @@ public sealed class RefreshTokenHandler :
     private readonly AppDbContext _dbContext;
     private readonly IRefreshTokenRevocationService _refreshTokenRevocationService;
     private readonly ITokenService _tokenService;
+    private readonly IUserReader _userReader;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<RefreshTokenHandler> _logger;
 
     public RefreshTokenHandler(
@@ -24,6 +25,8 @@ public sealed class RefreshTokenHandler :
         AppDbContext dbContext,
         IRefreshTokenRevocationService refreshTokenRevocationService,
         ITokenService tokenService,
+        IUserReader userReader,
+        IDomainEventDispatcher dispatcher,
         ILogger<RefreshTokenHandler> logger)
     {
         _dateTimeService = dateTimeService;
@@ -32,6 +35,8 @@ public sealed class RefreshTokenHandler :
         _dbContext = dbContext;
         _refreshTokenRevocationService = refreshTokenRevocationService;
         _tokenService = tokenService;
+        _userReader = userReader;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -90,18 +95,19 @@ public sealed class RefreshTokenHandler :
             existingToken,
             cancellationToken);
 
-        // Get user roles (if found)
-        var roles = await _dbContext.UserRoles
-            .Where(ur => ur.UserId == userId && ur.RemovedAt == null)
-            .Select(ur => ur.Role.Name ?? string.Empty)
-            .ToListAsync(cancellationToken);
+        // Get user
+        var userAccountData = await _userReader.GetByIdAsync(
+            userId: user.Id,
+            cancellationToken: cancellationToken);
 
-        var userAccountData = await _dbContext.Users
-            .AsNoTracking()
-            .Where(u => u.Id == userId)
-            .SelectUserAccount()
-            .SingleAsync(cancellationToken);
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new TokenRefreshedEvent(
+                User: user,
+                OccurredAt: _dateTimeService.UtcNow),
+            cancellationToken: cancellationToken);
 
+        // Return result
         return new RefreshTokenResponse(
             UserAccountData: userAccountData,
             Token: token);

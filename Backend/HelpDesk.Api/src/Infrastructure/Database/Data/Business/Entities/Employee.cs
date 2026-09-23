@@ -22,9 +22,7 @@ public sealed class Employee
     public string Number { get; set; } = null!;
 
 
-    public Guid? StatusId { get; set; }
-    public EmployeeStatus? Status { get; set; }
-
+    // Department
     public Guid? DepartmentId { get; set; }
     public Department? Department { get; set; }
 
@@ -38,14 +36,17 @@ public sealed class Employee
     public string? JobTitle { get; set; }
 
 
+    // Branch
     public Guid? BranchId { get; set; }
     public Branch? Branch { get; set; }
 
 
+    // Sector
     public Guid? SectorId { get; set; }
     public Sector? Sector { get; set; } = null!;
 
 
+    // Company
     public Guid? CompanyId { get; set; }
     public Company? Company { get; set; } = null!;
 
@@ -53,7 +54,6 @@ public sealed class Employee
     // Audit
     public Guid CreatedById { get; set; }
 
-    //[NotMapped]
     public ApplicationUser CreatedBy { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
 

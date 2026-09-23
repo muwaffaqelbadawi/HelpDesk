@@ -1,8 +1,8 @@
-﻿using HelpDesk.src.Features.Users.UserAccount.GetCurrent;
-using HelpDesk.src.Features.Users.UserAccount.UpdateCurrent;
-using HelpDesk.src.Features.Users.UserModules.GetCurrent;
-using HelpDesk.src.Features.Users.UserPermissions.GetCurrent;
-using HelpDesk.src.Features.Users.UserRoles.GetCurrent;
+﻿using HelpDesk.src.Features.Auth.Modules.GetCurrent;
+using HelpDesk.src.Features.Auth.Permissions.GetCurrent;
+using HelpDesk.src.Features.Auth.Roles.GetCurrent;
+using HelpDesk.src.Features.Users.UserAccount.User.GetCurrent;
+using HelpDesk.src.Features.Users.UserAccount.User.UpdateCurrent;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;

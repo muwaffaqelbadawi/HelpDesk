@@ -32,9 +32,6 @@ public partial class AppDbContext
     // Business.Employees
     public DbSet<Employee> Employees { get; set; } = null!;
 
-    // Business.EmployeeStatuses
-    public DbSet<EmployeeStatus> EmployeeStatuses { get; set; } = null!;
-
     // Business.Tickets
     public DbSet<Ticket> Tickets { get; set; } = null!;
 
@@ -290,12 +287,6 @@ public partial class AppDbContext
             entity.HasIndex(e => e.Number)
                 .IsUnique();
 
-            // EmployeeStatus (Relation)
-            entity.HasOne(e => e.Status)
-                .WithMany(e => e.Employees)
-                .HasForeignKey(e => e.StatusId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // CreatedAt (Property)
             entity.Property(e => e.CreatedAt);
 
@@ -376,43 +367,6 @@ public partial class AppDbContext
 
             // Employee Query filter (IsDeleted)
             entity.HasQueryFilter(e => !e.IsDeleted);
-        });
-
-        // Business.EmployeeStatuses
-        modelBuilder.Entity<EmployeeStatus>(entity =>
-        {
-            // Schema
-            entity.ToTable("EmployeeStatuses", "Business");
-
-            // ID (Key)
-            entity.HasKey(e => e.Id);
-
-            // Code (Property)
-            entity.Property(e => e.Code)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            // Code (Index)
-            entity.HasIndex(e => e.Code)
-                .IsUnique();
-
-            // Name (Property)
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            // NormalizedName (Property)
-            entity.Property(e => e.NormalizedName)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            // IsActive (Property)
-            entity.Property(e => e.IsActive)
-                .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
         });
 
         // TicketSequence (BIGINT)

@@ -1,12 +1,12 @@
-﻿using HelpDesk.src.Features.Users.UserAccount.Create;
-using HelpDesk.src.Features.Users.UserAccount.Delete;
-using HelpDesk.src.Features.Users.UserAccount.GetById;
-using HelpDesk.src.Features.Users.UserAccount.Update;
-using HelpDesk.src.Features.Users.UserRoles.Assign;
-using HelpDesk.src.Features.Users.UserRoles.Delete;
-using HelpDesk.src.Features.Users.UserRoles.GetAll;
-using HelpDesk.src.Features.Users.UserRoles.GetById;
-using HelpDesk.src.Features.Users.UserRoles.Update;
+﻿using HelpDesk.src.Features.Auth.Roles.Assign;
+using HelpDesk.src.Features.Auth.Roles.Delete;
+using HelpDesk.src.Features.Auth.Roles.GetAll;
+using HelpDesk.src.Features.Auth.Roles.GetById;
+using HelpDesk.src.Features.Auth.Roles.Update;
+using HelpDesk.src.Features.Users.UserAccount.Admin.Create;
+using HelpDesk.src.Features.Users.UserAccount.Admin.Delete;
+using HelpDesk.src.Features.Users.UserAccount.Admin.GetById;
+using HelpDesk.src.Features.Users.UserAccount.Admin.Update;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Queries;
@@ -24,8 +24,6 @@ public sealed class AdminUserController(IDateTimeService dateTimeService)
     : ControllerBase
 {
     // Admin-level permission
-
-    // Users
 
     // GetAll
     [HttpGet]
@@ -139,10 +137,6 @@ public sealed class AdminUserController(IDateTimeService dateTimeService)
 
         return NoContent();
     }
-
-    // ----------------------------------------------------------------------------------------
-
-    // Roles
 
     // GetAll
     [HttpGet("roles")]

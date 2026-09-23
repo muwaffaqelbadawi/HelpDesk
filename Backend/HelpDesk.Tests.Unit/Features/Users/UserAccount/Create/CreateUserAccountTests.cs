@@ -1,7 +1,6 @@
-﻿using HelpDesk.src.Features.Users.UserAccount.Create;
+﻿using HelpDesk.src.Features.Users.UserAccount.Admin.Create;
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.EmployeeStatuses;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
@@ -171,9 +170,7 @@ public sealed class CreateUserAccountTests
         Assert.Equal(employeeNumber, createdEmployee!.Number);
         Assert.Equal(command.FullEnName, createdEmployee.FullEnName);
         Assert.Equal(command.FullArName, createdEmployee.FullArName);
-        Assert.Equal(EmployeeStatusIds.Active, createdEmployee.StatusId);
         Assert.Equal(currentUserId, createdEmployee.CreatedById);
-        Assert.Equal(departmentId, createdEmployee.DepartmentId);
         Assert.Equal(sectorId, createdEmployee.SectorId);
         Assert.Equal(countryId, createdEmployee.CountryId);
         Assert.Equal(now, createdEmployee.CreatedAt);

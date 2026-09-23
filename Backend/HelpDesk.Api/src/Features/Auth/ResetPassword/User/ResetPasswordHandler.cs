@@ -48,11 +48,42 @@ public sealed class ResetPasswordHandler :
         var user = await _userProvider.GetUserAsync(userId)
             ?? throw new AuthenticationRequiredException();
 
+        var resetToken = command.ResetToken;
+        var newPassword = command.NewPassword;
+        var confirmedPassword = command.ConfirmNewPassword;
+
+        if (string.IsNullOrWhiteSpace(resetToken))
+        {
+            throw new ValidationException(
+                errors: new()
+                {
+                    ["resetToken"] = ["resetToken is invalid or missing."]
+                });
+        }
+
+        if (string.IsNullOrWhiteSpace(newPassword))
+        {
+            throw new ValidationException(
+                errors: new()
+                {
+                    ["newPassword"] = ["newPassword is invalid or missing."]
+                });
+        }
+
+        if (string.IsNullOrWhiteSpace(confirmedPassword))
+        {
+            throw new ValidationException(
+                errors: new()
+                {
+                    ["confirmedPassword"] = ["confirmedPassword is invalid or missing."]
+                });
+        }
+
         // Reset password using the reset token
         var result = await _userManager.ResetPasswordAsync(
             user,
-            command.ResetToken,
-            command.NewPassword);
+            resetToken,
+            newPassword);
 
         // Check if the password reset succeeded
         if (!result.Succeeded)
@@ -91,19 +122,19 @@ public sealed class ResetPasswordHandler :
             user,
             cancellationToken);
 
-        // Get user
-        var userAccountData = await _userReader.GetByIdAsync(
-            userId: user.Id,
-            cancellationToken: cancellationToken);
-
         // Successful log
         _logger.LogInformation(
             "User: {user} password was reset successfully.",
             user.Id);
 
+        // Get user
+        var userAccountData = await _userReader.GetByIdAsync(
+            userId: user.Id,
+            cancellationToken: cancellationToken);
+
         // Domain event
         await _dispatcher.DispatchAsync(
-            @event: new ResetPasswordEvent(
+            @event: new PasswordResetEvent(
                 User: user,
                 OccurredAt: _dateTimeService.UtcNow),
             cancellationToken: cancellationToken);

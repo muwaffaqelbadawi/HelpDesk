@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Branches;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Companies;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.EmployeeStatuses;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Modules;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Permissions;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.RolePermissionModules;
@@ -63,24 +62,10 @@ public static class SeedRegistry
             Scope: nameof(SectorSeederService),
             Version: "v1");
 
-
-
-
     public static readonly SeederIdentity Companies =
         new(
             Key: "Business.Companies",
             Scope: nameof(CompanySeederService),
-            Version: "v1");
-
-
-
-
-
-
-    public static readonly SeederIdentity EmployeeStatuses =
-        new(
-            Key: "Business.EmployeeStatuses",
-            Scope: nameof(EmployeeStatusSeederService),
             Version: "v1");
 
     public static readonly SeederIdentity TicketStatuses =

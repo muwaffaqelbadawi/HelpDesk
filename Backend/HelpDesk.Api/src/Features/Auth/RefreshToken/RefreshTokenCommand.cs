@@ -1,3 +1,6 @@
-﻿namespace HelpDesk.src.Features.Auth.RefreshToken;
+﻿using HelpDesk.src.Shared.Interfaces;
 
-public sealed record RefreshTokenCommand(string RefreshToken);
+namespace HelpDesk.src.Features.Auth.RefreshToken;
+
+public sealed record RefreshTokenCommand(string RefreshToken)
+    : IPasswordResetAllowedCommand;

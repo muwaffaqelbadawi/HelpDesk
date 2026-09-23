@@ -4,8 +4,7 @@ public static class TokenCookie
 {
     public static void SetTokenCookies(
         this HttpResponse response,
-        TokenResult tokenResult,
-        IWebHostEnvironment environment)
+        TokenResult tokenResult)
     {
         // Access token cookie
         response.Cookies.Append(

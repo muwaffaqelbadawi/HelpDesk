@@ -18,10 +18,8 @@ namespace HelpDesk.src.Presentation.Controllers.User;
 [ApiController]
 [Route("api/auth")]
 [Authorize]
-public sealed class AuthController(
-    IWebHostEnvironment environment,
-    IDateTimeService dateTimeService)
-        : ControllerBase
+public sealed class AuthController(IDateTimeService dateTimeService)
+    : ControllerBase
 {
     //self-service actions
     // Require only that the user is authenticated no special permissions.
@@ -41,7 +39,7 @@ public sealed class AuthController(
         var result = await handler.HandleAsync(command, cancellationToken);
 
         // Set a new token cookies
-        Response.SetTokenCookies(result.Token, environment);
+        Response.SetTokenCookies(result.Token);
 
         return Ok(new ApiResponse<LoginResponse>(
             message: ApiMessages.Login,
@@ -75,11 +73,15 @@ public sealed class AuthController(
         CancellationToken cancellationToken)
     {
         // Read from cookie (no body needed)
-        var refreshTokenValue = Request.Cookies["refreshtoken"];
+        var refreshTokenValue = Request.Cookies["refresh_token"];
 
         if (string.IsNullOrEmpty(refreshTokenValue))
         {
-            return Unauthorized(new { Message = "No refresh token provided." });
+            return Unauthorized(
+                new
+                {
+                    Message = "No refresh token provided."
+                });
         }
 
         // Create command from cookie value
@@ -88,7 +90,7 @@ public sealed class AuthController(
         var result = await handler.HandleAsync(command, cancellationToken);
 
         // set new cookies
-        Response.SetTokenCookies(result.Token, environment);
+        Response.SetTokenCookies(result.Token);
 
         return Ok(new ApiResponse<RefreshTokenResponse>(
            message: ApiMessages.TokenRefreshed,
@@ -99,19 +101,20 @@ public sealed class AuthController(
     // Change Password
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword(
-         [FromServices] ICommandHandler<ChangePasswordCommand, ChangePasswordResponse> handler,
-         [FromBody] ChangePasswordBody body,
-         CancellationToken cancellationToken)
+        [FromServices] ICommandHandler<ChangePasswordCommand, ChangePasswordResponse> handler,
+        [FromBody] ChangePasswordBody body,
+        CancellationToken cancellationToken)
     {
         // Create command from cookie value
         var command = new ChangePasswordCommand(
             body.CurrentPassword,
-            body.NewPassword);
+            body.NewPassword,
+            body.ConfirmNewPassword);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
         // Overwrite cookies with fresh tokens (keep session alive)
-        Response.SetTokenCookies(result.Token, environment);
+        Response.SetTokenCookies(result.Token);
 
         return Ok(new ApiResponse<UserAccountData>(
            message: ApiMessages.PasswordChanged,
@@ -131,10 +134,9 @@ public sealed class AuthController(
 
         await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserAccountData>(
+        return Ok(new ApiResponse(
            message: ApiMessages.ForgotPassword,
-           time: dateTimeService,
-           data: null));
+           time: dateTimeService));
     }
 
     [HttpPost("reset-forgotten-password")]
@@ -151,16 +153,15 @@ public sealed class AuthController(
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserAccountData>(
+        return Ok(new ApiResponse<ResetForgottenPasswordResponse>(
            message: ApiMessages.ForgottenPasswordReset,
            time: dateTimeService,
-           data: result.UserAccountData));
+           data: result));
     }
 
     [HttpPost("revoke-token")]
     [AllowAnonymous]
     public async Task<IActionResult> RevokeTokens(
-
     [FromServices] ICommandHandler<RevokeTokenCommand, RevokeTokenResponse> handler,
     CancellationToken cancellationToken)
     {
@@ -174,15 +175,6 @@ public sealed class AuthController(
             data: result));
     }
 
-
-
-
-
-
-
-
-
-
     // Reset Password
     [HttpPost("reset-password")]
     [AllowAnonymous]
@@ -195,13 +187,14 @@ public sealed class AuthController(
         var command = new ResetPasswordCommand(
             UserId: body.UserId,
             ResetToken: body.ResetToken,
-            NewPassword: body.NewPassword);
+            NewPassword: body.NewPassword,
+            ConfirmNewPassword: body.ConfirmNewPassword);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return Ok(new ApiResponse<UserAccountData>(
+        return Ok(new ApiResponse<ResetPasswordResponse>(
             message: ApiMessages.PasswordReset,
             time: dateTimeService,
-            data: result.UserAccountData));
+            data: result));
     }
 }

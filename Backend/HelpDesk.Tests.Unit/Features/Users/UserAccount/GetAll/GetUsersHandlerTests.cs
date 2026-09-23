@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Users.UserAccount.GetAll;
+﻿using HelpDesk.src.Features.Users.UserAccount.Admin.GetAll;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Queries;

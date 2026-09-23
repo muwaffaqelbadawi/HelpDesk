@@ -8,10 +8,10 @@ public sealed class ResetPasswordEmailHandler(
     IQueueEmailService queueEmailService,
     IUserContext userContext,
     ILogger<ResetPasswordEmailHandler> logger)
-        : IDomainEventHandler<ResetPasswordEvent>
+        : IDomainEventHandler<PasswordResetEvent>
 {
     public async Task HandleAsync(
-        ResetPasswordEvent @event,
+        PasswordResetEvent @event,
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("{handler}: Handling login event for user {UserId}",

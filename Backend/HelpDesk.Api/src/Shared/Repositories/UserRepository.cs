@@ -58,4 +58,42 @@ public sealed class UserRepository(
             throw;
         }
     }
+
+    public async Task DeleteAsync(
+        ApplicationUser user,
+        Guid currentUserId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        // Check for EmployeeId
+        if (user.Employee is not null)
+        {
+            // lookup employee
+            var employee = await dbContext.Employees.FindAsync(
+                [user.Employee], cancellationToken);
+
+            // Ensure an employee with ID user.EmployeeId exists
+            if (employee is not null)
+            {
+                // Soft-delete the employee
+                employee.IsDeleted = true;
+                employee.DeletedById = currentUserId;
+                employee.DeletedAt = now;
+            }
+        }
+
+        using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            await userManager.UpdateAsync(user);
+            await dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
 }

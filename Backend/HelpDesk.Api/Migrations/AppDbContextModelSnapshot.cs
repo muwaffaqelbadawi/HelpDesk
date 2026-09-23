@@ -261,9 +261,6 @@ namespace HelpDesk.Migrations
                     b.Property<Guid?>("SectorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("StatusId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -292,53 +289,12 @@ namespace HelpDesk.Migrations
 
                     b.HasIndex("SectorId");
 
-                    b.HasIndex("StatusId");
-
                     b.HasIndex("UpdatedById");
 
                     b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("Employees", "Business");
-                });
-
-            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.EmployeeStatus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("NormalizedName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("EmployeeStatuses", "Business");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Sector", b =>
@@ -1233,11 +1189,6 @@ namespace HelpDesk.Migrations
                         .HasForeignKey("SectorId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.EmployeeStatus", "Status")
-                        .WithMany("Employees")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "UpdatedBy")
                         .WithMany("UpdatedEmployees")
                         .HasForeignKey("UpdatedById")
@@ -1262,8 +1213,6 @@ namespace HelpDesk.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("Sector");
-
-                    b.Navigation("Status");
 
                     b.Navigation("UpdatedBy");
 
@@ -1547,11 +1496,6 @@ namespace HelpDesk.Migrations
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Department", b =>
-                {
-                    b.Navigation("Employees");
-                });
-
-            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.EmployeeStatus", b =>
                 {
                     b.Navigation("Employees");
                 });
