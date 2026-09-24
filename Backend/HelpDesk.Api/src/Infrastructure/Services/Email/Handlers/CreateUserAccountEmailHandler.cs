@@ -1,6 +1,7 @@
 ﻿using HelpDesk.src.Features.Users.UserAccount.Admin.Create;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.Cors;
+using HelpDesk.src.Infrastructure.Services.ResetPassword;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Links;
@@ -14,6 +15,8 @@ public sealed class CreateUserAccountEmailHandler(
     IOptions<CorsOptions> corsOptions,
     IQueueEmailService queueEmailService,
     IUserContext userContext,
+    IDateTimeService dateTimeService,
+    IOptions<ResetPasswordOptions> resetPasswordOptions,
     ILogger<CreateUserAccountEmailHandler> logger)
         : IDomainEventHandler<UserAccountCreatedEvent>
 {
@@ -58,12 +61,19 @@ public sealed class CreateUserAccountEmailHandler(
             userId: @event.User.Id,
             token: passwordResetToken);
 
+        // expired reset password link
+        var linkExpiration =
+            dateTimeService.UtcNow
+            .Add(resetPasswordOptions.Value.ResetTokenLifetime)
+            .ToString("dd MMM yyyy, hh:mm tt zzz");
+
         await queueEmailService.WelcomeEmail(
             userId: @event.User.Id,
             userName: userName,
             recipientEmail: email,
             tempPassword: @event.TempPassword,
             resetPasswordLink: resetPasswordLink,
+            linkExpiration: linkExpiration,
             traceId: userContext.TraceId,
             correlationId: userContext.CorrelationId,
             cancellationToken: cancellationToken);

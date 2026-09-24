@@ -62,6 +62,7 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
         string recipientEmail,
         string tempPassword,
         string resetPasswordLink,
+        string linkExpiration,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken)
@@ -78,6 +79,7 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
                 recipientEmail: recipientEmail,
                 tempPassword: tempPassword,
                 resetPasswordLink: resetPasswordLink,
+                linkExpiration: linkExpiration,
                 traceId: traceId,
                 correlationId: correlationId,
                 cancellationToken: cancellationToken);

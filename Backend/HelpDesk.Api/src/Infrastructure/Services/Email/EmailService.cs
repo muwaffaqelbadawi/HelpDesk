@@ -19,6 +19,7 @@ public sealed class EmailService(
         string recipientEmail,
         string tempPassword,
         string resetPasswordLink,
+        string linkExpiration,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken)
@@ -29,7 +30,8 @@ public sealed class EmailService(
             {
                 ["userName"] = userName,
                 ["tempPassword"] = tempPassword,
-                ["resetPasswordLink"] = resetPasswordLink
+                ["resetPasswordLink"] = resetPasswordLink,
+                ["linkExpiration"] = linkExpiration
             });
 
         await SendEmailAsync(

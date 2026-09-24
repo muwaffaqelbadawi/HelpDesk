@@ -8,6 +8,7 @@ public interface IEmailService
         string recipientEmail,
         string tempPassword,
         string resetPasswordLink,
+        string linkExpiration,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken = default);

@@ -24,6 +24,7 @@ public interface IQueueEmailService
         string recipientEmail,
         string tempPassword,
         string resetPasswordLink,
+        string linkExpiration,
         string traceId,
         string correlationId,
         CancellationToken cancellationToken);
