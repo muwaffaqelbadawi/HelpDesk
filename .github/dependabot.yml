@@ -19,6 +19,18 @@ updates:
     directory: "/Frontend/HelpDesk.Client"
     schedule:
       interval: "weekly"
+
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+        update-types:
+          - "patch"
+          - "minor"
+      ngrx:
+        patterns:
+          - "@ngrx/*"
+
     ignore:
       - dependency-name: "@angular*"
         versions: [">=21.0.0"]
