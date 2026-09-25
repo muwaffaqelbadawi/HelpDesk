@@ -1,12 +1,11 @@
 version: 2
 
 updates:
+  # Backend/.NET
   - package-ecosystem: "nuget"
     directory: "/Backend"
-
     schedule:
       interval: "weekly"
-
     ignore:
       - dependency-name: "Microsoft.*"
         versions: [">=10.0.0"]
@@ -15,7 +14,17 @@ updates:
       - dependency-name: "Swashbuckle.*"
         versions: [">=10.0.0"]
 
+  # Frontend/Angular
   - package-ecosystem: "npm"
     directory: "/Frontend/HelpDesk.Client"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "@angular*"
+        versions: [">=22.0.0"]
+      - dependency-name: "@ngrx*"
+        versions: [">=22.0.0"]
+      - dependency-name: "@types/jasmine"
+        versions: [">=6.0.0"]
+      - dependency-name: "typescript"
+        versions: [">=6.0.0"]
