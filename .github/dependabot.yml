@@ -21,9 +21,9 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "@angular*"
-        versions: [">=22.0.0"]
+        versions: [">=21.0.0"]
       - dependency-name: "@ngrx*"
-        versions: [">=22.0.0"]
+        versions: [">=21.0.0"]
       - dependency-name: "@types/jasmine"
         versions: [">=6.0.0"]
       - dependency-name: "typescript"
