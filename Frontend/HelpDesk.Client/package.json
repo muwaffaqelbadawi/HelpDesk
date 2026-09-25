@@ -42,7 +42,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^20.3.34",
+    "@angular/build": "^21.2.24",
     "@angular/cli": "^20.3.34",
     "@angular/compiler-cli": "^20.3.0",
     "@tailwindcss/postcss": "^4.3.3",
