@@ -11,5 +11,8 @@ public sealed class AssignTicketValidator : AbstractValidator<AssignTicketComman
 
         RuleFor(x => x.TicketId)
             .NotEmpty();
+
+        RuleFor(x => x.TicketRowVersion)
+            .NotEmpty();
     }
 }

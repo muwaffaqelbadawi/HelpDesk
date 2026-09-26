@@ -159,7 +159,7 @@ public sealed class CreateUserAccountHandler :
 
         // Domain event
         await _dispatcher.DispatchAsync(
-            @event: new UserAccountCreatedEvent(
+            @event: new UserAccountUpdatedEvent(
                 User: user,
                 OccurredAt: now,
                 TempPassword: tempPassword),

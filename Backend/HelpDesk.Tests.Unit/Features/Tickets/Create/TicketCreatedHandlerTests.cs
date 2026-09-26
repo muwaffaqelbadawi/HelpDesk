@@ -45,7 +45,7 @@ public sealed class TicketCreatedHandlerTests
 
         // SUT (System Under Test)
         // Real handler instance with mocked dependencies
-        var sut = new TicketCreatedHandler(historyWriter);
+        var sut = new TicketCreatedEventHandler(historyWriter);
 
         // Act
         await sut.HandleAsync(@event, CancellationToken.None);

@@ -1,8 +1,5 @@
-﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace HelpDesk.src.Features.Users.UserAccount.Admin.Delete;
 
@@ -10,7 +7,7 @@ public sealed class DeleteUserAccountHandler :
     ICommandHandler<DeleteUserAccountCommand>
 {
     private readonly IUserContext _userContext;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserProvider _userProvider;
     private readonly IUserRepository _userRepository;
     private readonly IDateTimeService _dateTimeService;
     private readonly IDomainEventDispatcher _dispatcher;
@@ -18,14 +15,14 @@ public sealed class DeleteUserAccountHandler :
 
     public DeleteUserAccountHandler(
         IUserContext userContext,
-        UserManager<ApplicationUser> userManager,
+        IUserProvider userProvider,
         IUserRepository userRepository,
         IDateTimeService dateTimeService,
         IDomainEventDispatcher dispatcher,
         ILogger<DeleteUserAccountHandler> logger)
     {
         _userContext = userContext;
-        _userManager = userManager;
+        _userProvider = userProvider;
         _userRepository = userRepository;
         _dateTimeService = dateTimeService;
         _dispatcher = dispatcher;
@@ -42,17 +39,10 @@ public sealed class DeleteUserAccountHandler :
         // user
         var userId = command.UserId;
 
-        // lookup user
-        var user = await _userManager.FindByIdAsync(userId.ToString())
-            ?? throw new UserNotFoundException(userId);
+        var user = await _userProvider.GetUserAsync(userId.ToString())
+            ?? throw new AuthenticationRequiredException();
 
         var now = _dateTimeService.UtcNow;
-
-        // Soft-delete user
-        user.IsDeleted = true;
-        user.StatusId = UserStatusIds.Deleted;
-        user.DeletedById = currentUserId;
-        user.DeletedAt = now;
 
         // User repo
         await _userRepository.DeleteAsync(
@@ -70,7 +60,7 @@ public sealed class DeleteUserAccountHandler :
         await _dispatcher.DispatchAsync(
             @event: new UserAccountDeletedEvent(
                 User: user,
-                OccurredAt: _dateTimeService.UtcNow),
+                OccurredAt: now),
             cancellationToken: cancellationToken);
     }
 }

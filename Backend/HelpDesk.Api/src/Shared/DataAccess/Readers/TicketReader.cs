@@ -74,6 +74,7 @@ public sealed class TicketReader(AppDbContext dbContext)
             .SingleAsync(cancellationToken);
     }
 
+    // Get Owned Tickets
     public async Task<IReadOnlyCollection<TicketData>> GetOwnedTicketsAsync(
         Guid userId,
         CancellationToken cancellationToken)
@@ -84,5 +85,16 @@ public sealed class TicketReader(AppDbContext dbContext)
             .OrderByDescending(t => t.CreatedAt)
             .SelectTicketData()
             .ToListAsync(cancellationToken);
+    }
+
+    // Get new row version
+    public async Task<byte[]> GetNewRowAsync(
+        Guid ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Tickets
+            .Where(t => t.Id == ticketId)
+            .Select(t => t.RowVersion)
+            .SingleAsync(cancellationToken);
     }
 }

@@ -67,13 +67,13 @@ public sealed class CreateTicketHandler :
 
         // Ticket repo
         await _ticketRepository.AddAsync(
-            ticket,
-            cancellationToken);
+            ticket: ticket,
+            cancellationToken: cancellationToken);
 
         // Ticket reader
         var ticketData = await _ticketReader.GetByIdAsync(
-            ticket.Id,
-            cancellationToken);
+            ticketId: ticket.Id,
+            cancellationToken: cancellationToken);
 
         // Successful log
         _logger.LogInformation("Ticket created successfully: {ticket}" +

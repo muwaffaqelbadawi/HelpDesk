@@ -5,4 +5,5 @@ namespace HelpDesk.src.Features.Tickets.Update;
 
 public sealed record TicketUpdatedEvent(
     ApplicationUser User,
-    DateTimeOffset OccurredAt) : IDomainEvent;
+    DateTimeOffset OccurredAt,
+    Guid TicketId) : IDomainEvent;

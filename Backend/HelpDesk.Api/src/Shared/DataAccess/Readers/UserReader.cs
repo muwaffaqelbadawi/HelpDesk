@@ -80,4 +80,20 @@ public sealed class UserReader(AppDbContext dbContext)
             .SelectUserAccount()
             .SingleAsync(cancellationToken);
     }
+
+    // Get new row version
+    public async Task<UserAccountRowVersionData> GetNewRowAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        // move to user reader
+        return await dbContext.Users
+            .Where(u => u.Id == userId)
+            .Select(u => new UserAccountRowVersionData
+            {
+                UserRowVersion = u.RowVersion,
+                EmployeeRowVersion = u.Employee!.RowVersion
+            })
+            .SingleAsync(cancellationToken);
+    }
 }

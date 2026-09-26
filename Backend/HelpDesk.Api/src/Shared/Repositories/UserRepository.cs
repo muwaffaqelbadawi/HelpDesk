@@ -1,8 +1,10 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.Repositories;
 
@@ -65,6 +67,12 @@ public sealed class UserRepository(
         DateTimeOffset now,
         CancellationToken cancellationToken)
     {
+        // Soft-delete user
+        user.IsDeleted = true;
+        user.StatusId = UserStatusIds.Deleted;
+        user.DeletedById = currentUserId;
+        user.DeletedAt = now;
+
         // Check for EmployeeId
         if (user.Employee is not null)
         {
@@ -82,7 +90,8 @@ public sealed class UserRepository(
             }
         }
 
-        using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        using var transaction = await dbContext
+            .Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
@@ -95,5 +104,60 @@ public sealed class UserRepository(
             await transaction.RollbackAsync(cancellationToken);
             throw;
         }
+    }
+
+    public async Task<int> UpdateAsync(
+        Guid currentUserId,
+        Guid userId,
+        string userName,
+        string email,
+        string fullEnName,
+        string fullArName,
+        DateTimeOffset now,
+        byte[] employeeRowVersion,
+        byte[] userRowVersion,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == userId
+                && u.Employee != null
+                && u.RowVersion == userRowVersion
+                && u.Employee.RowVersion == employeeRowVersion
+                && u.CreatedById == userId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.UserName, userName)
+                .SetProperty(u => u.Email, email)
+                .SetProperty(u => u.Employee!.FullEnName, fullEnName)
+                .SetProperty(u => u.Employee!.FullArName, fullArName)
+                .SetProperty(u => u.UpdatedById, currentUserId)
+                .SetProperty(u => u.UpdatedAt, now),
+            cancellationToken);
+    }
+
+    public async Task<int> UpdateCurrentAsync(
+        Guid userId,
+        string userName,
+        string email,
+        string fullEnName,
+        string fullArName,
+        DateTimeOffset now,
+        byte[] employeeRowVersion,
+        byte[] userRowVersion,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == userId
+                && u.Employee != null
+                && u.RowVersion == userRowVersion
+                && u.Employee.RowVersion == employeeRowVersion
+                && u.CreatedById == userId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.UserName, userName)
+                .SetProperty(u => u.Email, email)
+                .SetProperty(u => u.Employee!.FullEnName, fullEnName)
+                .SetProperty(u => u.Employee!.FullArName, fullArName)
+                .SetProperty(u => u.UpdatedById, userId)
+                .SetProperty(u => u.UpdatedAt, now),
+            cancellationToken);
     }
 }

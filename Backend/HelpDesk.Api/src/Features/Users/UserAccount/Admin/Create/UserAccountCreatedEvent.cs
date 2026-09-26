@@ -3,7 +3,7 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Users.UserAccount.Admin.Create;
 
-public sealed record UserAccountCreatedEvent(
+public sealed record UserAccountUpdatedEvent(
     ApplicationUser User,
     DateTimeOffset OccurredAt,
     string TempPassword) : IDomainEvent;

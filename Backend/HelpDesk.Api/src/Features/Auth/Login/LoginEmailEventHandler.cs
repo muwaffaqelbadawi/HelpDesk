@@ -1,5 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.Login;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.Cors;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
@@ -7,14 +6,14 @@ using HelpDesk.src.Shared.Links;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace HelpDesk.src.Infrastructure.Services.Email.Handlers;
+namespace HelpDesk.src.Features.Auth.Login;
 
-public sealed class LoginEmailHandler(
+public sealed class LoginEmailEventHandler(
     UserManager<ApplicationUser> userManager,
     IOptions<CorsOptions> corsOptions,
     IQueueEmailService queueEmailService,
     IUserContext userContext,
-    ILogger<LoginEmailHandler> logger)
+    ILogger<LoginEmailEventHandler> logger)
         : IDomainEventHandler<LoginEvent>
 {
     public async Task HandleAsync(
@@ -22,7 +21,7 @@ public sealed class LoginEmailHandler(
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("{handler}: Handling login event for user {UserId}",
-            nameof(LoginEmailHandler),
+            nameof(LoginEmailEventHandler),
             @event.User.Id);
 
         // password reset token

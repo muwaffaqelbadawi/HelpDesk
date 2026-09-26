@@ -5,4 +5,5 @@ namespace HelpDesk.src.Features.Tickets.Assign;
 
 public sealed record TicketAssignedEvent(
     ApplicationUser User,
-    DateTimeOffset OccurredAt) : IDomainEvent;
+    DateTimeOffset OccurredAt,
+    Guid TicketId) : IDomainEvent;

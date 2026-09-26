@@ -18,4 +18,27 @@ public interface IUserRepository
         Guid currentUserId,
         DateTimeOffset now,
         CancellationToken cancellationToken);
+
+    Task<int> UpdateAsync(
+        Guid currentUserId,
+        Guid userId,
+        string userName,
+        string email,
+        string fullEnName,
+        string fullArName,
+        DateTimeOffset now,
+        byte[] employeeRowVersion,
+        byte[] userRowVersion,
+        CancellationToken cancellationToken);
+
+    Task<int> UpdateCurrentAsync(
+        Guid userId,
+        string userName,
+        string email,
+        string fullEnName,
+        string fullArName,
+        DateTimeOffset now,
+        byte[] employeeRowVersion,
+        byte[] userRowVersion,
+        CancellationToken cancellationToken);
 }

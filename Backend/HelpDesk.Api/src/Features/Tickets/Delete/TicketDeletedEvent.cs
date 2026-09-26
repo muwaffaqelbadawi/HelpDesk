@@ -5,4 +5,5 @@ namespace HelpDesk.src.Features.Tickets.Delete;
 
 public sealed record TicketDeletedEvent(
     ApplicationUser User,
-    DateTimeOffset OccurredAt) : IDomainEvent;
+    DateTimeOffset OccurredAt,
+    Guid TicketId) : IDomainEvent;

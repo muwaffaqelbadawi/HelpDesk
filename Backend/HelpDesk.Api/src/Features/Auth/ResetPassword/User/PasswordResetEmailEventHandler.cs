@@ -1,13 +1,12 @@
-﻿using HelpDesk.src.Features.Auth.ResetPassword.User;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Infrastructure.Services.Email.Handlers;
+namespace HelpDesk.src.Features.Auth.ResetPassword.User;
 
-public sealed class ResetPasswordEmailHandler(
+public sealed class PasswordResetEmailEventHandler(
     IQueueEmailService queueEmailService,
     IUserContext userContext,
-    ILogger<ResetPasswordEmailHandler> logger)
+    ILogger<PasswordResetEmailEventHandler> logger)
         : IDomainEventHandler<PasswordResetEvent>
 {
     public async Task HandleAsync(
@@ -15,7 +14,7 @@ public sealed class ResetPasswordEmailHandler(
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("{handler}: Handling login event for user {UserId}",
-            nameof(ResetPasswordEmailHandler),
+            nameof(PasswordResetEmailEventHandler),
             @event.User.Id);
 
         var userName = @event.User.UserName;

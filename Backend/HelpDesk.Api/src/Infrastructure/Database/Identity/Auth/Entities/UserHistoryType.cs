@@ -4,6 +4,7 @@ public enum UserHistoryType
 {
     Created,
     Updated,
+    Deleted,
     PasswordChanged,
     PasswordReset,
     LoggedIn,

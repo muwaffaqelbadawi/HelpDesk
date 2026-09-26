@@ -1,8 +1,5 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Users.UserAccount.User.UpdateCurrent;
 
@@ -10,19 +7,28 @@ public sealed class UpdateCurrentUserAccountHandler
     : ICommandHandler<UpdateCurrentUserAccountCommand, UpdateCurrentUserAccountResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly AppDbContext _dbContext;
+    private readonly IUserProvider _userProvider;
+    private readonly IUserRepository _userRepository;
+    private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<UpdateCurrentUserAccountHandler> _logger;
 
     public UpdateCurrentUserAccountHandler(
         IUserContext userContext,
-        AppDbContext dbContext,
+        IUserProvider userProvider,
+        IUserRepository userRepository,
+        IUserReader userReader,
         IDateTimeService dateTimeService,
+        IDomainEventDispatcher dispatcher,
         ILogger<UpdateCurrentUserAccountHandler> logger)
     {
         _userContext = userContext;
-        _dbContext = dbContext;
+        _userProvider = userProvider;
+        _userRepository = userRepository;
+        _userReader = userReader;
         _dateTimeService = dateTimeService;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -31,46 +37,54 @@ public sealed class UpdateCurrentUserAccountHandler
         CancellationToken cancellationToken)
     {
         // Self-service
-
-
         var userId = _userContext.GuidUserId;
 
         var now = _dateTimeService.UtcNow;
 
-        var rows = await _dbContext.Users
-            .Where(u => u.Id == userId
-                && u.Employee != null
-                && u.RowVersion == command.UserRowVersion
-                && u.Employee.RowVersion == command.EmployeeRowVersion
-                && u.CreatedById == userId)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(u => u.UserName, command.UserName)
-                .SetProperty(u => u.Email, command.Email)
-                .SetProperty(u => u.Employee!.FullEnName, command.FullEnName)
-                .SetProperty(u => u.Employee!.FullArName, command.FullArName)
-                .SetProperty(u => u.UpdatedById, userId)
-                .SetProperty(u => u.UpdatedAt, now),
-            cancellationToken);
+        // User repo
+        var rows = await _userRepository.UpdateCurrentAsync(
+            userId: userId,
+            userName: command.UserName,
+            email: command.Email,
+            fullEnName: command.FullEnName,
+            fullArName: command.FullArName,
+            now: now,
+            employeeRowVersion: command.EmployeeRowVersion,
+            userRowVersion: command.UserRowVersion,
+            cancellationToken: cancellationToken);
 
+        // check affected rows
         if (rows == 0)
         {
-            throw new ConcurrencyException($"The user account associated with user {userId} was modified or deleted by another user.");
+            throw new ConcurrencyException(
+                $"The user account associated with user {userId} was modified or deleted by another user.");
         }
 
-        var rowVersions = await _dbContext.Users
-            .Where(u => u.Id == userId)
-            .Select(u => new RowVersionData
-            {
-                UserRowVersion = u.RowVersion,
-                EmployeeRowVersion = u.Employee!.RowVersion
-            })
-            .SingleAsync(cancellationToken);
+        // User reader
+        var newRowVersion = await _userReader.GetNewRowAsync(
+            userId: userId,
+            cancellationToken: cancellationToken);
 
-        var userRowVersion = rowVersions.UserRowVersion;
-        var employeeRowVersion = rowVersions.EmployeeRowVersion;
+        var userRowVersion = newRowVersion.UserRowVersion;
+        var employeeRowVersion = newRowVersion.EmployeeRowVersion;
 
-        _logger.LogInformation("The user account associate with user {userId} was updated successfully", userId);
+        // Successful log
+        _logger.LogInformation(
+            "The user account associate with user {userId} was updated successfully",
+            userId);
 
+        // Retrieve current user for domain event
+        var user = await _userProvider.GetUserAsync(userId.ToString())
+            ?? throw new AuthenticationRequiredException();
+
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new CurrentUserAccountUpdatedEvent(
+                User: user,
+                OccurredAt: now),
+            cancellationToken: cancellationToken);
+
+        // Return response
         return new UpdateCurrentUserAccountResponse(
             UserRowVersion: userRowVersion,
             EmployeeRowVersion: employeeRowVersion!);

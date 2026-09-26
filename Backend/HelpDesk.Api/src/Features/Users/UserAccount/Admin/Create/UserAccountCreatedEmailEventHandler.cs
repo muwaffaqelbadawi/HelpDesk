@@ -1,31 +1,30 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.Cors;
-using HelpDesk.src.Infrastructure.SystemAccounts.Superadmin;
+using HelpDesk.src.Infrastructure.Services.ResetPassword;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Links;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace HelpDesk.src.Infrastructure.Services.Email.Handlers;
+namespace HelpDesk.src.Features.Users.UserAccount.Admin.Create;
 
-public sealed class SuperadminHandlerEmailHandler(
+public sealed class UserAccountCreatedEmailEventHandler(
     UserManager<ApplicationUser> userManager,
     IOptions<CorsOptions> corsOptions,
     IQueueEmailService queueEmailService,
     IUserContext userContext,
-    ILogger<SuperadminHandlerEmailHandler> logger)
-        : IDomainEventHandler<SuperadminCreatedEvent>
+    IDateTimeService dateTimeService,
+    IOptions<ResetPasswordOptions> resetPasswordOptions,
+    ILogger<UserAccountCreatedEmailEventHandler> logger)
+        : IDomainEventHandler<UserAccountUpdatedEvent>
 {
     public async Task HandleAsync(
-        SuperadminCreatedEvent @event,
+        UserAccountUpdatedEvent @event,
         CancellationToken cancellationToken = default)
     {
-        // In the production environment for Superadmin Prefer controlled
-        // bootstrap/provisioning process SSO
-
         logger.LogInformation("{handler}: Handling login event for user {UserId}",
-            nameof(SuperadminHandlerEmailHandler),
+            nameof(UserAccountCreatedEmailEventHandler),
             @event.User.Id);
 
         var userName = @event.User.UserName;
@@ -53,25 +52,32 @@ public sealed class SuperadminHandlerEmailHandler(
         var passwordResetToken = await userManager
             .GeneratePasswordResetTokenAsync(@event.User);
 
-        // Build change password link
+        // Build reset password link
         var baseUrl = corsOptions.Value.Origins.Single();
 
-        var changePasswordLink = ChangePasswordLink.Build(
+        var resetPasswordLink = ResetPasswordLink.Build(
             baseUrl: baseUrl,
             userId: @event.User.Id,
             token: passwordResetToken);
 
-        await queueEmailService.SuperadminWelcomeEmail(
+        // expired reset password link
+        var linkExpiration =
+            dateTimeService.UtcNow
+            .Add(resetPasswordOptions.Value.ResetTokenLifetime)
+            .ToString("dd MMM yyyy, hh:mm tt zzz");
+
+        await queueEmailService.WelcomeEmail(
             userId: @event.User.Id,
             userName: userName,
             recipientEmail: email,
             tempPassword: @event.TempPassword,
-            changePasswordLink: changePasswordLink,
+            resetPasswordLink: resetPasswordLink,
+            linkExpiration: linkExpiration,
             traceId: userContext.TraceId,
             correlationId: userContext.CorrelationId,
             cancellationToken: cancellationToken);
 
-        logger.LogInformation("Superadmin welcome email for user {user} queued successfully.",
+        logger.LogInformation("Welcome email for user {user} queued successfully.",
             @event.User.Id);
     }
 }

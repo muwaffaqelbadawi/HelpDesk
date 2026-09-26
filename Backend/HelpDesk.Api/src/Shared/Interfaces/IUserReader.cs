@@ -22,4 +22,9 @@ public interface IUserReader
     Task<UserAccountData> GetByIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
+
+    // Get new row version
+    Task<UserAccountRowVersionData> GetNewRowAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
 }

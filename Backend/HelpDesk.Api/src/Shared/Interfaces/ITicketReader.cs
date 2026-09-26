@@ -23,7 +23,13 @@ public interface ITicketReader
         Guid ticketId,
         CancellationToken cancellationToken = default);
 
+    // Get Owned Tickets
     Task<IReadOnlyCollection<TicketData>> GetOwnedTicketsAsync(
         Guid userId,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
+
+    // Get new row version
+    Task<byte[]> GetNewRowAsync(
+        Guid ticketId,
+        CancellationToken cancellationToken = default);
 }

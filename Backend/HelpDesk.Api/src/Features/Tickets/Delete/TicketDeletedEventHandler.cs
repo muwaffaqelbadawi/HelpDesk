@@ -1,21 +1,19 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Features.Tickets.Create;
+namespace HelpDesk.src.Features.Tickets.Delete;
 
-public sealed class TicketCreatedHandler(
-    ITicketWriter historyWriter) : IDomainEventHandler<TicketCreatedEvent>
+public sealed class TicketDeletedEventHandler(ITicketWriter historyWriter)
+    : IDomainEventHandler<TicketDeletedEvent>
 {
-    // Domain-event handler (Subscriber)
     public Task HandleAsync(
-        TicketCreatedEvent @event,
+        TicketDeletedEvent @event,
         CancellationToken cancellationToken = default)
     {
-        // React to ticket creation.
         return historyWriter.WriteAsync(
             userId: @event.User.Id,
             ticketId: @event.TicketId,
-            type: TicketHistoryType.Created,
+            type: TicketHistoryType.Deleted,
             occurredAt: @event.OccurredAt,
             cancellationToken: cancellationToken);
     }
