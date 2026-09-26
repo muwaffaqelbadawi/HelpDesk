@@ -17,10 +17,10 @@ public sealed class UserAccountCreatedEmailEventHandler(
     IDateTimeService dateTimeService,
     IOptions<ResetPasswordOptions> resetPasswordOptions,
     ILogger<UserAccountCreatedEmailEventHandler> logger)
-        : IDomainEventHandler<UserAccountUpdatedEvent>
+        : IDomainEventHandler<UserAccountCreatedEvent>
 {
     public async Task HandleAsync(
-        UserAccountUpdatedEvent @event,
+        UserAccountCreatedEvent @event,
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("{handler}: Handling login event for user {UserId}",

@@ -4,10 +4,10 @@ using HelpDesk.src.Shared.Interfaces;
 namespace HelpDesk.src.Features.Users.UserAccount.Admin.Create;
 
 public sealed class UserAccountCreatedEventHandler(IUserWriter historyWriter)
-    : IDomainEventHandler<UserAccountUpdatedEvent>
+    : IDomainEventHandler<UserAccountCreatedEvent>
 {
     public Task HandleAsync(
-        UserAccountUpdatedEvent @event,
+        UserAccountCreatedEvent @event,
         CancellationToken cancellationToken = default)
     {
         return historyWriter.WriteAsync(
