@@ -8,6 +8,10 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![xUnit](https://img.shields.io/badge/xUnit-512BD4?logo=xunit&logoColor=white)
 
-## 📖 Overview
+## Overview
 
 HelpDesk is an enterprise-oriented ticket management system designed to manage support requests throughout their lifecycle, from creation and assignment to resolution and history tracking.
+
+## License
+
+This project is licensed under the MIT License. See the [MIT License](./LICENSE) file for details.
