@@ -71,4 +71,8 @@ public sealed class Employee
 
     // Concurrency
     public byte[] RowVersion { get; set; } = null!;
+
+
+    // Availability
+    public EmployeeAvailability? Availability { get; set; }
 }

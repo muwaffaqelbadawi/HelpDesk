@@ -32,6 +32,9 @@ public partial class AppDbContext
     // Business.Employees
     public DbSet<Employee> Employees { get; set; } = null!;
 
+    // Business.EmployeeAvailabilities
+    public DbSet<EmployeeAvailability> EmployeeAvailabilities { get; set; } = null!;
+
     // Business.Tickets
     public DbSet<Ticket> Tickets { get; set; } = null!;
 
@@ -358,6 +361,13 @@ public partial class AppDbContext
             entity.Property(e => e.JobTitle)
                 .HasMaxLength(200);
 
+            // Employee (Relation)
+            entity.HasOne(e => e.Availability)
+                .WithOne(a => a.Employee)
+                .HasForeignKey<EmployeeAvailability>(a => a.EmployeeId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
             // RowVersion (Property)
             entity.Property(e => e.RowVersion)
                 .IsRowVersion();
@@ -369,12 +379,46 @@ public partial class AppDbContext
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
 
+        // Business.EmployeeAvailabilities
+        modelBuilder.Entity<EmployeeAvailability>(entity =>
+        {
+            // Schema
+            entity.ToTable("EmployeeAvailabilities", "Business");
+
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // EmployeeId (Property)
+            entity.Property(e => e.EmployeeId);
+
+            // Reason (Property)
+            entity.Property(e => e.Reason);
+
+            // StartsAt (Property)
+            entity.Property(e => e.StartsAt);
+
+            // EndsAt (Property)
+            entity.Property(e => e.EndsAt);
+
+            // Message (Property)
+            entity.Property(e => e.Message)
+                .HasMaxLength(1000);
+
+            // IsDeleted (Property)
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // EmployeeAvailability Query filter (IsDeleted)
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
         // TicketSequence (BIGINT)
         modelBuilder.HasSequence<long>(
-                BusinessSchema.TicketNumber,
-                BusinessSchema.Name)
-           .StartsAt(Numbering.Start)
-           .IncrementsBy(Numbering.Increment);
+            BusinessSchema.TicketNumber,
+            BusinessSchema.Name)
+       .StartsAt(Numbering.Start)
+       .IncrementsBy(Numbering.Increment);
 
         // Business.Tickets
         modelBuilder.Entity<Ticket>(entity =>
