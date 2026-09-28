@@ -13,8 +13,7 @@ namespace HelpDesk.src.Presentation.Controllers.User;
 [ApiController]
 [Route("api/users")]
 [Authorize]
-public sealed class UserController(IDateTimeService dateTimeService)
-    : ControllerBase
+public sealed class UserController(IDateTimeService dateTimeService) : ControllerBase
 {
     // Self-Service
 

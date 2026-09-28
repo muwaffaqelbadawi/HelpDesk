@@ -18,19 +18,15 @@ namespace HelpDesk.src.Presentation.Controllers.User;
 [ApiController]
 [Route("api/auth")]
 [Authorize]
-public sealed class AuthController(IDateTimeService dateTimeService)
-    : ControllerBase
+public sealed class AuthController(IDateTimeService dateTimeService) : ControllerBase
 {
-    //self-service actions
-    // Require only that the user is authenticated no special permissions.
-
     // Login
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login(
-    [FromServices] ICommandHandler<LoginCommand, LoginResponse> handler,
-    [FromBody] LoginBody body,
-    CancellationToken cancellationToken)
+        [FromServices] ICommandHandler<LoginCommand, LoginResponse> handler,
+        [FromBody] LoginBody body,
+        CancellationToken cancellationToken)
     {
         var command = new LoginCommand(
             body.Identity,
@@ -78,10 +74,10 @@ public sealed class AuthController(IDateTimeService dateTimeService)
         if (string.IsNullOrEmpty(refreshTokenValue))
         {
             return Unauthorized(
-                new
-                {
-                    Message = "No refresh token provided."
-                });
+            new
+            {
+                Message = "No refresh token provided."
+            });
         }
 
         // Create command from cookie value
@@ -142,9 +138,9 @@ public sealed class AuthController(IDateTimeService dateTimeService)
     [HttpPost("reset-forgotten-password")]
     [AllowAnonymous]
     public async Task<IActionResult> ResetForgottenPassword(
-    [FromServices] ICommandHandler<ResetForgottenPasswordCommand, ResetForgottenPasswordResponse> handler,
-    [FromBody] ResetForgottenPasswordBody body,
-    CancellationToken cancellationToken)
+        [FromServices] ICommandHandler<ResetForgottenPasswordCommand, ResetForgottenPasswordResponse> handler,
+        [FromBody] ResetForgottenPasswordBody body,
+        CancellationToken cancellationToken)
     {
         var command = new ResetForgottenPasswordCommand(
             body.UserId,
@@ -162,8 +158,8 @@ public sealed class AuthController(IDateTimeService dateTimeService)
     [HttpPost("revoke-token")]
     [AllowAnonymous]
     public async Task<IActionResult> RevokeTokens(
-    [FromServices] ICommandHandler<RevokeTokenCommand, RevokeTokenResponse> handler,
-    CancellationToken cancellationToken)
+        [FromServices] ICommandHandler<RevokeTokenCommand, RevokeTokenResponse> handler,
+        CancellationToken cancellationToken)
     {
         var command = new RevokeTokenCommand();
 
