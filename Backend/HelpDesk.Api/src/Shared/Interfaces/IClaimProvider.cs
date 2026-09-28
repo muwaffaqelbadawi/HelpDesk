@@ -4,7 +4,5 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IClaimProvider
 {
-    Task<IDictionary<string, object>> GetClaimsAsync(
-        ApplicationUser user,
-        CancellationToken cancellationToken = default);
+    IDictionary<string, object> GetClaims(ApplicationUser user);
 }

@@ -23,14 +23,10 @@ public sealed class TokenIssuer : ITokenIssuer
         _dateTimeService = dateTimeService;
     }
 
-    public async Task<TokenResult> IssueAsync(
-        ApplicationUser user,
-        CancellationToken cancellationToken = default)
+    public TokenResult Issue(ApplicationUser user)
     {
         // Generate access token
-        var accessToken = await _jwtProvider.GenerateAccessToken(
-            user,
-            cancellationToken);
+        var accessToken = _jwtProvider.GenerateAccessToken(user);
 
         // Generate refresh token
         var refreshToken = _refreshTokenProvider.GenerateRefreshToken();

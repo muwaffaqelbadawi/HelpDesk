@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 
 namespace HelpDesk.src.Shared.Interfaces;
@@ -8,7 +8,7 @@ public interface IUserReader
 {
     // Pagination logic
     Task<PagedResult<UserAccountData>> GetAllAsync(
-        GetUsersQuery query,
+        GetUsersParameters query,
         CancellationToken cancellationToken = default);
 
     // Search logic

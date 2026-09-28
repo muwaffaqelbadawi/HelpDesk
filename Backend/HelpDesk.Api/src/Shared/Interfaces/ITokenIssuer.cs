@@ -5,7 +5,5 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface ITokenIssuer
 {
-    Task<TokenResult> IssueAsync(
-        ApplicationUser user,
-        CancellationToken cancellationToken = default);
+    TokenResult Issue(ApplicationUser user);
 }

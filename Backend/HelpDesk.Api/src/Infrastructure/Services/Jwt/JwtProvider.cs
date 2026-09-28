@@ -7,51 +7,36 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HelpDesk.src.Infrastructure.Services.Jwt;
 
-public sealed class JwtProvider : IJwtProvider
+public sealed class JwtProvider(
+    IOptions<JwtOptions> jwtOptions,
+    IDateTimeService dateTimeService,
+    IClaimProvider claimsProvider) : IJwtProvider
 {
-    private readonly JwtOptions _jwtOptions;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly IClaimProvider _claimsProvider;
-
-    public JwtProvider(
-        IOptions<JwtOptions> jwtOptions,
-        IDateTimeService dateTimeService,
-        IClaimProvider claimsProvider)
+    public string GenerateAccessToken(ApplicationUser user)
     {
-        _jwtOptions = jwtOptions.Value;
-        _dateTimeService = dateTimeService;
-        _claimsProvider = claimsProvider;
-    }
-
-    public async Task<string> GenerateAccessToken(
-        ApplicationUser user,
-        CancellationToken cancellationToken = default)
-    {
-        var key = Encoding.UTF8.GetBytes(_jwtOptions.Key);
+        var key = Encoding.UTF8.GetBytes(jwtOptions.Value.Key);
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(key),
             SecurityAlgorithms.HmacSha256Signature);
 
-        // Payload (sub, name, unique_name, Jti, Iat, roles, email, employee_number)
-        var claims = await _claimsProvider.GetClaimsAsync(
-            user,
-            cancellationToken);
+        var claims = claimsProvider.GetClaims(user);
 
-        // now
-        var now = _dateTimeService.UtcNowDateTime;
-        var accessTokenExpiresAt = now.Add(_jwtOptions.AccessTokenLifetime);
+        var now = dateTimeService.UtcNowDateTime;
+
+        var accessTokenExpiresAt = now.Add(jwtOptions.Value.AccessTokenLifetime);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Issuer = _jwtOptions.Issuer,
-            Audience = _jwtOptions.Audience,
+            Issuer = jwtOptions.Value.Issuer,
+            Audience = jwtOptions.Value.Audience,
             Claims = claims,
             Expires = accessTokenExpiresAt,
             SigningCredentials = signingCredentials
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
+
         var securityToken = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(securityToken);

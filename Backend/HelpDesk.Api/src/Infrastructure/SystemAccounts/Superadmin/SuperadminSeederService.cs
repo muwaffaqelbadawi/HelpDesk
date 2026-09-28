@@ -14,7 +14,7 @@ public sealed class SuperadminSeederService(
     {
         var command = new SuperadminCommand(
             UserName: "superadmin",
-            Email: "superadmin@test.com",
+            Email: "superadmin@helpdesk.com",
             RoleId: RoleIds.SuperAdmin);
 
         await handler.HandleAsync(command, cancellationToken);

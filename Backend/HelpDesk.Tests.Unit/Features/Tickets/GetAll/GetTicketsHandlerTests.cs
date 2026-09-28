@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Features.Tickets.GetAll;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using NSubstitute;
 using Xunit;
@@ -23,7 +23,7 @@ public sealed class GetTicketsHandlerTests
         var handler = new GetTicketsHandler(ticketReader);
 
         // Query parameters
-        var query = new GetTicketsQuery();
+        var query = new GetTicketsParameters();
 
         // Prepare expected ticket data for assertion
         var expectedTicketData = new PagedResult<TicketData>(

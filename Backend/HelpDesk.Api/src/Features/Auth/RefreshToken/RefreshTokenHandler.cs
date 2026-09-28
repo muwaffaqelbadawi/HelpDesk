@@ -75,8 +75,10 @@ public sealed class RefreshTokenHandler :
             throw new AuthenticationFailedException("Invalid refresh token.");
         }
 
+        var now = _dateTimeService.UtcNow;
+
         // Check expiry
-        if (existingToken.ExpiresAt <= _dateTimeService.UtcNow)
+        if (existingToken.ExpiresAt <= now)
         {
             _logger.LogWarning("Expired refresh token used for user {UserId}",
                 existingToken.UserId);
@@ -104,7 +106,7 @@ public sealed class RefreshTokenHandler :
         await _dispatcher.DispatchAsync(
             @event: new TokenRefreshedEvent(
                 User: user,
-                OccurredAt: _dateTimeService.UtcNow),
+                OccurredAt: now),
             cancellationToken: cancellationToken);
 
         // Return result

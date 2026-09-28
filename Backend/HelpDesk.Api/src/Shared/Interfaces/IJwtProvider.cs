@@ -4,7 +4,5 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IJwtProvider
 {
-    Task<string> GenerateAccessToken(
-        ApplicationUser user,
-        CancellationToken cancellationToken = default);
+    string GenerateAccessToken(ApplicationUser user);
 }

@@ -1,6 +1,6 @@
-﻿namespace HelpDesk.src.Shared.Queries;
+﻿namespace HelpDesk.src.Shared.QueryParameters;
 
-public sealed record GetUsersQuery
+public sealed record GetTicketsParameters
 {
     // pagination parameters
     public int PageNumber { get; init; } = 1;
@@ -19,7 +19,7 @@ public sealed record GetUsersQuery
 
     public int Offset => (PageNumber - 1) * PageSize;
 
-    public GetUsersQuery(
+    public GetTicketsParameters(
         int pageNumber = 1,
         int pageSize = 10)
     {

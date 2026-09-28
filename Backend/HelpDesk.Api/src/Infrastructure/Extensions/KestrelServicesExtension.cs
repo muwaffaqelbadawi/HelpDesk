@@ -29,7 +29,7 @@ public static class KestrelServicesExtension
         {
             throw new FileNotFoundException(
                  "Certificate was not found." +
-                 "Expected file: DevCertificate/cert.pem in the repo root.",
+                 "Expected file: dev_certificate/cert.pem in the repo root.",
                 certificatePath);
         }
 
@@ -37,7 +37,7 @@ public static class KestrelServicesExtension
         {
             throw new FileNotFoundException(
                  "Certificate key was not found." +
-                 "Expected file: DevCertificate/key.pem in the repo root.",
+                 "Expected file: dev_certificate/key.pem in the repo root.",
                 keyPath);
         }
 

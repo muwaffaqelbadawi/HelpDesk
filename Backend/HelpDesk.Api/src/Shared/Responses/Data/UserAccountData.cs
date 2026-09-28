@@ -7,7 +7,6 @@ public sealed record UserAccountData
     public string Email { get; init; } = null!;
     public string TimeZone { get; set; } = null!;
     public string PreferredLanguage { get; set; } = null!;
-    public string IpAddress { get; set; } = null!;
     public IReadOnlyCollection<string> Roles { get; init; } = [];
     public bool MustResetPassword { get; init; }
     public byte[]? RowVersion { get; init; } = null!;

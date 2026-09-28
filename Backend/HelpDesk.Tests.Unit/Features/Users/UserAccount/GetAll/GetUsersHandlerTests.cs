@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Features.Users.UserAccount.Admin.GetAll;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using NSubstitute;
 using Xunit;
@@ -24,7 +24,7 @@ public sealed class GetUsersHandlerTests
         var handler = new GetUsersAccountHandler(userReader);
 
         // Query parameters
-        var query = new GetUsersQuery();
+        var query = new GetUsersParameters();
 
         // Prepare expected user data for assertion
         var expectedUserData = new PagedResult<UserAccountData>(

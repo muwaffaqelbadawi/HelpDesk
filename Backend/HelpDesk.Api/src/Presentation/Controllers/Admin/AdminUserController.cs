@@ -9,7 +9,7 @@ using HelpDesk.src.Features.Users.UserAccount.Admin.GetById;
 using HelpDesk.src.Features.Users.UserAccount.Admin.Update;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -29,8 +29,8 @@ public sealed class AdminUserController(IDateTimeService dateTimeService)
     [HttpGet]
     [Authorize(Policy = "Permission:Users.View")]
     public async Task<IActionResult> GetUsersAccount(
-        [FromQuery] GetUsersQuery query,
-        [FromServices] IQueryHandler<GetUsersQuery, PagedResult<UserAccountData>> handler,
+        [FromQuery] GetUsersParameters query,
+        [FromServices] IQueryHandler<GetUsersParameters, PagedResult<UserAccountData>> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(query, cancellationToken);

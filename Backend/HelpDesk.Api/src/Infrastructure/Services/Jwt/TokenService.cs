@@ -33,9 +33,7 @@ public sealed class TokenService : ITokenService
         var now = _dateTimeService.UtcNow;
 
         // Issue new tokens
-        var token = await _tokenIssuer.IssueAsync(
-            user,
-            cancellationToken);
+        var token = _tokenIssuer.Issue(user);
 
         // Create RefreshToken entity
         var newRefreshTokenEntity = new ApplicationRefreshToken

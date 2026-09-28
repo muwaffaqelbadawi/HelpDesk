@@ -465,7 +465,7 @@ FodyWeavers.xsd
 
 
 # Local development certificates
-/DevCertificate/
+/dev_certificate/
 *.pfx
 *.pem
 *.key

@@ -2,7 +2,7 @@
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Projections;
-using HelpDesk.src.Shared.Queries;
+using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,7 @@ public sealed class UserReader(AppDbContext dbContext)
 {
     // Pagination logic
     public async Task<PagedResult<UserAccountData>> GetAllAsync(
-        GetUsersQuery query,
+        GetUsersParameters query,
         CancellationToken cancellationToken = default)
     {
         var queryable = dbContext.Users
