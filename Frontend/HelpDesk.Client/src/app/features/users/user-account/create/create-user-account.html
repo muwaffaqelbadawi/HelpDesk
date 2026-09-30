@@ -1,0 +1,96 @@
+<form [formGroup]="createUserAccountForm" (ngSubmit)="onSubmit()">
+  <p-card [header]="'USERS.CREATE_USER_ACCOUNT.TITLE' | translate" [style]="{ width: '360px' }">
+    <!-- UserName -->
+    <div class="field">
+      <label for="username">
+        {{ 'USERS.CREATE_USER_ACCOUNT.USERNAME' | translate }}
+      </label>
+      <input id="username" type="username" pInputText formControlName="username" class="w-full" name="username"
+        [placeholder]="'USERS.CREATE_USER_ACCOUNT.USERNAME' | translate" autocomplete="username" />
+    </div>
+
+    <!-- Email -->
+    <div class="field">
+      <label for="email">
+        {{ 'USERS.CREATE_USER_ACCOUNT.EMAIL' | translate }}
+      </label>
+      <input id="email" type="email" pInputText formControlName="email" class="w-full" name="email"
+        [placeholder]="'USERS.CREATE_USER_ACCOUNT.EMAIL' | translate" autocomplete="email" />
+      @if (showEmailError) {
+      @if (requiredEmailError) {
+      <small class="block CREATE_USER_ACCOUNT-error"> Email is required. </small>
+      } @else if (emailError) {
+      <small class="block CREATE_USER_ACCOUNT-error"> Email should be valid. </small>
+      }
+      }
+    </div>
+
+    <!-- PhoneNumber  -->
+    <div class="field">
+      <label for="phoneNumber">
+        {{ 'USERS.CREATE_USER_ACCOUNT.PHONE_NUMBER' | translate }}
+      </label>
+      <input id="phoneNumber" type="tel" pInputText formControlName="phoneNumber" class="w-full" name="phoneNumber"
+        [placeholder]="'USERS.CREATE_USER_ACCOUNT.PHONE_NUMBER' | translate" autocomplete="tel" />
+    </div>
+
+    <!-- FullEnName -->
+    <div class="field">
+      <label for="fullEnName">
+        {{ 'USERS.CREATE_USER_ACCOUNT.FULL_EN_NAME' | translate }}
+      </label>
+      <input id="fullEnName" type="text" pInputText formControlName="fullEnName" class="w-full" name="fullEnName"
+        [placeholder]="'USERS.CREATE_USER_ACCOUNT.FULL_EN_NAME' | translate" autocomplete="name" />
+    </div>
+
+    <!-- FullArName -->
+    <div class="field">
+      <label for="fullArName">
+        {{ 'USERS.CREATE_USER_ACCOUNT.FULL_AR_NAME' | translate }}
+      </label>
+      <input id="fullArName" type="text" pInputText formControlName="fullArName" class="w-full" name="fullArName"
+        [placeholder]="'USERS.CREATE_USER_ACCOUNT.FULL_AR_NAME' | translate" autocomplete="off" />
+    </div>
+
+    <!-- Job Title -->
+    <div class="field">
+      <label for="jobTitle">
+        {{ 'USERS.CREATE_USER_ACCOUNT.JOB_TITLE' | translate }}
+      </label>
+      <input id="jobTitle" type="text" pInputText formControlName="jobTitle" class="w-full" name="jobTitle"
+        [placeholder]="'USERS.CREATE_USER_ACCOUNT.JOB_TITLE' | translate" autocomplete="organization-title" />
+    </div>
+
+    <!-- Department -->
+    <div class="field">
+      <label for="departmentId">
+        {{ 'USERS.CREATE_USER_ACCOUNT.DEPARTMENT' | translate }}
+      </label>
+      <p-select id="department" formControlName="departmentId" [options]="departments" optionLabel="name"
+        optionValue="id" class="w-full" [placeholder]="'USERS.CREATE_USER_ACCOUNT.DEPARTMENT' | translate" />
+    </div>
+
+    <!-- Sector -->
+    <div class="field">
+      <label for="sectorId">
+        {{ 'USERS.CREATE_USER_ACCOUNT.SECTOR' | translate }}
+      </label>
+      <p-select id="sector" formControlName="sectorId" [options]="sectors" optionLabel="name" optionValue="id"
+        class="w-full" [placeholder]="'USERS.CREATE_USER_ACCOUNT.SECTOR' | translate" />
+    </div>
+
+    <!-- Country -->
+    <div class="field">
+      <label for="countryId">
+        {{ 'USERS.CREATE_USER_ACCOUNT.COUNTRY' | translate }}
+      </label>
+      <p-select id="country" formControlName="countryId" [options]="countries" optionLabel="name" optionValue="id"
+        class="w-full" [placeholder]="'USERS.CREATE_USER_ACCOUNT.COUNTRY' | translate" />
+    </div>
+
+    <div class="create-user-account-button">
+      <p-button type="submit" [label]="'USERS.CREATE_USER_ACCOUNT.SUBMIT' | translate" styleClass="w-full"
+        [disabled]="createUserAccountForm.invalid" />
+    </div>
+  </p-card>
+</form>

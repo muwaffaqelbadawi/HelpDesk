@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-
 import { ApiResponse } from '../../http/models/api-response';
 import { LoginRequest } from '../../../features/auth/login/login-request';
 import { LoginResponse } from '../../../features/auth/login/login-response';
@@ -11,6 +10,9 @@ import { changePasswordResponse } from '../../../features/auth/change-password/c
 import { RefreshTokenResponse } from '../../../features/auth/refresh-token/refresh-token-response';
 import { resetPasswordRequest } from '../../../features/auth/reset-password/reset-password-request';
 import { resetPasswordResponse } from '../../../features/auth/reset-password/reset-password-response';
+import { CreateUserAccountRequest } from '../../../features/users/user-account/create/create-user-account-request';
+import { CreateUserAccountResponse } from '../../../features/users/user-account/create/create-user-account-response';
+import { UserAccountData } from '../../../shared/responses/data/user-account-data';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +20,35 @@ import { resetPasswordResponse } from '../../../features/auth/reset-password/res
 export class AuthService {
   private readonly http = inject(HttpClient);
 
+  getCurrentUser(): Observable<UserAccountData> {
+    return this.http
+      .get<ApiResponse<UserAccountData>>(
+        `${environment.apiUrl}/users/me`,
+      )
+      .pipe(
+        map((response) => {
+          if (!response.data) {
+            throw new Error('Current user response did not contain user account data.');
+          }
+
+          return response.data;
+        }),
+      );
+  }
+
+  createUserAccount(request: CreateUserAccountRequest): Observable<CreateUserAccountResponse> {
+    return this.http
+      .post<ApiResponse<CreateUserAccountResponse>>(`${environment.apiUrl}/admin/users`, request)
+      .pipe(
+        map((response) => {
+          if (!response.data) {
+            throw new Error('Create user account response did not contain user account data.');
+          }
+
+          return response.data;
+        }),
+      );
+  }
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http
       .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/auth/login`, request)
@@ -26,7 +57,6 @@ export class AuthService {
           if (!response.data) {
             throw new Error('Login response did not contain user account data.');
           }
-
           return response.data;
         }),
       );

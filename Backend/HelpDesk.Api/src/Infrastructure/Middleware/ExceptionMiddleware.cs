@@ -9,7 +9,8 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
     public async Task InvokeAsync(
         HttpContext context,
         IApiContext apiContext,
-        IUserContext userContext)
+        IUserContext userContext,
+        ILogger<ExceptionMiddleware> logger)
     {
         try
         {
@@ -28,7 +29,7 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 ConflictException => StatusCodes.Status409Conflict,
                 BusinessRuleViolationException => StatusCodes.Status422UnprocessableEntity,
                 IdentityOperationException => StatusCodes.Status400BadRequest,
-                Exception => StatusCodes.Status500InternalServerError,
+                _ => StatusCodes.Status500InternalServerError
             };
 
             var response = CreateErrorResponse(
@@ -182,24 +183,10 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 }
             },
 
-            Exception => new ProblemDetails
-            {
-                Type = $"{baseUrl}/errors/internal-server-error",
-                Title = nameof(Exception),
-                Status = status,
-                Detail = details,
-                Instance = path,
-                Extensions =
-                {
-                    ["traceId"] = traceId,
-                    ["correlationId"] = correlationId
-                }
-            },
-
             _ => new ProblemDetails
             {
-                Type = $"{baseUrl}/errors/unknown-error",
-                Title = nameof(Exception),
+                Type = $"{baseUrl}/errors/internal-server-error",
+                Title = "UnknownException",
                 Status = status,
                 Detail = details,
                 Instance = path,

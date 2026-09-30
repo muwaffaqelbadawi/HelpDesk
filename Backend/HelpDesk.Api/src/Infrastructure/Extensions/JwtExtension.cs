@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using HelpDesk.src.Infrastructure.Extensions;
 using HelpDesk.src.Infrastructure.Services.Jwt;
+using HelpDesk.src.Shared.DataAccess.Readers;
+using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,11 +23,18 @@ public static class JwtExtension
         return builder;
     }
 
+    public static WebApplicationBuilder AddJwtServices(
+        this WebApplicationBuilder builder)
+    {
+        // Register RefreshTokenReader as scoped
+        builder.Services.AddScoped<IRefreshTokenReader, RefreshTokenReader>();
+
+        return builder;
+    }
+
     public static WebApplicationBuilder AddJwtOptions(
         this WebApplicationBuilder builder)
     {
-        builder.AddJwtConfigs();
-
         var jwtSection = builder.Configuration.GetSection("Jwt");
 
         var jwtOptions = jwtSection.Get<JwtOptions>()
@@ -37,7 +46,7 @@ public static class JwtExtension
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.TokenValidationParameters = new()
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
@@ -52,10 +61,30 @@ public static class JwtExtension
 
                     ClockSkew = TimeSpan.Zero
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["access_token"];
+
+                        return Task.CompletedTask;
+                    },
+                };
             });
 
-        // AddAuthorization services
         builder.Services.AddAuthorization();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddJwt(
+        this WebApplicationBuilder builder)
+    {
+        builder
+            .AddJwtConfigs()
+            .AddJwtServices()
+            .AddJwtOptions();
 
         return builder;
     }

@@ -8,12 +8,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { passwordValidators } from '../../../shared/validators/password.validators';
 
 @Component({
   selector: 'app-reset-password',
   imports: [CardModule, InputTextModule, ReactiveFormsModule, ButtonModule, TranslatePipe],
   templateUrl: './reset-password.html',
-  styleUrl: './reset-password.scss',
+  styleUrl: './reset-password.css',
 })
 export class ResetPasswordComponent {
   private fb = inject(FormBuilder);
@@ -24,7 +25,7 @@ export class ResetPasswordComponent {
   private readonly route = inject(ActivatedRoute);
 
   resetPasswordForm = this.fb.nonNullable.group({
-    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    newPassword: ['', passwordValidators],
   });
 
   onSubmit(): void {

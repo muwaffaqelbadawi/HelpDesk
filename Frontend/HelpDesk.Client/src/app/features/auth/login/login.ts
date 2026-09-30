@@ -3,11 +3,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/localization/language.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
+import { PostLoginRedirectService } from '../../../core/auth/services/post-login-redirect.service';
 
 @Component({
   selector: 'app-login',
@@ -16,22 +16,21 @@ import { AuthStateService } from '../../../core/auth/services/auth-state.service
     InputTextModule,
     ReactiveFormsModule,
     ButtonModule,
-    RouterLink,
     TranslatePipe,
   ],
   templateUrl: './login.html',
-  styleUrl: './login.scss',
+  styleUrl: './login.css',
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
   readonly languageService = inject(LanguageService);
   private readonly authService = inject(AuthService);
   private readonly authState = inject(AuthStateService);
-  private readonly router = inject(Router);
+  private readonly redirectService = inject(PostLoginRedirectService);
 
   loginForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    email: ['', [Validators.required]],
+    password: ['', Validators.required],
   });
 
   onSubmit(): void {
@@ -50,7 +49,7 @@ export class LoginComponent {
       .subscribe({
         next: (response) => {
           this.authState.setSession(response.userAccountData);
-          this.router.navigate(['/']);
+          this.redirectService.redirect();
         },
         error: (error) => this.handleLoginError(error),
       });

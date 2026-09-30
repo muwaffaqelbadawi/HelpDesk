@@ -8,13 +8,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
 import { Router } from '@angular/router';
+import { passwordValidators } from '../../../shared/validators/password.validators';
 
 @Component({
   selector: 'app-change-password',
   imports: [CardModule, InputTextModule, ReactiveFormsModule, ButtonModule, TranslatePipe],
 
   templateUrl: './change-password.html',
-  styleUrl: './change-password.scss',
+  styleUrl: './change-password.css',
 })
 export class ChangePasswordComponent {
   private fb = inject(FormBuilder);
@@ -24,8 +25,8 @@ export class ChangePasswordComponent {
   private readonly router = inject(Router);
 
   changePasswordForm = this.fb.nonNullable.group({
-    currentPassword: ['', [Validators.required, Validators.minLength(8)]],
-    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    currentPassword: ['', passwordValidators],
+    newPassword: ['', passwordValidators],
   });
 
   onSubmit(): void {

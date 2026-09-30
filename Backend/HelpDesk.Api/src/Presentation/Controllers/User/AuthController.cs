@@ -64,6 +64,7 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
 
     // Refresh Token
     [HttpPost("refresh-token")]
+    [AllowAnonymous]
     public async Task<IActionResult> RefreshToken(
         [FromServices] ICommandHandler<RefreshTokenCommand, RefreshTokenResponse> handler,
         CancellationToken cancellationToken)

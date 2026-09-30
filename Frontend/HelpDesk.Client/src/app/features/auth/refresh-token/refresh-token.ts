@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-refresh-token',
   imports: [],
   templateUrl: './refresh-token.html',
-  styleUrl: './refresh-token.scss',
+  styleUrl: './refresh-token.css',
 })
-export class RefreshTokenComponent {}
+export class RefreshTokenComponent { }

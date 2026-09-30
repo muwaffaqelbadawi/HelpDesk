@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-revoke-token',
   imports: [],
   templateUrl: './revoke-token.html',
-  styleUrl: './revoke-token.scss',
+  styleUrl: './revoke-token.css',
 })
-export class RevokeTokenComponent {}
+export class RevokeTokenComponent { }

@@ -5,5 +5,9 @@
 </div>
 
 <div class="flex justify-center items-center h-full">
+  @if (authState.backendUnavailable()) {
+  <app-backend-unavailable />
+  } @else {
   <router-outlet />
+  }
 </div>

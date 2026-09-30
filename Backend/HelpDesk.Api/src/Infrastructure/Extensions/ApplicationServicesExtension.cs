@@ -13,7 +13,7 @@ public static class ApplicationServicesExtension
             .AddDatabase()
             .AddControllers()
             .AddBackgroundServices()
-            .AddJwtOptions()
+            .AddJwt()
             .AddUserSession()
             .AddAuthentication()
             .AddAuthorization()

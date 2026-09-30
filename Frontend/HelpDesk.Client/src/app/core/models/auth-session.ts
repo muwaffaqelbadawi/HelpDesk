@@ -1,4 +1,4 @@
-import { UserAccountData } from '../../features/auth/models/user-account-data';
+import { UserAccountData } from '../../shared/responses/data/user-account-data';
 
 export interface AuthSession {
   userAccount: UserAccountData;

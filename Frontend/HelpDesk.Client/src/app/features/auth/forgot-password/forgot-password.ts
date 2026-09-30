@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-forgot-password',
   imports: [],
   templateUrl: './forgot-password.html',
-  styleUrl: './forgot-password.scss',
+  styleUrl: './forgot-password.css',
 })
-export class ForgotPasswordComponent {}
+export class ForgotPasswordComponent { }
