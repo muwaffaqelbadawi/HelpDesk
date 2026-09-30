@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Services.UserSession;
+using HelpDesk.src.Shared.DataAccess.Repositories;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Repositories;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 

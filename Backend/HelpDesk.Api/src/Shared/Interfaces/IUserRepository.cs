@@ -13,6 +13,12 @@ public interface IUserRepository
         string tempPassword,
         CancellationToken cancellationToken);
 
+    Task AddToHistory(
+        Guid userId,
+        UserHistoryType type,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken = default);
+
     Task DeleteAsync(
         ApplicationUser user,
         Guid currentUserId,

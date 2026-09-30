@@ -15,7 +15,7 @@ public sealed class TicketCreatedHandlerTests
         // Arrange
 
         // Mock dependencies (substitutes)
-        var historyWriter = Substitute.For<ITicketWriter>();
+        var repository = Substitute.For<ITicketRepository>();
 
         // userId
         var userId = Guid.NewGuid();
@@ -45,7 +45,7 @@ public sealed class TicketCreatedHandlerTests
 
         // SUT (System Under Test)
         // Real handler instance with mocked dependencies
-        var sut = new TicketCreatedEventHandler(historyWriter);
+        var sut = new TicketCreatedEventHandler(repository);
 
         // Act
         await sut.HandleAsync(@event, CancellationToken.None);
@@ -53,7 +53,7 @@ public sealed class TicketCreatedHandlerTests
         // Assert
 
         // Verify the WriteAsync was called once.
-        await historyWriter.Received(1).WriteAsync(
+        await repository.Received(1).AddToHistory(
             userId,
             ticketId,
             TicketHistoryType.Created,

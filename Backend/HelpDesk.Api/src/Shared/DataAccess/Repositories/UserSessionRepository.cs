@@ -2,7 +2,7 @@
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Shared.Repositories;
+namespace HelpDesk.src.Shared.DataAccess.Repositories;
 
 public sealed class UserSessionRepository(AppDbContext dbContext)
     : IUserSessionRepository

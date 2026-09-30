@@ -6,7 +6,7 @@ using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelpDesk.src.Shared.Repositories;
+namespace HelpDesk.src.Shared.DataAccess.Repositories;
 
 public sealed class UserRepository(
     UserManager<ApplicationUser> userManager,
@@ -17,6 +17,37 @@ public sealed class UserRepository(
     public async Task AddAsync(ApplicationUser user)
     {
         await userManager.UpdateAsync(user);
+    }
+
+    public async Task AddToHistory(
+        Guid userId,
+        UserHistoryType type,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken = default)
+    {
+        var userHistory = new ApplicationUserHistory
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Type = type,
+            Description = type switch
+            {
+                UserHistoryType.Created => "User created",
+                UserHistoryType.Updated => "User updated",
+                UserHistoryType.PasswordChanged => "Password changed",
+                UserHistoryType.PasswordReset => "Password reset",
+                UserHistoryType.LoggedIn => "User logged in",
+                UserHistoryType.LoggedOut => "User logged out",
+                UserHistoryType.RoleChanged => "User role changed",
+                _ => null
+            },
+
+            OccurredAt = occurredAt
+        };
+
+        dbContext.UserHistories.Add(userHistory);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AddAsync(

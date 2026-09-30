@@ -3,14 +3,14 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Users.UserAccount.Admin.Update;
 
-public sealed class UserAccountUpdatedEventHandler(IUserWriter historyWriter)
+public sealed class UserAccountUpdatedEventHandler(IUserRepository repository)
     : IDomainEventHandler<UserAccountUpdatedEvent>
 {
     public Task HandleAsync(
         UserAccountUpdatedEvent @event,
         CancellationToken cancellationToken = default)
     {
-        return historyWriter.WriteAsync(
+        return repository.AddToHistory(
            userId: @event.User.Id,
            type: UserHistoryType.Updated,
            occurredAt: @event.OccurredAt,

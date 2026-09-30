@@ -9,6 +9,13 @@ public interface ITicketRepository
         Ticket ticket,
         CancellationToken cancellationToken);
 
+    Task AddToHistory(
+        Guid userId,
+        Guid ticketId,
+        TicketHistoryType type,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken = default);
+
     Task<int> DeleteAsync(
         Guid userId,
         Guid ticketId,

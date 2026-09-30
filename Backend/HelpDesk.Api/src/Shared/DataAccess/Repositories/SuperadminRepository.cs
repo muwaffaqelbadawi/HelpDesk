@@ -3,7 +3,7 @@ using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace HelpDesk.src.Shared.Repositories;
+namespace HelpDesk.src.Shared.DataAccess.Repositories;
 
 public sealed class SuperadminRepository(
     UserManager<ApplicationUser> userManager,

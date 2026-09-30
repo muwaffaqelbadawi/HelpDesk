@@ -3,14 +3,14 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Tickets.Update;
 
-public sealed class TicketUpdatedEventHandler(ITicketWriter historyWriter)
+public sealed class TicketUpdatedEventHandler(ITicketRepository repository)
     : IDomainEventHandler<TicketUpdatedEvent>
 {
     public Task HandleAsync(
         TicketUpdatedEvent @event,
         CancellationToken cancellationToken = default)
     {
-        return historyWriter.WriteAsync(
+        return repository.AddToHistory(
             userId: @event.User.Id,
             ticketId: @event.TicketId,
             type: TicketHistoryType.Updated,

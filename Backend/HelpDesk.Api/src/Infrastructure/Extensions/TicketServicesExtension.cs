@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Shared.DataAccess.Readers;
-using HelpDesk.src.Shared.DataAccess.Writers;
+using HelpDesk.src.Shared.DataAccess.Repositories;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Repositories;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
@@ -15,9 +14,6 @@ public static class TicketServicesExtension
 
         // TicketReader
         services.AddScoped<ITicketReader, TicketReader>();
-
-        // TicketWriter
-        services.AddScoped<ITicketWriter, TicketWriter>();
 
         return services;
     }

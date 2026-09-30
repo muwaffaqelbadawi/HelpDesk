@@ -5,7 +5,7 @@ using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketS
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelpDesk.src.Shared.Repositories;
+namespace HelpDesk.src.Shared.DataAccess.Repositories;
 
 public sealed class TicketRepository(AppDbContext dbContext)
     : ITicketRepository
@@ -15,6 +15,37 @@ public sealed class TicketRepository(AppDbContext dbContext)
         CancellationToken cancellationToken)
     {
         dbContext.Tickets.Add(ticket);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AddToHistory(
+        Guid userId,
+        Guid ticketId,
+        TicketHistoryType type,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken = default)
+    {
+        var ticketHistory = new TicketHistory
+        {
+            Id = Guid.NewGuid(),
+            TicketId = ticketId,
+            Type = type,
+            UserId = userId,
+            Description = type switch
+            {
+                TicketHistoryType.Created => "Ticket created",
+                TicketHistoryType.Updated => "Ticket updated",
+                TicketHistoryType.Assigned => "Ticket assigned",
+                TicketHistoryType.Closed => "Ticket closed",
+                _ => null
+            },
+            OldValueId = null,
+            NewValueId = null,
+            OccurredAt = occurredAt
+        };
+
+        dbContext.TicketHistories.Add(ticketHistory);
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }
