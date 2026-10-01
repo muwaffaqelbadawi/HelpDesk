@@ -1,5 +1,4 @@
 ﻿using System.Security.Cryptography.X509Certificates;
-using HelpDesk.src.Infrastructure.Services.Kestrel;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
@@ -16,14 +15,22 @@ public static class KestrelServicesExtension
         var kestrelSection = builder.Configuration
             .GetSection("Kestrel:Certificates:Default");
 
-        var kestrelOptions = kestrelSection.Get<KestrelOptions>()
-            ?? throw new InvalidOperationException(
-                "Kestrel certificate options are not configured." +
-                "Expected configuration section" +
-                "'Kestrel:Certificates:Default'.");
+        var pemPath = kestrelSection["Pem"];
+        var keyPath = kestrelSection["Key"];
 
-        var certificatePath = Path.GetFullPath(kestrelOptions.Pem);
-        var keyPath = Path.GetFullPath(kestrelOptions.Key);
+        if (string.IsNullOrWhiteSpace(pemPath) && string.IsNullOrWhiteSpace(keyPath))
+        {
+            return builder;
+        }
+
+        if (string.IsNullOrWhiteSpace(pemPath) || string.IsNullOrWhiteSpace(keyPath))
+        {
+            throw new InvalidOperationException(
+                "Both Kestrel certificate PEM and key paths must be configured.");
+        }
+
+        var certificatePath = Path.GetFullPath(pemPath);
+        var fullKeyPath = Path.GetFullPath(keyPath);
 
         if (!File.Exists(certificatePath))
         {
@@ -33,15 +40,15 @@ public static class KestrelServicesExtension
                 certificatePath);
         }
 
-        if (!File.Exists(keyPath))
+        if (!File.Exists(fullKeyPath))
         {
             throw new FileNotFoundException(
                  "Certificate key was not found." +
                  "Expected file: dev_certificate/key.pem in the repo root.",
-                keyPath);
+                fullKeyPath);
         }
 
-        var tempCert = X509Certificate2.CreateFromPemFile(certificatePath, keyPath);
+        var tempCert = X509Certificate2.CreateFromPemFile(certificatePath, fullKeyPath);
 
         byte[] pfxBytes = tempCert.Export(X509ContentType.Pfx);
 

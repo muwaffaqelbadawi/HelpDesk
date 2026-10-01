@@ -25,6 +25,36 @@ services:
 
     restart: unless-stopped
 
+  helpdesk-api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: helpdesk-api
+    environment:
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__AppDBConnection: >-
+        Server=sqlserver,1433;Database=HelpDesk;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True
+      Jwt__Key: ${Jwt__Key:?Set Jwt__Key in .env before starting the API}
+      Jwt__Issuer: HelpDesk.API
+      Jwt__Audience: HelpDesk.Client
+      Jwt__AccessTokenExpiryMinutes: "10"
+      Jwt__RefreshTokenExpiryDays: "7"
+      Cors__Name: Frontend
+      Cors__Origins__0: ${CORS_ORIGIN:-https://localhost:4200}
+      Smtp__Host: mailpit
+      Smtp__Port: "1025"
+      Smtp__UseSsl: "false"
+      Smtp__Username: ${Smtp__Username:-}
+      Smtp__Password: ${Smtp__Password:-}
+      Smtp__SenderName: HelpDesk.HelpDesk
+      Smtp__SenderEmail: noreply@helpdesk_test.local
+      UserSession__UserSessionExpiryDays: "7"
+      DataImport__RelativePath: src/Infrastructure/Services/DataIngestion/Importing/Importers/Countries/data/countries.json
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    restart: unless-stopped
+
   mailpit:
     image: axllent/mailpit:latest
     container_name: helpdesk-mailpit
@@ -48,17 +78,24 @@ services:
       retries: 5
       start_period: 10s
 
-    # nginx will set here later
-    # nginx:
-    #   image: nginx:alpine
-    #   container_name: helpdesk-nginx
-    #   ports:
-    #     - "80:80"
-    #   volumes:
-    #     - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    # depends_on:
-    #   - helpdesk-api
+    restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: helpdesk-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - helpdesk-api
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: helpdesk-redis
+    ports:
+      - "6379:6379"
     restart: unless-stopped
 
 volumes:

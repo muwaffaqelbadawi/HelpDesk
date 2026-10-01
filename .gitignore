@@ -13,6 +13,8 @@
 *.userosscache
 *.sln.docstates
 *.env
+.env.*
+!/.env.example
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -269,7 +271,6 @@ ClientBin/
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
-*.pfx
 *.publishsettings
 orleans.codegen.cs
 
@@ -431,11 +432,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-
-
-
-
-
 # Angular .gitignore
 
 # Angular specific
@@ -446,11 +442,7 @@ FodyWeavers.xsd
 /Frontend/HelpDesk.Client/e2e/test-output/
 /Frontend/HelpDesk.Client/.angular/
 
-# Node modules and dependency files
-/Frontend/HelpDesk.Client/node_modules/
-
 # Environment files
-/Frontend/HelpDesk.Client/*.env
 
 # TypeScript cache
 /Frontend/HelpDesk.Client/*.tsbuildinfo
@@ -459,10 +451,6 @@ FodyWeavers.xsd
 /Frontend/HelpDesk.Client/npm-debug.log*
 /Frontend/HelpDesk.Client/yarn-debug.log*
 /Frontend/HelpDesk.Client/yarn-error.log*
-
-
-
-
 
 # Local development certificates
 /dev_certificate/
