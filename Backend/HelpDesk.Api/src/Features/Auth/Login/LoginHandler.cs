@@ -2,8 +2,8 @@
 
 namespace HelpDesk.src.Features.Auth.Login;
 
-public sealed class LoginHandler :
-    ICommandHandler<LoginCommand, LoginResponse>
+public sealed class LoginHandler
+    : ICommandHandler<LoginCommand, LoginResponse>
 {
     private readonly IIdentityResolver _identityResolver;
     private readonly ITokenService _tokenService;
@@ -42,29 +42,33 @@ public sealed class LoginHandler :
             user,
             command);
 
+        var sessionId = Guid.NewGuid();
+
         // Issue new token
         var token = await _tokenService.IssueAfterLoginAsync(
             user,
+            sessionId,
             cancellationToken);
-
-        // Get user
-        var userAccountData = await _userReader.GetByIdAsync(
-            userId: user.Id,
-            cancellationToken: cancellationToken);
 
         // Successful log
         _logger.LogInformation(
             "User {userId} logged in successfully",
             user.Id);
 
+        // Get user
+        var userAccountData = await _userReader.GetByIdAsync(
+            user.Id,
+            cancellationToken);
+
         // Domain event
         await _dispatcher.DispatchAsync(
             @event: new LoginEvent(
                 User: user,
-                OccurredAt: _dateTimeService.UtcNow),
+                OccurredAt: _dateTimeService.UtcNow,
+                StaySignedIn: command.StaySignedIn,
+                SessionId: sessionId),
             cancellationToken: cancellationToken);
 
-        // Return response
         return new LoginResponse(
             UserAccountData: userAccountData,
             Token: token);

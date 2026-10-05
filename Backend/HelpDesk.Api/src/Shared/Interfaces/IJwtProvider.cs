@@ -4,5 +4,7 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IJwtProvider
 {
-    string GenerateAccessToken(ApplicationUser user);
+    string GenerateAccessToken(
+        ApplicationUser user,
+        Guid sessionId);
 }

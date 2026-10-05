@@ -1,4 +1,5 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Projections;
@@ -8,10 +9,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.DataAccess.Readers;
 
-public sealed class TicketReader(AppDbContext dbContext)
-    : ITicketReader
+public sealed class TicketReader(AppDbContext dbContext) : ITicketReader
 {
-    // Pagination logic
     public async Task<PagedResult<TicketData>> GetAllAsync(
         GetTicketsParameters query,
         CancellationToken cancellationToken = default)
@@ -38,7 +37,18 @@ public sealed class TicketReader(AppDbContext dbContext)
             TotalPages: totalPages);
     }
 
-    // Search logic
+    public async Task<IReadOnlyCollection<TicketData>> GetAssignedAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.AssignedToId == userId)
+            .OrderByDescending(t => t.AssignedAt)
+            .SelectTicketData()
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<TicketData>> GetAsync(
         string? search,
         int offset,
@@ -62,7 +72,6 @@ public sealed class TicketReader(AppDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
-    // Select data logic
     public async Task<TicketData> GetByIdAsync(
         Guid ticketId,
         CancellationToken cancellationToken = default)
@@ -74,10 +83,9 @@ public sealed class TicketReader(AppDbContext dbContext)
             .SingleAsync(cancellationToken);
     }
 
-    // Get Owned Tickets
-    public async Task<IReadOnlyCollection<TicketData>> GetOwnedTicketsAsync(
+    public async Task<IReadOnlyCollection<TicketData>> GetMyTicketsAsync(
         Guid userId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         return await dbContext.Tickets
             .AsNoTracking()
@@ -87,14 +95,32 @@ public sealed class TicketReader(AppDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
-    // Get new row version
     public async Task<byte[]> GetNewRowAsync(
         Guid ticketId,
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Tickets
+            .AsNoTracking()
             .Where(t => t.Id == ticketId)
             .Select(t => t.RowVersion)
             .SingleAsync(cancellationToken);
+    }
+
+    public async Task<(DateTimeOffset? AssignedAt, byte[] RowVersion)> GetStateAsync(
+        Guid ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        var state = await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.Id == ticketId)
+            .Select(t => new
+            {
+                t.AssignedAt,
+                t.RowVersion
+            })
+            .SingleOrDefaultAsync(cancellationToken)
+                ?? throw new TicketNotFoundException(ticketId);
+
+        return (state.AssignedAt, state.RowVersion);
     }
 }

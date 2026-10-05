@@ -15,4 +15,13 @@ public sealed class UserSessionRepository(AppDbContext dbContext)
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task UpdateAsync(
+        ApplicationUserSession userSession,
+        CancellationToken cancellationToken)
+    {
+        dbContext.UserSessions.Update(userSession);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

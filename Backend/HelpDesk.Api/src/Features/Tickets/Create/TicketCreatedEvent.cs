@@ -6,4 +6,4 @@ namespace HelpDesk.src.Features.Tickets.Create;
 public sealed record TicketCreatedEvent(
     ApplicationUser User,
     DateTimeOffset OccurredAt,
-     Guid TicketId) : IDomainEvent;
+    Guid TicketId) : IDomainEvent;

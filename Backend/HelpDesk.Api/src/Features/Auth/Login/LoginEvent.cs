@@ -5,4 +5,6 @@ namespace HelpDesk.src.Features.Auth.Login;
 
 public sealed record LoginEvent(
     ApplicationUser User,
-    DateTimeOffset OccurredAt) : IDomainEvent;
+    DateTimeOffset OccurredAt,
+    bool StaySignedIn,
+    Guid SessionId) : IDomainEvent;

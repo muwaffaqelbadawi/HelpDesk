@@ -5,9 +5,8 @@ using HelpDesk.src.Shared.Responses.Data;
 
 namespace HelpDesk.src.Features.Tickets.GetAll;
 
-public sealed class GetTicketsHandler(
-    ITicketReader ticketReader)
-        : IQueryHandler<GetTicketsParameters, PagedResult<TicketData>>
+public sealed class GetTicketsHandler(ITicketReader ticketReader)
+    : IQueryHandler<GetTicketsParameters, PagedResult<TicketData>>
 {
     public async Task<PagedResult<TicketData>> HandleAsync(
         GetTicketsParameters query,

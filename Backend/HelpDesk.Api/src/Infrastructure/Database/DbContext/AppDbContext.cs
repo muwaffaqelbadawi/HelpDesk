@@ -473,11 +473,15 @@ public partial class AppDbContext
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false);
 
-            // LastActivityAt
+            // LastActivityAt (Property)
             entity.Property(e => e.LastActivityAt);
 
-            // ExpiresAt
+            // ExpiresAt (Property)
             entity.Property(e => e.ExpiresAt);
+
+            // IsPersistent (Property)
+            entity.Property(e => e.IsPersistent)
+                .HasDefaultValue(false);
 
             // UserSession query filter (IsDeleted)
             entity.HasQueryFilter(e => !e.IsDeleted);

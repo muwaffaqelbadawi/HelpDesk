@@ -2,4 +2,4 @@
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries.ImportCountries;
 
-public sealed record ImportCountriesCommand : IPasswordResetAllowedCommand;
+public sealed record ImportCountriesCommand : ISystemCommand;

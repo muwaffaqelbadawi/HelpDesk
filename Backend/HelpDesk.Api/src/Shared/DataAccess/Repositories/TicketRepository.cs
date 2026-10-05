@@ -7,9 +7,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.DataAccess.Repositories;
 
-public sealed class TicketRepository(AppDbContext dbContext)
-    : ITicketRepository
+public sealed class TicketRepository(AppDbContext dbContext) : ITicketRepository
 {
+    public async Task<int> AssignAsync(
+        Guid currentUserId,
+        Guid userId,
+        Guid ticketId,
+        byte[] ticketRowVersion,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .Where(t => t.Id == ticketId
+                     && t.RowVersion == ticketRowVersion
+                     && t.AssignedAt == null)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(t => t.AssignedById, currentUserId)
+                .SetProperty(t => t.AssignedToId, userId)
+                .SetProperty(t => t.AssignedAt, now),
+            cancellationToken);
+    }
+
     public async Task AddAsync(
         Ticket ticket,
         CancellationToken cancellationToken)

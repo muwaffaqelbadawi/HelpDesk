@@ -10,8 +10,8 @@ public sealed class IdentityFilter(ILookupNormalizer normalizer)
         LoginCommand command,
         IQueryable<ApplicationUser> query)
     {
-        var normalizedName = normalizer.NormalizeName(command.Identity);
-        var normalizedEmail = normalizer.NormalizeEmail(command.Identity);
+        var normalizedName = normalizer.NormalizeName(command.Username);
+        var normalizedEmail = normalizer.NormalizeEmail(command.Username);
 
         bool isEmployeeNumber = IdentityClassifier.IsEmployeeNumber(normalizedName);
         bool isEmail = IdentityClassifier.IsEmail(normalizedEmail);
@@ -29,8 +29,8 @@ public sealed class IdentityFilter(ILookupNormalizer normalizer)
 
     public string IdentityType(LoginCommand command)
     {
-        var normalizedName = normalizer.NormalizeName(command.Identity);
-        var normalizedEmail = normalizer.NormalizeEmail(command.Identity);
+        var normalizedName = normalizer.NormalizeName(command.Username);
+        var normalizedEmail = normalizer.NormalizeEmail(command.Username);
 
         bool isEmployeeNumber = IdentityClassifier.IsEmployeeNumber(normalizedName);
         bool isEmail = IdentityClassifier.IsEmail(normalizedEmail);

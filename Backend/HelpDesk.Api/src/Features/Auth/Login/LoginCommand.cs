@@ -3,5 +3,6 @@
 namespace HelpDesk.src.Features.Auth.Login;
 
 public sealed record LoginCommand(
-    string Identity,
-    string Password) : IPasswordResetAllowedCommand;
+    string Username,
+    string Password,
+    bool StaySignedIn = false) : ISystemCommand;

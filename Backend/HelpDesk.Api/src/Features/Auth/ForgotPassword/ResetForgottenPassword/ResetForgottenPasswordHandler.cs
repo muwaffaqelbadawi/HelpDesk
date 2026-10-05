@@ -11,6 +11,7 @@ namespace HelpDesk.src.Features.Auth.ForgotPassword.ResetForgottenPassword;
 public sealed class ResetForgottenPasswordHandler :
     ICommandHandler<ResetForgottenPasswordCommand, ResetForgottenPasswordResponse>
 {
+    private readonly IUserContext _userContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly AppDbContext _dbContext;
     private readonly IDateTimeService _dateTimeService;
@@ -18,12 +19,14 @@ public sealed class ResetForgottenPasswordHandler :
     private readonly ILogger<ResetForgottenPasswordHandler> _logger;
 
     public ResetForgottenPasswordHandler(
+        IUserContext userContext,
         UserManager<ApplicationUser> userManager,
         AppDbContext dbContext,
         IDateTimeService dateTimeService,
         ITokenService tokenService,
         ILogger<ResetForgottenPasswordHandler> logger)
     {
+        _userContext = userContext;
         _userManager = userManager;
         _dbContext = dbContext;
         _dateTimeService = dateTimeService;
@@ -39,6 +42,10 @@ public sealed class ResetForgottenPasswordHandler :
         // Find user by ID
         var user = await _userManager.FindByIdAsync(command.UserId.ToString())
             ?? throw new UserNotFoundException(command.UserId);
+
+
+
+
 
         // Reset password using the reset token
         var result = await _userManager.ResetPasswordAsync(
@@ -75,15 +82,28 @@ public sealed class ResetForgottenPasswordHandler :
 
         await _userManager.UpdateAsync(user);
 
+        var sessionId = _userContext.SessionId;
+
         // Issue new token
         var token = await _tokenService.IssueAfterResetForgottenPasswordAsync(
             user,
+            sessionId,
             cancellationToken);
 
+
+        // Successful log
         _logger.LogInformation(
             "User {UserId} reset their password via forgot password flow",
             user.Id);
 
+
+        // Domain event
+
+
+
+
+
+        // TODO: use user reader instead
         var userAccountData = await _dbContext.Users
             .AsNoTracking()
             .Where(u => u.Id == user.Id)

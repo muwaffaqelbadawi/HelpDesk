@@ -4,5 +4,7 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IClaimProvider
 {
-    IDictionary<string, object> GetClaims(ApplicationUser user);
+    IDictionary<string, object> GetClaims(
+        ApplicationUser user,
+        Guid sessionId);
 }

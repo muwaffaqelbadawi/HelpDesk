@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Shared.AssemblyMarker;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.Tests.Integration.Configurations;
-using HelpDesk.Tests.Integration.TestDoubles;
+using HelpDesk.Tests.Integration.TestData;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -30,9 +30,9 @@ public sealed class HelpDeskApplicationFactory
 
         builder.ConfigureTestServices(services =>
         {
-            services.AddScoped<TestUserContext>();
+            services.AddScoped<UserContextTestData>();
             services.AddScoped<IUserContext>(sp =>
-                sp.GetRequiredService<TestUserContext>());
+                sp.GetRequiredService<UserContextTestData>());
         });
     }
 }

@@ -6,25 +6,25 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IUserReader
 {
-    // Pagination logic
     Task<PagedResult<UserAccountData>> GetAllAsync(
         GetUsersParameters query,
         CancellationToken cancellationToken = default);
 
-    // Search logic
     Task<IReadOnlyList<UserAccountData>> GetAsync(
         string? search,
         int offset,
         int pageSize,
         CancellationToken cancellationToken = default);
 
-    // Select logic
     Task<UserAccountData> GetByIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 
-    // Get new row version
     Task<UserAccountRowVersionData> GetNewRowAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> IsEmployee(
         Guid userId,
         CancellationToken cancellationToken = default);
 }

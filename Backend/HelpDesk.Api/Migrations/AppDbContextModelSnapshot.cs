@@ -1109,6 +1109,11 @@ namespace HelpDesk.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsPersistent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("LastActivityAt")
                         .HasColumnType("datetimeoffset");
 

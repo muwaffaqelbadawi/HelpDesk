@@ -1,8 +1,7 @@
 ﻿using HelpDesk.src.Features.Tickets.Create;
 using HelpDesk.src.Features.Tickets.Delete;
 using HelpDesk.src.Features.Tickets.GetAssigned;
-using HelpDesk.src.Features.Tickets.GetByIdOwned;
-using HelpDesk.src.Features.Tickets.GetOwned;
+using HelpDesk.src.Features.Tickets.GetMy;
 using HelpDesk.src.Features.Tickets.Update;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
@@ -11,8 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.src.Presentation.Controllers.User;
 
-public sealed class TicketController(IDateTimeService dateTimeService)
-    : ControllerBase
+public sealed class TicketController(IDateTimeService dateTimeService) : ControllerBase
 {
     // Self-Service
 
@@ -20,31 +18,13 @@ public sealed class TicketController(IDateTimeService dateTimeService)
     [HttpGet("me/tickets")]
     [Authorize]
     public async Task<IActionResult> GetCurrentTickets(
-        [FromServices] IQueryHandler<OwnedTicketResponse> handler,
+        [FromServices] IQueryHandler<GetMyTicketsResponse> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(cancellationToken);
 
-        return Ok(new ApiResponse<OwnedTicketResponse>(
+        return Ok(new ApiResponse<GetMyTicketsResponse>(
             message: ApiMessages.TicketsRetrieved,
-            time: dateTimeService,
-            data: result));
-    }
-
-    // GetByIdOwned
-    [Authorize]
-    [HttpGet("me/tickets/{ticketId:guid}", Name = nameof(GetByIdOwnedTicket))]
-    public async Task<IActionResult> GetByIdOwnedTicket(
-        [FromServices] IQueryHandler<GetByIdOwnedTicketQuery, GetByIdOwnedTicketResponse> handler,
-        [FromRoute] Guid ticketId,
-        CancellationToken cancellationToken)
-    {
-        var query = new GetByIdOwnedTicketQuery(ticketId);
-
-        var result = await handler.HandleAsync(query, cancellationToken);
-
-        return Ok(new ApiResponse<GetByIdOwnedTicketResponse>(
-            message: ApiMessages.TicketRetrieved,
             time: dateTimeService,
             data: result));
     }
@@ -67,9 +47,10 @@ public sealed class TicketController(IDateTimeService dateTimeService)
             time: dateTimeService,
             data: result);
 
+        var ticketId = result.TicketData.TicketId;
+
         return CreatedAtRoute(
-            routeName: nameof(GetByIdOwnedTicket),
-            routeValues: new { ticketId = result.TicketData.TicketId },
+            routeValues: new { ticketId },
             value: value);
     }
 

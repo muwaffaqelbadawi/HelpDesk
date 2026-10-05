@@ -10,7 +10,9 @@ public sealed class RefreshTokenHandler :
     private readonly IDateTimeService _dateTimeService;
     private readonly IRefreshTokenRevocationService _refreshTokenRevocationService;
     private readonly ITokenService _tokenService;
+    private readonly IUserContext _userContext;
     private readonly IUserReader _userReader;
+    private readonly IUserSessionReader _userSessionReader;
     private readonly IUserProvider _userProvider;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<RefreshTokenHandler> _logger;
@@ -20,7 +22,9 @@ public sealed class RefreshTokenHandler :
         IDateTimeService dateTimeService,
         IRefreshTokenRevocationService refreshTokenRevocationService,
         ITokenService tokenService,
+        IUserContext userContext,
         IUserReader userReader,
+        IUserSessionReader userSessionReader,
         IUserProvider userProvider,
         IDomainEventDispatcher dispatcher,
         ILogger<RefreshTokenHandler> logger)
@@ -29,7 +33,9 @@ public sealed class RefreshTokenHandler :
         _dateTimeService = dateTimeService;
         _refreshTokenRevocationService = refreshTokenRevocationService;
         _tokenService = tokenService;
+        _userContext = userContext;
         _userReader = userReader;
+        _userSessionReader = userSessionReader;
         _userProvider = userProvider;
         _dispatcher = dispatcher;
         _logger = logger;
@@ -72,6 +78,18 @@ public sealed class RefreshTokenHandler :
         }
 
         var now = _dateTimeService.UtcNow;
+
+        var userSessionExpiresAt = await _userSessionReader.GetExpiresAtAsync(
+            userId,
+            cancellationToken);
+
+        if (userSessionExpiresAt is null || userSessionExpiresAt <= now)
+        {
+            _logger.LogWarning("User session expired for user {userId}.", userId);
+
+            throw new AuthenticationFailedException("User session has expired.");
+        }
+
         var expiresAt = existingToken.ExpiresAt;
 
         // Check expiry
@@ -87,25 +105,27 @@ public sealed class RefreshTokenHandler :
         var user = await _userProvider.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
+        var sessionId = _userContext.SessionId;
+
         // Issue new token
         var token = await _tokenService.IssueAfterRefreshAsync(
             user,
+            sessionId,
             existingToken,
             cancellationToken);
 
         // Get user
         var userAccountData = await _userReader.GetByIdAsync(
-            userId: userId,
-            cancellationToken: cancellationToken);
+            userId,
+            cancellationToken);
 
         // Domain event
         await _dispatcher.DispatchAsync(
             @event: new TokenRefreshedEvent(
                 User: user,
                 OccurredAt: now),
-            cancellationToken: cancellationToken);
+            cancellationToken);
 
-        // Return result
         return new RefreshTokenResponse(
             UserAccountData: userAccountData,
             Token: token);

@@ -5,7 +5,9 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IUserRepository
 {
-    Task AddAsync(ApplicationUser user);
+    Task AddAsync(
+        ApplicationUser user,
+        CancellationToken cancellationToken);
 
     Task AddAsync(
         ApplicationUser user,
@@ -23,6 +25,10 @@ public interface IUserRepository
         ApplicationUser user,
         Guid currentUserId,
         DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task UpdateAsync(
+        ApplicationUser user,
         CancellationToken cancellationToken);
 
     Task<int> UpdateAsync(

@@ -1,4 +1,5 @@
 ﻿using HelpDesk.src.Infrastructure.Services.UserSession;
+using HelpDesk.src.Shared.DataAccess.Readers;
 using HelpDesk.src.Shared.DataAccess.Repositories;
 using HelpDesk.src.Shared.Interfaces;
 
@@ -22,6 +23,9 @@ public static class UserSessionExtension
     public static WebApplicationBuilder AddUserSessionServices(
        this WebApplicationBuilder builder)
     {
+        // Register UserSessionReader as scoped service
+        builder.Services.AddScoped<IUserSessionReader, UserSessionReader>();
+
         // Register UserSessionRepository as scoped service
         builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
 

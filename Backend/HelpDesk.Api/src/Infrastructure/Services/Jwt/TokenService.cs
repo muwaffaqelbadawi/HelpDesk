@@ -1,5 +1,4 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Services.Jwt;
@@ -7,20 +6,20 @@ namespace HelpDesk.src.Infrastructure.Services.Jwt;
 public sealed class TokenService : ITokenService
 {
     private readonly IDateTimeService _dateTimeService;
-    private readonly AppDbContext _dbContext;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenIssuer _tokenIssuer;
     private readonly IUserContext _userContext;
     private readonly IRefreshTokenRevocationService _refreshTokenRevocationService;
 
     public TokenService(
         IDateTimeService dateTimeService,
-        AppDbContext dbContext,
+        IRefreshTokenRepository refreshTokenRepository,
         ITokenIssuer tokenIssuer,
         IUserContext userContext,
         IRefreshTokenRevocationService refreshTokenRevocationService)
     {
         _dateTimeService = dateTimeService;
-        _dbContext = dbContext;
+        _refreshTokenRepository = refreshTokenRepository;
         _tokenIssuer = tokenIssuer;
         _userContext = userContext;
         _refreshTokenRevocationService = refreshTokenRevocationService;
@@ -28,12 +27,15 @@ public sealed class TokenService : ITokenService
 
     public async Task<TokenResult> IssueAsync(
         ApplicationUser user,
+        Guid sessionId,
         CancellationToken cancellationToken)
     {
         var now = _dateTimeService.UtcNow;
 
         // Issue new tokens
-        var token = _tokenIssuer.Issue(user);
+        var token = _tokenIssuer.Issue(
+            user,
+            sessionId);
 
         // Create RefreshToken entity
         var newRefreshTokenEntity = new ApplicationRefreshToken
@@ -49,34 +51,42 @@ public sealed class TokenService : ITokenService
             UserAgent = _userContext.UserAgent,
         };
 
-        // Add new refresh token entity to DB
-        _dbContext.RefreshTokens.Add(newRefreshTokenEntity);
-
-        // Persist everything
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        // Refresh token repo
+        await _refreshTokenRepository.AddAsync(
+            newRefreshTokenEntity,
+            cancellationToken);
 
         return token;
     }
 
     public async Task<TokenResult> IssueAfterLoginAsync(
         ApplicationUser user,
+        Guid sessionId,
         CancellationToken cancellationToken)
     {
-        return await IssueAsync(user, cancellationToken);
+        return await IssueAsync(
+            user,
+            sessionId,
+            cancellationToken);
     }
 
     public async Task<TokenResult> IssueAfterRefreshAsync(
         ApplicationUser user,
+        Guid sessionId,
         ApplicationRefreshToken existingToken,
         CancellationToken cancellationToken)
     {
         existingToken.RevokedAt = _dateTimeService.UtcNow;
 
-        return await IssueAsync(user, cancellationToken);
+        return await IssueAsync(
+            user,
+            sessionId,
+            cancellationToken);
     }
 
     public async Task<TokenResult> IssueAfterPasswordChangeAsync(
         ApplicationUser user,
+        Guid sessionId,
         CancellationToken cancellationToken)
     {
         // Revoke all refresh tokens
@@ -84,11 +94,15 @@ public sealed class TokenService : ITokenService
             user.Id,
             cancellationToken);
 
-        return await IssueAsync(user, cancellationToken);
+        return await IssueAsync(
+            user,
+            sessionId,
+            cancellationToken);
     }
 
     public async Task<TokenResult> IssueAfterResetPasswordAsync(
         ApplicationUser user,
+        Guid sessionId,
         CancellationToken cancellationToken)
     {
         // Revoke all refresh tokens
@@ -96,11 +110,15 @@ public sealed class TokenService : ITokenService
             user.Id,
             cancellationToken);
 
-        return await IssueAsync(user, cancellationToken);
+        return await IssueAsync(
+            user,
+            sessionId,
+            cancellationToken);
     }
 
     public async Task<TokenResult> IssueAfterResetForgottenPasswordAsync(
         ApplicationUser user,
+        Guid sessionId,
         CancellationToken cancellationToken)
     {
         // Revoke all refresh tokens
@@ -108,6 +126,9 @@ public sealed class TokenService : ITokenService
             user.Id,
             cancellationToken);
 
-        return await IssueAsync(user, cancellationToken);
+        return await IssueAsync(
+            user,
+            sessionId,
+            cancellationToken);
     }
 }

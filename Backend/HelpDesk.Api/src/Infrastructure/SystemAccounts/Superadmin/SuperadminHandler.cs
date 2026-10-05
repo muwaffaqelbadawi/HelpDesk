@@ -140,7 +140,7 @@ public sealed class SuperadminHandler
                 TempPassword: tempPassword),
             cancellationToken: cancellationToken);
 
-        // Return response
+
         return new SuperadminResponse(
             SuperadminData: superadminAccountData);
     }

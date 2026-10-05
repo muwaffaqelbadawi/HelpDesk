@@ -7,4 +7,8 @@ public interface IUserSessionRepository
     Task AddAsync(
         ApplicationUserSession userSession,
         CancellationToken cancellationToken);
+
+    Task UpdateAsync(
+        ApplicationUserSession userSession,
+        CancellationToken cancellationToken);
 }

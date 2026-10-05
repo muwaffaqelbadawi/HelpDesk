@@ -1,15 +1,14 @@
-﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace HelpDesk.src.Features.Auth.ResetPassword.User;
 
 public sealed class ResetPasswordHandler :
     ICommandHandler<ResetPasswordCommand, ResetPasswordResponse>
 {
+    private readonly IUserContext _userContext;
     private readonly IUserProvider _userProvider;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IResetPasswordService _resetPasswordService;
     private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
     private readonly IUserReader _userReader;
@@ -18,8 +17,9 @@ public sealed class ResetPasswordHandler :
     private readonly ILogger<ResetPasswordHandler> _logger;
 
     public ResetPasswordHandler(
+        IUserContext userContext,
         IUserProvider userProvider,
-        UserManager<ApplicationUser> userManager,
+        IResetPasswordService resetPasswordService,
         IUserRepository userRepository,
         ITokenService tokenService,
         IUserReader userReader,
@@ -27,8 +27,9 @@ public sealed class ResetPasswordHandler :
         IDomainEventDispatcher dispatcher,
         ILogger<ResetPasswordHandler> logger)
     {
+        _userContext = userContext;
         _userProvider = userProvider;
-        _userManager = userManager;
+        _resetPasswordService = resetPasswordService;
         _userRepository = userRepository;
         _tokenService = tokenService;
         _userReader = userReader;
@@ -79,13 +80,11 @@ public sealed class ResetPasswordHandler :
                 });
         }
 
-        // Reset password using the reset token
-        var result = await _userManager.ResetPasswordAsync(
+        var result = await _resetPasswordService.ResetPasswordAsync(
             user,
             resetToken,
             newPassword);
 
-        // Check if the password reset succeeded
         if (!result.Succeeded)
         {
             _logger.LogWarning(
@@ -94,7 +93,6 @@ public sealed class ResetPasswordHandler :
                 user.Id,
                 string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            // Check for specific error types
             if (result.Errors.Any(e => e.Code == "InvalidToken"))
             {
                 throw new AuthenticationFailedException("Reset token is invalid or expired.");
@@ -115,11 +113,16 @@ public sealed class ResetPasswordHandler :
         user.MustResetPassword = false;
 
         // User repo
-        await _userRepository.AddAsync(user);
+        await _userRepository.UpdateAsync(
+            user,
+            cancellationToken);
+
+        var sessionId = _userContext.SessionId;
 
         // Issue new token
         var token = await _tokenService.IssueAfterResetPasswordAsync(
             user,
+            sessionId,
             cancellationToken);
 
         // Successful log
@@ -139,7 +142,7 @@ public sealed class ResetPasswordHandler :
                 OccurredAt: _dateTimeService.UtcNow),
             cancellationToken: cancellationToken);
 
-        // Return response
+
         return new ResetPasswordResponse(
             UserAccountData: userAccountData,
             Token: token);

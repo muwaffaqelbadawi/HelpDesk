@@ -1,8 +1,5 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Projections;
-using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Tickets.Assign;
 
@@ -10,19 +7,31 @@ public sealed class AssignTicketHandler
     : ICommandHandler<AssignTicketCommand, AssignTicketResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly AppDbContext _dbContext;
+    private readonly IUserProvider _userProvider;
+    private readonly ITicketRepository _ticketRepository;
+    private readonly ITicketReader _ticketReader;
+    private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<AssignTicketHandler> _logger;
 
     public AssignTicketHandler(
         IUserContext userContext,
-        AppDbContext dbContext,
+        IUserProvider userProvider,
+        ITicketRepository ticketRepository,
+        ITicketReader ticketReader,
+        IUserReader userReader,
         IDateTimeService dateTimeService,
+        IDomainEventDispatcher dispatcher,
         ILogger<AssignTicketHandler> logger)
     {
         _userContext = userContext;
-        _dbContext = dbContext;
+        _userProvider = userProvider;
+        _ticketRepository = ticketRepository;
+        _ticketReader = ticketReader;
+        _userReader = userReader;
         _dateTimeService = dateTimeService;
+        _dispatcher = dispatcher;
         _logger = logger;
     }
 
@@ -36,54 +45,38 @@ public sealed class AssignTicketHandler
         // Assigned ticket
         var ticketId = command.TicketId;
 
-        // AssignedTo user
+        // user
         var userId = command.UserId;
 
         // now
         var now = _dateTimeService.UtcNow;
 
-        // Ticket can't be assigned to a user with no employee
-        var isEmployeeUser = await _dbContext.Users
-            .AnyAsync(
-                u => u.Id == userId
-                  && u.Employee != null,
-                cancellationToken);
+        var isEmployee = await _userReader.IsEmployee(
+            userId: userId,
+            cancellationToken: cancellationToken);
 
-        if (!isEmployeeUser)
+        if (!isEmployee)
         {
             throw new DomainException(
                 $"User {userId} cannot be assigned tickets because they are not an employee.");
         }
 
-        // Ticket row
-        var rows = await _dbContext.Tickets
-            .Where(t => t.Id == ticketId
-                     && t.RowVersion == command.TicketRowVersion
-                     && t.AssignedAt == null)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(t => t.AssignedById, currentUserId)
-                .SetProperty(t => t.AssignedToId, userId)
-                .SetProperty(t => t.AssignedAt, now),
-            cancellationToken);
+        // Ticket repo
+        var rows = await _ticketRepository.AssignAsync(
+            currentUserId: currentUserId,
+            userId: userId,
+            ticketId,
+            ticketRowVersion: command.TicketRowVersion,
+            now: now,
+            cancellationToken: cancellationToken);
 
         if (rows == 0)
         {
-            var state = await _dbContext.Tickets
-                .AsNoTracking()
-                .Where(t => t.Id == ticketId)
-                .Select(t => new
-                {
-                    t.AssignedAt,
-                    t.RowVersion
-                })
-                .SingleOrDefaultAsync(cancellationToken);
+            var (assignedAt, _) = await _ticketReader.GetStateAsync(
+                ticketId: ticketId,
+                cancellationToken: cancellationToken);
 
-            if (state is null)
-            {
-                throw new TicketNotFoundException(ticketId);
-            }
-
-            if (state.AssignedAt is not null)
+            if (assignedAt is not null)
             {
                 throw new DomainException($"Ticket {ticketId} is already assigned");
             }
@@ -92,17 +85,29 @@ public sealed class AssignTicketHandler
                 $"Ticket {ticketId} was modified or deleted by another user.");
         }
 
+        // Successful log
         _logger.LogInformation(
-            "Ticket {TicketId} assigned to user {UserId} by user {AssignedById}",
+            "Ticket {TicketId} assigned to user {UserId} by user {admin}",
             ticketId,
             userId,
             currentUserId);
 
-        var ticketData = await _dbContext.Tickets
-            .AsNoTracking()
-            .Where(t => t.Id == ticketId)
-            .SelectTicketData()
-            .SingleAsync(cancellationToken);
+        // ticket reader
+        var ticketData = await _ticketReader.GetByIdAsync(
+            ticketId: ticketId,
+            cancellationToken: cancellationToken);
+
+        // Retrieve current user for domain event
+        var user = await _userProvider.GetUserAsync(userId.ToString())
+            ?? throw new AuthenticationRequiredException();
+
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new TicketAssignedEvent(
+                User: user,
+                OccurredAt: now,
+                TicketId: ticketId),
+            cancellationToken: cancellationToken);
 
         return new AssignTicketResponse(ticketData);
     }

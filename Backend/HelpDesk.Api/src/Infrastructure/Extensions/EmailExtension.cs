@@ -8,9 +8,11 @@ public static class EmailExtension
     public static WebApplicationBuilder AddSmtpConfigs(
        this WebApplicationBuilder builder)
     {
+        var smtpSection = builder.Configuration.GetSection("Smtp");
+
         builder.Services
             .AddOptions<SmtpSettings>()
-            .Bind(builder.Configuration.GetSection("Smtp"))
+            .Bind(smtpSection)
             .ValidateOnStart();
 
         return builder;

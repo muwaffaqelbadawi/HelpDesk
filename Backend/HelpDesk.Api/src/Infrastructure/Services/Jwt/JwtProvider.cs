@@ -12,7 +12,9 @@ public sealed class JwtProvider(
     IDateTimeService dateTimeService,
     IClaimProvider claimsProvider) : IJwtProvider
 {
-    public string GenerateAccessToken(ApplicationUser user)
+    public string GenerateAccessToken(
+        ApplicationUser user,
+        Guid sessionId)
     {
         var key = Encoding.UTF8.GetBytes(jwtOptions.Value.Key);
 
@@ -20,7 +22,9 @@ public sealed class JwtProvider(
             new SymmetricSecurityKey(key),
             SecurityAlgorithms.HmacSha256Signature);
 
-        var claims = claimsProvider.GetClaims(user);
+        var claims = claimsProvider.GetClaims(
+            user,
+            sessionId);
 
         var now = dateTimeService.UtcNowDateTime;
 

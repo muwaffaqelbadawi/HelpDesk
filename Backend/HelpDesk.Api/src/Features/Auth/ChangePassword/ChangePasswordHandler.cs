@@ -111,9 +111,12 @@ public sealed class ChangePasswordHandler :
 
         await _userManager.UpdateAsync(user);
 
+        var sessionId = _userContext.SessionId;
+
         // Issue new token
         var token = await _tokenService.IssueAfterPasswordChangeAsync(
             user,
+            sessionId,
             cancellationToken);
 
         // Success log
@@ -122,8 +125,8 @@ public sealed class ChangePasswordHandler :
 
         // Get user
         var userAccountData = await _userReader.GetByIdAsync(
-            userId: user.Id,
-            cancellationToken: cancellationToken);
+            user.Id,
+            cancellationToken);
 
         // Domain event
         await _dispatcher.DispatchAsync(
@@ -132,7 +135,6 @@ public sealed class ChangePasswordHandler :
                 OccurredAt: _dateTimeService.UtcNow),
             cancellationToken: cancellationToken);
 
-        // Return response
         return new ChangePasswordResponse(
             UserAccountData: userAccountData,
             Token: token);

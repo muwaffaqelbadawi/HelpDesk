@@ -6,30 +6,33 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface ITicketReader
 {
-    // Pagination logic
     Task<PagedResult<TicketData>> GetAllAsync(
         GetTicketsParameters query,
         CancellationToken cancellationToken = default);
 
-    // Search logic
+    Task<IReadOnlyCollection<TicketData>> GetAssignedAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyCollection<TicketData>> GetAsync(
         string? search,
         int offset,
         int pageSize,
         CancellationToken cancellationToken = default);
 
-    // Select data logic
     Task<TicketData> GetByIdAsync(
         Guid ticketId,
         CancellationToken cancellationToken = default);
 
-    // Get Owned Tickets
-    Task<IReadOnlyCollection<TicketData>> GetOwnedTicketsAsync(
+    Task<IReadOnlyCollection<TicketData>> GetMyTicketsAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 
-    // Get new row version
     Task<byte[]> GetNewRowAsync(
+        Guid ticketId,
+        CancellationToken cancellationToken = default);
+
+    Task<(DateTimeOffset? AssignedAt, byte[] RowVersion)> GetStateAsync(
         Guid ticketId,
         CancellationToken cancellationToken = default);
 }

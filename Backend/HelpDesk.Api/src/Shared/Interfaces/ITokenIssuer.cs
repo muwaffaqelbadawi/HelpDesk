@@ -5,5 +5,7 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface ITokenIssuer
 {
-    TokenResult Issue(ApplicationUser user);
+    TokenResult Issue(
+        ApplicationUser user,
+        Guid sessionId);
 }

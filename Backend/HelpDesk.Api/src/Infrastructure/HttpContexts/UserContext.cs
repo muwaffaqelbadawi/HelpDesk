@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
@@ -36,6 +37,20 @@ public sealed class UserContext(IHttpContextAccessor context) : IUserContext
         return !Guid.TryParse(id, out var guid)
             ? throw new AuthenticationRequiredException()
             : guid;
+    }
+
+    public Guid SessionId
+    {
+        get
+        {
+            var sessionId = context.HttpContext?
+                .User
+                .FindFirstValue(JwtRegisteredClaimNames.Sid);
+
+            return !Guid.TryParse(sessionId, out var guid)
+                ? throw new AuthenticationRequiredException()
+                : guid;
+        }
     }
 
     public string UserName

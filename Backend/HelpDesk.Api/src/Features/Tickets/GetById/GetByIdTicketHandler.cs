@@ -1,31 +1,18 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Shared.Exceptions;
-using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Projections;
-using Microsoft.EntityFrameworkCore;
+﻿using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Tickets.GetById;
 
-public sealed class GetByIdTicketHandler
+public sealed class GetByIdTicketHandler(ITicketReader ticketReader)
     : IQueryHandler<GetByIdTicketQuery, GetByIdTicketResponse>
 {
-    private readonly AppDbContext _dbContext;
-
-    public GetByIdTicketHandler(AppDbContext context)
-    {
-        _dbContext = context;
-    }
-
     public async Task<GetByIdTicketResponse> HandleAsync(
         GetByIdTicketQuery query,
         CancellationToken cancellationToken)
     {
-        var ticket = await _dbContext.Tickets
-            .Where(t => t.Id == query.TicketId)
-            .SelectTicketData()
-            .SingleOrDefaultAsync(cancellationToken)
-                ?? throw new TicketNotFoundException(query.TicketId);
+        var ticketData = await ticketReader.GetByIdAsync(
+            ticketId: query.TicketId,
+            cancellationToken: cancellationToken);
 
-        return new GetByIdTicketResponse(ticket);
+        return new GetByIdTicketResponse(ticketData);
     }
 }

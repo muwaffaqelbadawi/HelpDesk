@@ -89,7 +89,6 @@ public sealed class UpdateTicketHandler :
                 TicketId: command.TicketId),
             cancellationToken: cancellationToken);
 
-        // Return response
         return new UpdateTicketResponse(
             NewRowVersion: newRowVersion);
     }

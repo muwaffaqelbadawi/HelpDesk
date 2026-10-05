@@ -2,8 +2,12 @@
 
 public sealed class UserSessionOptions
 {
-    public int UserSessionExpiryDays { get; init; }
+    public int DefaultSessionExpiryMinutes { get; init; }
+    public int PersistentSessionExpiryDays { get; init; }
 
-    public TimeSpan UserSessionLifetime =>
-        TimeSpan.FromDays(UserSessionExpiryDays);
+    public TimeSpan DefaultSessionLifetime =>
+        TimeSpan.FromMinutes(DefaultSessionExpiryMinutes);
+
+    public TimeSpan PersistentSessionLifetime =>
+        TimeSpan.FromDays(PersistentSessionExpiryDays);
 }

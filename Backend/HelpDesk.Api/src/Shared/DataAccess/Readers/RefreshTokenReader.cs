@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.DataAccess.Readers;
 
-public sealed class RefreshTokenReader(AppDbContext dbContext)
-    : IRefreshTokenReader
+public sealed class RefreshTokenReader(AppDbContext dbContext) : IRefreshTokenReader
 {
     public async Task<ApplicationRefreshToken?> GetRefreshTokenAsync(
         string refreshToken,

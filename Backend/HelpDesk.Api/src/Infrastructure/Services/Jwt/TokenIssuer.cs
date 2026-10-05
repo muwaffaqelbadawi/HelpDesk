@@ -23,10 +23,14 @@ public sealed class TokenIssuer : ITokenIssuer
         _dateTimeService = dateTimeService;
     }
 
-    public TokenResult Issue(ApplicationUser user)
+    public TokenResult Issue(
+        ApplicationUser user,
+        Guid sessionId)
     {
         // Generate access token
-        var accessToken = _jwtProvider.GenerateAccessToken(user);
+        var accessToken = _jwtProvider.GenerateAccessToken(
+            user,
+            sessionId);
 
         // Generate refresh token
         var refreshToken = _refreshTokenProvider.GenerateRefreshToken();

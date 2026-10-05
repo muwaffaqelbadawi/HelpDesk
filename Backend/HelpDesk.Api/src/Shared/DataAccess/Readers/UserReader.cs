@@ -8,10 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.DataAccess.Readers;
 
-public sealed class UserReader(AppDbContext dbContext)
-    : IUserReader
+public sealed class UserReader(AppDbContext dbContext) : IUserReader
 {
-    // Pagination logic
     public async Task<PagedResult<UserAccountData>> GetAllAsync(
         GetUsersParameters query,
         CancellationToken cancellationToken = default)
@@ -39,7 +37,6 @@ public sealed class UserReader(AppDbContext dbContext)
             TotalPages: totalPages);
     }
 
-    // Search logic
     public async Task<IReadOnlyList<UserAccountData>> GetAsync(
         string? search,
         int offset,
@@ -68,12 +65,10 @@ public sealed class UserReader(AppDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
-    // Select data logic
     public async Task<UserAccountData> GetByIdAsync(
         Guid userId,
         CancellationToken cancellationToken)
     {
-        // User reader
         return await dbContext.Users
             .AsNoTracking()
             .Where(u => u.Id == userId)
@@ -81,12 +76,10 @@ public sealed class UserReader(AppDbContext dbContext)
             .SingleAsync(cancellationToken);
     }
 
-    // Get new row version
     public async Task<UserAccountRowVersionData> GetNewRowAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        // move to user reader
         return await dbContext.Users
             .Where(u => u.Id == userId)
             .Select(u => new UserAccountRowVersionData
@@ -95,5 +88,15 @@ public sealed class UserReader(AppDbContext dbContext)
                 EmployeeRowVersion = u.Employee!.RowVersion
             })
             .SingleAsync(cancellationToken);
+    }
+
+    public async Task<bool> IsEmployee(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Users
+            .AnyAsync(
+                u => u.Id == userId && u.Employee != null,
+                cancellationToken);
     }
 }

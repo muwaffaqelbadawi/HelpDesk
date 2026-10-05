@@ -2,6 +2,7 @@
 using HelpDesk.src.Infrastructure.Extensions;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.DataAccess.Readers;
+using HelpDesk.src.Shared.DataAccess.Repositories;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +27,9 @@ public static class JwtExtension
     public static WebApplicationBuilder AddJwtServices(
         this WebApplicationBuilder builder)
     {
+        // Register RefreshTokenRepository as scoped
+        builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
         // Register RefreshTokenReader as scoped
         builder.Services.AddScoped<IRefreshTokenReader, RefreshTokenReader>();
 

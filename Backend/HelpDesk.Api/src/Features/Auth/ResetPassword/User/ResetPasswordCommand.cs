@@ -6,4 +6,4 @@ public sealed record ResetPasswordCommand(
     string UserId,
     string ResetToken,
     string NewPassword,
-    string ConfirmNewPassword) : IPasswordResetAllowedCommand;
+    string ConfirmNewPassword) : ISystemCommand;

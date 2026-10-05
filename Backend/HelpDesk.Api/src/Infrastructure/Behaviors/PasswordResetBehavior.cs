@@ -2,7 +2,7 @@
 
 namespace HelpDesk.src.Infrastructure.Behaviors;
 
-public sealed class PasswordResetBehavior<TCommand>(IPasswordResetPolicy policy)
+public sealed class PasswordResetBehavior<TCommand>(IResetPasswordPolicy policy)
     : ICommandHandlerBehavior<TCommand>
 {
     public async Task HandleAsync(
@@ -10,7 +10,7 @@ public sealed class PasswordResetBehavior<TCommand>(IPasswordResetPolicy policy)
         Func<Task> next,
         CancellationToken cancellationToken)
     {
-        if (command is IPasswordResetAllowedCommand)
+        if (command is ISystemCommand)
         {
             await next();
             return;
@@ -24,7 +24,7 @@ public sealed class PasswordResetBehavior<TCommand>(IPasswordResetPolicy policy)
 }
 
 public sealed class PasswordResetBehavior<TCommand, TResult>(
-    IPasswordResetPolicy policy)
+    IResetPasswordPolicy policy)
     : ICommandHandlerBehavior<TCommand, TResult>
 {
     public async Task<TResult> HandleAsync(
@@ -32,7 +32,7 @@ public sealed class PasswordResetBehavior<TCommand, TResult>(
         Func<Task<TResult>> next,
         CancellationToken cancellationToken)
     {
-        if (command is IPasswordResetAllowedCommand)
+        if (command is ISystemCommand)
         {
             return await next();
         }

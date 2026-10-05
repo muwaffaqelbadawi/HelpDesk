@@ -1,8 +1,8 @@
 ﻿using HelpDesk.src.Features.Auth.Modules.GetCurrent;
 using HelpDesk.src.Features.Auth.Permissions.GetCurrent;
 using HelpDesk.src.Features.Auth.Roles.GetCurrent;
-using HelpDesk.src.Features.Users.UserAccount.User.GetCurrent;
-using HelpDesk.src.Features.Users.UserAccount.User.UpdateCurrent;
+using HelpDesk.src.Features.Users.GetMy;
+using HelpDesk.src.Features.Users.UpdateMy;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -20,12 +20,12 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
     // GetCurrent
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentUserAccount(
-        [FromServices] IQueryHandler<CurrentUserAccountResponse> handler,
+        [FromServices] IQueryHandler<GetMyUserAccountResponse> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(cancellationToken);
 
-        return Ok(new ApiResponse<CurrentUserAccountResponse>(
+        return Ok(new ApiResponse<GetMyUserAccountResponse>(
             message: ApiMessages.UserRetrieved,
             time: dateTimeService,
             data: result));
@@ -34,11 +34,11 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
     // UpdateCurrent
     [HttpPut("me")]
     public async Task<IActionResult> UpdateCurrentUserAccount(
-        [FromServices] ICommandHandler<UpdateCurrentUserAccountCommand, UpdateCurrentUserAccountResponse> handler,
-        [FromBody] UpdateCurrentUserAccountBody body,
+        [FromServices] ICommandHandler<UpdateMyUserAccountCommand, UpdateMyUserAccountResponse> handler,
+        [FromBody] UpdateMyUserAccountBody body,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateCurrentUserAccountCommand(
+        var command = new UpdateMyUserAccountCommand(
             body.FullEnName,
             body.FullArName,
             body.UserName,

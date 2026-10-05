@@ -5,6 +5,4 @@ namespace HelpDesk.src.Shared.Interfaces;
 public interface IUserProvider
 {
     Task<ApplicationUser?> GetUserAsync(string userId);
-
-    Task<IReadOnlyCollection<string>> GetRoleNamesAsync(ApplicationUser user);
 }

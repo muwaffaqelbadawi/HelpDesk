@@ -14,9 +14,12 @@ public sealed class UserRepository(
     ILogger<UserRepository> logger)
         : IUserRepository
 {
-    public async Task AddAsync(ApplicationUser user)
+    public async Task AddAsync(
+        ApplicationUser user,
+        CancellationToken cancellationToken)
     {
-        await userManager.UpdateAsync(user);
+        dbContext.Users.Add(user);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AddToHistory(
@@ -135,6 +138,14 @@ public sealed class UserRepository(
             await transaction.RollbackAsync(cancellationToken);
             throw;
         }
+    }
+
+    public async Task UpdateAsync(
+        ApplicationUser user,
+        CancellationToken cancellationToken)
+    {
+        await userManager.UpdateAsync(user);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<int> UpdateAsync(

@@ -2,6 +2,7 @@
 using HelpDesk.src.Infrastructure.HttpContexts;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Infrastructure.Services.ResetPassword;
+using HelpDesk.src.Infrastructure.Services.RoleProviders;
 using HelpDesk.src.Infrastructure.Services.Security;
 using HelpDesk.src.Infrastructure.Services.UserProviders;
 using HelpDesk.src.Shared.IdentityBuilders;
@@ -28,6 +29,10 @@ public static class AuthenticationServicesExtension
         // UserProvider
         // Register the UserProvider as a scoped service
         builder.Services.AddScoped<IUserProvider, UserProvider>();
+
+        // RoleProvider
+        // Register the RoleProvider as a scoped service
+        builder.Services.AddScoped<IRoleProvider, RoleProvider>();
 
         // Register the UserIdentityFilter as a scoped service
         builder.Services.AddScoped<IdentityFilter>();
@@ -59,11 +64,14 @@ public static class AuthenticationServicesExtension
         // Register the RefreshTokenService as a scoped service
         builder.Services.AddScoped<ITokenService, TokenService>();
 
-        // Register PasswordResetPolicy as scoped service
-        builder.Services.AddScoped<IPasswordResetPolicy, PasswordResetPolicy>();
+        // Register ResetPasswordPolicy as scoped service
+        builder.Services.AddScoped<IResetPasswordPolicy, ResetPasswordPolicy>();
 
-        // IPasswordResetState as scoped service
-        builder.Services.AddScoped<IPasswordResetState, PasswordResetState>();
+        // Register ResetPasswordState as scoped service
+        builder.Services.AddScoped<IResetPasswordState, ResetPasswordState>();
+
+        // Register ResetPasswordService as scoped service
+        builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 
         return builder;
     }

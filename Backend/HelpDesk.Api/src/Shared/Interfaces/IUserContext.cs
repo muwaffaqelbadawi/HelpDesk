@@ -8,6 +8,8 @@ public interface IUserContext
 
     Guid ToGuidId(string id);
 
+    Guid SessionId { get; }
+
     string UserName { get; }
 
     string? UserAgent { get; }

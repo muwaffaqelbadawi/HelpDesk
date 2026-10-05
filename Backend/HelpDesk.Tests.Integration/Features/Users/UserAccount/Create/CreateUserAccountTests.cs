@@ -1,13 +1,10 @@
-﻿using HelpDesk.src.Features.Users.UserAccount.Admin.Create;
+﻿using HelpDesk.src.Features.Users.Create;
 using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Sectors;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.Tests.Integration.Fixtures;
-using HelpDesk.Tests.Integration.TestDoubles;
+using HelpDesk.Tests.Integration.TestData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PhoneNumbers;
 using Xunit;
 
 namespace HelpDesk.Tests.Integration.Features.Users.UserAccount.Create;
@@ -19,7 +16,6 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
     public async Task Should_create_user_account()
     {
         // Arrange
-
         await using var scope =
             factory.Services.CreateAsyncScope();
 
@@ -49,16 +45,9 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
             .Select(x => x.Id)
             .SingleAsync(CancellationToken.None);
 
-        // Phone number
-        var phoneUtil = PhoneNumberUtil.GetInstance();
-        var number = phoneUtil.GetExampleNumber("SA");
-        var phone = phoneUtil.Format(
-            number,
-            PhoneNumberFormat.E164);
-
         // Test user context
         var testUserContext = scope.ServiceProvider
-            .GetRequiredService<TestUserContext>();
+            .GetRequiredService<UserContextTestData>();
 
         // Query superadmin ID
         var superAdminId = await db.Users
@@ -69,17 +58,8 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
         // Set superadmin ID
         testUserContext.GuidUserId = superAdminId;
 
-        // command
-        var command = new CreateUserAccountCommand(
-            UserName: "johndo",
-            Email: "johndo@example.com",
-            PhoneNumber: phone,
-            FullEnName: "John Do",
-            FullArName: "جون دو",
-            JobTitle: "Software engineer",
-            DepartmentId: DepartmentsIds.InformationTechnology,
-            SectorId: SectorsIds.Technology,
-            CountryId: countryId);
+        // command (Only enter the countryId everything else is automated!)
+        var command = UserTestData.CreateUserCommand(countryId);
 
         // Act
         await handler.HandleAsync(

@@ -7,7 +7,9 @@ namespace HelpDesk.src.Infrastructure.Services.Jwt;
 
 public sealed class ClaimProvider(IDateTimeService dateTimeService) : IClaimProvider
 {
-    public IDictionary<string, object> GetClaims(ApplicationUser user)
+    public IDictionary<string, object> GetClaims(
+        ApplicationUser user,
+        Guid sessionId)
     {
         var userName =
             user.UserName
@@ -27,6 +29,8 @@ public sealed class ClaimProvider(IDateTimeService dateTimeService) : IClaimProv
                 [JwtRegisteredClaimNames.Name] = userName,
 
                 [JwtRegisteredClaimNames.UniqueName] = userName,
+
+                [JwtRegisteredClaimNames.Sid] = sessionId,
 
                 [JwtRegisteredClaimNames.Jti] = Guid.NewGuid(),
 

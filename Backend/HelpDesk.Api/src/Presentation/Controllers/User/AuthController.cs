@@ -29,8 +29,9 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
         CancellationToken cancellationToken)
     {
         var command = new LoginCommand(
-            body.Identity,
-            body.Password);
+            Username: body.Username,
+            Password: body.Password,
+            StaySignedIn: body.StaySignedIn);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 

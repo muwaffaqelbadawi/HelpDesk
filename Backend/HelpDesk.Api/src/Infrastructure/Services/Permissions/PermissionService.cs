@@ -8,6 +8,7 @@ namespace HelpDesk.src.Infrastructure.Services.Permissions;
 public sealed class PermissionService(
     IUserContext userContext,
     IUserProvider userProvider,
+    IRoleProvider roleProvider,
     AppDbContext dbContext)
         : IPermissionService
 {
@@ -20,7 +21,7 @@ public sealed class PermissionService(
             ?? throw new AuthenticationRequiredException();
 
         // Get user roles
-        var roles = await userProvider.GetRoleNamesAsync(user);
+        var roles = await roleProvider.GetRoleNamesAsync(user);
 
         // Build permissions
         var permissions = await dbContext.RolePermissionModules

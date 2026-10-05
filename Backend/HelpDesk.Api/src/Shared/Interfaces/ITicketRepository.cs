@@ -5,6 +5,14 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface ITicketRepository
 {
+    Task<int> AssignAsync(
+        Guid currentUserId,
+        Guid userId,
+        Guid ticketId,
+        byte[] ticketRowVersion,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
     Task AddAsync(
         Ticket ticket,
         CancellationToken cancellationToken);

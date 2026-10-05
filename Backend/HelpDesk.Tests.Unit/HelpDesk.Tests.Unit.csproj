@@ -20,4 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="../HelpDesk.Api/HelpDesk.Api.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Users\UpdateMy\" />
+  </ItemGroup>
 </Project>
