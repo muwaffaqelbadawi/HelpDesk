@@ -15,12 +15,6 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
         try
         {
             await next(context);
-
-            logger.LogInformation(
-                "Request {method} {path} completed with status code {statusCode}",
-                context.Request.Method,
-                context.Request.Path,
-                context.Response.StatusCode);
         }
         catch (Exception ex)
         {

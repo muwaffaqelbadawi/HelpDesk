@@ -43,10 +43,6 @@ public sealed class ResetForgottenPasswordHandler :
         var user = await _userManager.FindByIdAsync(command.UserId.ToString())
             ?? throw new UserNotFoundException(command.UserId);
 
-
-
-
-
         // Reset password using the reset token
         var result = await _userManager.ResetPasswordAsync(
             user,
@@ -90,18 +86,13 @@ public sealed class ResetForgottenPasswordHandler :
             sessionId,
             cancellationToken);
 
-
         // Successful log
         _logger.LogInformation(
             "User {UserId} reset their password via forgot password flow",
             user.Id);
 
 
-        // Domain event
-
-
-
-
+        // TODO: Domain event
 
         // TODO: use user reader instead
         var userAccountData = await _dbContext.Users
