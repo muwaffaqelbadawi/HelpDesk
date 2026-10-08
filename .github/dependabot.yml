@@ -38,7 +38,7 @@ updates:
         versions: [">=21.0.0"]
       - dependency-name: "primeng*"
         versions: [">=21.0.0"]
-      - dependency-name: "@types/jasmine"
+      - dependency-name: "@types/jasmine*"
         versions: [">=6.0.0"]
       - dependency-name: "typescript"
         versions: [">=6.0.0"]
