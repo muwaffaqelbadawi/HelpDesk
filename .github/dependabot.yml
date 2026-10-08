@@ -40,5 +40,7 @@ updates:
         versions: [">=21.0.0"]
       - dependency-name: "@types/jasmine"
         versions: [">=6.0.0"]
+      - dependency-name: "@types/jasmine-core"
+        versions: [">=6.0.0"]
       - dependency-name: "typescript"
         versions: [">=6.0.0"]
