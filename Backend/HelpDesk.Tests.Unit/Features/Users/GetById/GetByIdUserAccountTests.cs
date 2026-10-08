@@ -1,40 +1,31 @@
-﻿using HelpDesk.src.Features.Users.GetMy;
+﻿using HelpDesk.src.Features.Users.GetById;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace HelpDesk.Tests.Unit.Features.Users.GetMy;
+namespace HelpDesk.Tests.Unit.Features.Users.GetById;
 
-public sealed class GetMyUserAccountTests
+public sealed class GetByIdUserAccountTests
 {
     [Fact]
-    public async Task Should_get_my_user_account()
+    public async Task Should_get_by_id_user_account()
     {
         // Arrange
-        var userContext = new Mock<IUserContext>();
         var userReader = new Mock<IUserReader>();
-        var logger = new Mock<ILogger<GetMyUserAccountHandler>>();
+        var logger = new Mock<ILogger<GetByIdUserAccountHandler>>();
 
         // SUT (System Under Test)
-        var handler = new GetMyUserAccountHandler(
-            userContext.Object,
+        var handler = new GetByIdUserAccountHandler(
             userReader.Object,
             logger.Object);
 
         // userAccountData
         var userAccountData = new UserAccountData();
 
-        // userId
-        var userId = Guid.NewGuid();
-
-        userContext
-            .Setup(x => x.GuidUserId)
-            .Returns(userId);
-
         // Prepare expected user data for assertion
-        var expectedUser = new GetMyUserAccountResponse(userAccountData);
+        var expectedUser = new GetByIdUserAccountResponse(userAccountData);
 
         // Mock user reader to return the expected user account data
         userReader
@@ -44,7 +35,9 @@ public sealed class GetMyUserAccountTests
             .ReturnsAsync(userAccountData);
 
         // Act
-        var result = await handler.HandleAsync(CancellationToken.None);
+        var result = await handler.HandleAsync(
+            new GetByIdUserAccountQuery(Guid.NewGuid()),
+            CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);

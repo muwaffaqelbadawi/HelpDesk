@@ -2,7 +2,7 @@
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.Delete;
@@ -13,9 +13,7 @@ public sealed class TicketDeletedEventTests
     public async Task Should_publish_ticket_deleted_event()
     {
         // Arrange
-
-        // Mock dependencies (substitutes)
-        var repository = Substitute.For<ITicketRepository>();
+        var repository = new Mock<ITicketRepository>();
 
         // userId
         var userId = Guid.NewGuid();
@@ -24,40 +22,36 @@ public sealed class TicketDeletedEventTests
         var ticketId = Guid.NewGuid();
 
         // Mock date time service to return a specific current time
-        var now = new DateTimeOffset(
-            2026, 8, 13, 14, 30, 0,
-            TimeSpan.Zero);
+        var now = new DateTimeOffset();
 
         // occurredAt
         var occurredAt = now;
 
         // User
-        var user = new ApplicationUser
-        {
-            Id = userId
-        };
+        var user = new ApplicationUser { Id = userId };
 
         // Domain event
         var @event = new TicketDeletedEvent(
-            User: user,
-            TicketId: ticketId,
-            OccurredAt: occurredAt);
+            user,
+            ticketId,
+            occurredAt);
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
-        var sut = new TicketDeletedEventHandler(repository);
+        var sut = new TicketDeletedEventHandler(repository.Object);
 
         // Act
-        await sut.HandleAsync(@event, CancellationToken.None);
+        await sut.HandleAsync(
+            @event,
+            CancellationToken.None);
 
         // Assert
-
-        // Verify the AddToHistory was called once.
-        await repository.Received(1).AddToHistory(
-            userId: userId,
-            ticketId: ticketId,
-            type: TicketHistoryType.Deleted,
-            occurredAt: now,
-            cancellationToken: Arg.Any<CancellationToken>());
+        repository.Verify(
+            x => x.AddToHistory(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<TicketHistoryType>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
     }
 }

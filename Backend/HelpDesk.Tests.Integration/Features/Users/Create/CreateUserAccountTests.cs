@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace HelpDesk.Tests.Integration.Features.Users.UserAccount.Create;
+namespace HelpDesk.Tests.Integration.Features.Users.Create;
 
 public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
     : IClassFixture<HelpDeskApplicationFactory>

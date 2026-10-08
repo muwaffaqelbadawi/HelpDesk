@@ -1,8 +1,7 @@
 ﻿namespace HelpDesk.src.Shared.Exceptions;
 
-public sealed class ConcurrencyException : ConflictException
+public sealed class ConcurrencyException : Exception
 {
-    // 409 ConflictException
     public ConcurrencyException(string message)
         : base(message)
     {

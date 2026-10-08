@@ -176,7 +176,7 @@ public sealed class UserRepository(
             cancellationToken);
     }
 
-    public async Task<int> UpdateCurrentAsync(
+    public async Task<int> UpdateAsync(
         Guid userId,
         string userName,
         string email,

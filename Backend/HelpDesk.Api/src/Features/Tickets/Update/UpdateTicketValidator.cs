@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using HelpDesk.src.Shared.Policies;
 
 namespace HelpDesk.src.Features.Tickets.Update;
 
@@ -12,11 +11,11 @@ public sealed class UpdateTicketValidator : AbstractValidator<UpdateTicketComman
 
         RuleFor(x => x.TicketTitle)
             .NotEmpty()
-            .MaximumLength(TicketPolicy.TitleMaxLength);
+            .MaximumLength(200);
 
         RuleFor(x => x.TicketSubject)
             .NotEmpty()
-            .MaximumLength(TicketPolicy.SubjectMaxLength);
+            .MaximumLength(1000);
 
         RuleFor(x => x.TicketPriorityId)
             .NotEmpty();

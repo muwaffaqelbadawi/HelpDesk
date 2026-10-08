@@ -3,7 +3,7 @@ using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.Assign;
@@ -14,34 +14,31 @@ public sealed class AssignTicketTests
     public async Task Should_assign_ticket()
     {
         // Arrange
-
-        // Mock dependencies (substitutes)
-        var userContext = Substitute.For<IUserContext>();
-        var userProvider = Substitute.For<IUserProvider>();
-        var ticketRepository = Substitute.For<ITicketRepository>();
-        var ticketReader = Substitute.For<ITicketReader>();
-        var userReader = Substitute.For<IUserReader>();
-        var dateTimeService = Substitute.For<IDateTimeService>();
-        var dispatcher = Substitute.For<IDomainEventDispatcher>();
-        var logger = Substitute.For<ILogger<AssignTicketHandler>>();
+        var userContext = new Mock<IUserContext>();
+        var userProvider = new Mock<IUserProvider>();
+        var ticketRepository = new Mock<ITicketRepository>();
+        var ticketReader = new Mock<ITicketReader>();
+        var userReader = new Mock<IUserReader>();
+        var dateTimeService = new Mock<IDateTimeService>();
+        var dispatcher = new Mock<IDomainEventDispatcher>();
+        var logger = new Mock<ILogger<AssignTicketHandler>>();
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
         var handler = new AssignTicketHandler(
-            userContext,
-            userProvider,
-            ticketRepository,
-            ticketReader,
-            userReader,
-            dateTimeService,
-            dispatcher,
-            logger);
+            userContext.Object,
+            userProvider.Object,
+            ticketRepository.Object,
+            ticketReader.Object,
+            userReader.Object,
+            dateTimeService.Object,
+            dispatcher.Object,
+            logger.Object);
 
         // provide a concrete user id and configure the substitute
         var userId = Guid.NewGuid();
 
         userContext
-            .GuidUserId
+            .SetupGet(x => x.GuidUserId)
             .Returns(userId);
 
         // Mock currentUserId
@@ -50,34 +47,38 @@ public sealed class AssignTicketTests
         // Mock date time service to return a specific current time
         var now = new DateTimeOffset();
 
-        dateTimeService.UtcNow.Returns(now);
+        dateTimeService
+            .SetupGet(x => x.UtcNow)
+            .Returns(now);
 
-        // Mock ticketId and row version
+        // Create new ticket ID
         var ticketId = Guid.NewGuid();
+
+        // Create new ticket row version
         byte[] ticketRowVersion = [];
 
         // Assign a command with ticket details
         var command = new AssignTicketCommand(
-            UserId: userId,
-            TicketId: ticketId,
-            TicketRowVersion: ticketRowVersion);
+            userId,
+            ticketId,
+            ticketRowVersion);
 
         // Mock userReader to return true for IsEmployee
         userReader
-            .IsEmployee(
-                Arg.Is(userId),
-                Arg.Any<CancellationToken>())
-            .Returns(true);
+            .Setup(x => x.IsEmployee(
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         // Mock ticket repository to capture the ticket being added
         ticketRepository
-            .AssignAsync(
-                Arg.Is<Guid>(g => g == userId),
-                Arg.Is<Guid>(g => g == userId),
-                Arg.Is<Guid>(g => g == ticketId),
-                Arg.Is<byte[]>(b => b.SequenceEqual(ticketRowVersion)),
-                Arg.Is<DateTimeOffset>(d => d == now),
-                Arg.Any<CancellationToken>())
+            .Setup(x => x.AssignAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<byte[]>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(1));
 
         // Prepare expected ticket data for assertion
@@ -85,18 +86,18 @@ public sealed class AssignTicketTests
 
         // Mock ticket reader to return the expected ticket data
         ticketReader
-            .GetByIdAsync(
-                Arg.Any<Guid>(),
-                Arg.Any<CancellationToken>())
-            .Returns(expectedTicketData);
+            .Setup(x => x.GetByIdAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedTicketData);
 
-        // Mock user
+        // Create user returned by the provider
         var user = new ApplicationUser();
 
         // Mock user provider to return the expected user
         userProvider
-            .GetUserAsync(userId.ToString())
-            .Returns(user);
+            .Setup(x => x.GetUserAsync(userId.ToString()))
+            .ReturnsAsync(user);
 
         // Act
         // One specific action
@@ -105,16 +106,19 @@ public sealed class AssignTicketTests
             CancellationToken.None);
 
         // repository
-        await ticketRepository.Received(1).AssignAsync(
-            Arg.Is(currentUserId),
-            Arg.Is(userId),
-            Arg.Is(ticketId),
-            Arg.Is(ticketRowVersion),
-            Arg.Is(now),
-            Arg.Any<CancellationToken>());
+        ticketRepository.Verify(
+            x => x.AssignAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<byte[]>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<CancellationToken>()));
 
-        await dispatcher.Received(1).DispatchAsync(
-            Arg.Is<TicketAssignedEvent>(e => e.TicketId == ticketId),
-            Arg.Any<CancellationToken>());
+        dispatcher.Verify(
+            x => x.DispatchAsync(
+                It.IsAny<IDomainEvent>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

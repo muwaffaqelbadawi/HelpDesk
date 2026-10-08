@@ -3,7 +3,7 @@ using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.GetAll;
@@ -16,11 +16,10 @@ public sealed class GetAllTicketsTests
         // Arrange
 
         // Mock dependencies (substitutes)
-        var ticketReader = Substitute.For<ITicketReader>();
+        var ticketReader = new Mock<ITicketReader>();
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
-        var handler = new GetTicketsHandler(ticketReader);
+        var handler = new GetTicketsHandler(ticketReader.Object);
 
         // Prepare expected ticket data for assertion
         var expectedTicketData = new PagedResult<TicketData>(
@@ -32,10 +31,10 @@ public sealed class GetAllTicketsTests
 
         // Mock ticket reader to return the expected ticket data
         ticketReader
-            .GetAllAsync(
-                Arg.Any<GetTicketsParameters>(),
-                Arg.Any<CancellationToken>())
-            .Returns(expectedTicketData);
+            .Setup(x => x.GetAllAsync(
+                It.IsAny<GetTicketsParameters>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedTicketData);
 
         // Act
         // One specific action
@@ -44,15 +43,13 @@ public sealed class GetAllTicketsTests
             CancellationToken.None);
 
         // Assert
-        // Verify that the result is not null
         Assert.NotNull(result);
-
-        // Verify the output
         Assert.Equal(expectedTicketData, result);
 
-        // Test the dependencies were called as expected
-        await ticketReader.Received(1).GetAllAsync(
-            Arg.Any<GetTicketsParameters>(),
-            Arg.Any<CancellationToken>());
+        ticketReader.Verify(
+            x => x.GetAllAsync(
+            It.IsAny<GetTicketsParameters>(),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

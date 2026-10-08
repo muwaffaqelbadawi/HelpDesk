@@ -1,49 +1,45 @@
-﻿using HelpDesk.src.Features.Tickets.Assign;
+﻿using HelpDesk.src.Features.Users.UpdateMy;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Events.DomainEvents;
 using HelpDesk.src.Shared.Interfaces;
 using Moq;
 using Xunit;
 
-namespace HelpDesk.Tests.Unit.Features.Tickets.Assign;
+namespace HelpDesk.Tests.Unit.Features.Users.UpdateMy;
 
-public sealed class TicketAssignedEventDispatcherTests
+public sealed class MyUserAccountUpdatedEventDispatcherTests
 {
     [Fact]
-    public async Task Should_dispatch_ticket_assigned_event()
+    public async Task Should_dispatch_my_user_account_updated_event()
     {
         // Arrange
         var serviceProvider = new Mock<IServiceProvider>();
         var dateTimeService = new Mock<IDateTimeService>();
 
-        // Mock user context to return a specific user ID
+        // Mock user ID
         var userId = Guid.NewGuid();
 
-        // Create a real user with the same userId
+        // Mock a real user with the same userId
         var user = new ApplicationUser { Id = userId };
 
         // Mock date time service to return a specific current time
         var now = new DateTimeOffset();
 
         dateTimeService
-            .SetupGet(x => x.UtcNow)
+            .Setup(x => x.UtcNow)
             .Returns(now);
 
-        // ticket ID
-        var ticketId = Guid.NewGuid();
-
-        var ticketAssignedEvent = new TicketAssignedEvent(
+        var userUpdatedEvent = new MyUserAccountUpdatedEvent(
             user,
-            now,
-            ticketId);
+            now);
 
         // Handler
-        var handler = new Mock<IDomainEventHandler<TicketAssignedEvent>>();
+        var handler = new Mock<IDomainEventHandler<MyUserAccountUpdatedEvent>>();
 
         // Mock service provider
         serviceProvider
             .Setup(x => x.GetService(
-                typeof(IEnumerable<IDomainEventHandler<TicketAssignedEvent>>)))
+                typeof(IEnumerable<IDomainEventHandler<MyUserAccountUpdatedEvent>>)))
             .Returns(new[]
             {
                 handler.Object
@@ -54,14 +50,14 @@ public sealed class TicketAssignedEventDispatcherTests
 
         // Act
         await sut.DispatchAsync(
-            ticketAssignedEvent,
+            userUpdatedEvent,
             CancellationToken.None);
 
         // Assert
         handler.Verify(
             x => x.HandleAsync(
-                ticketAssignedEvent,
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+                    It.IsAny<MyUserAccountUpdatedEvent>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
     }
 }

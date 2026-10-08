@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Responses.Data;
 
-namespace HelpDesk.src.Shared.Projections;
+namespace HelpDesk.src.Shared.DataAccess.Projections;
 
 public static class SuperadminQueries
 {

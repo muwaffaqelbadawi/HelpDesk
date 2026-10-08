@@ -39,11 +39,11 @@ public interface IUserRepository
         string fullEnName,
         string fullArName,
         DateTimeOffset now,
-        byte[] employeeRowVersion,
         byte[] userRowVersion,
+        byte[] employeeRowVersion,
         CancellationToken cancellationToken);
 
-    Task<int> UpdateCurrentAsync(
+    Task<int> UpdateAsync(
         Guid userId,
         string userName,
         string email,

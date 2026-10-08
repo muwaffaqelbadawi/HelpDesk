@@ -1,16 +1,16 @@
-﻿using HelpDesk.src.Features.Tickets.Assign;
+﻿using HelpDesk.src.Features.Users.Delete;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Events.DomainEvents;
 using HelpDesk.src.Shared.Interfaces;
 using Moq;
 using Xunit;
 
-namespace HelpDesk.Tests.Unit.Features.Tickets.Assign;
+namespace HelpDesk.Tests.Unit.Features.Users.Delete;
 
-public sealed class TicketAssignedEventDispatcherTests
+public sealed class UserAccountDeletedEventDispatcherTests
 {
     [Fact]
-    public async Task Should_dispatch_ticket_assigned_event()
+    public async Task Should_dispatch_user_deleted_event()
     {
         // Arrange
         var serviceProvider = new Mock<IServiceProvider>();
@@ -32,18 +32,21 @@ public sealed class TicketAssignedEventDispatcherTests
         // ticket ID
         var ticketId = Guid.NewGuid();
 
-        var ticketAssignedEvent = new TicketAssignedEvent(
+        dateTimeService
+            .SetupGet(x => x.UtcNow)
+            .Returns(now);
+
+        var userDeletedEvent = new UserAccountDeletedEvent(
             user,
-            now,
-            ticketId);
+            now);
 
         // Handler
-        var handler = new Mock<IDomainEventHandler<TicketAssignedEvent>>();
+        var handler = new Mock<IDomainEventHandler<UserAccountDeletedEvent>>();
 
         // Mock service provider
         serviceProvider
             .Setup(x => x.GetService(
-                typeof(IEnumerable<IDomainEventHandler<TicketAssignedEvent>>)))
+                typeof(IEnumerable<IDomainEventHandler<UserAccountDeletedEvent>>)))
             .Returns(new[]
             {
                 handler.Object
@@ -54,13 +57,13 @@ public sealed class TicketAssignedEventDispatcherTests
 
         // Act
         await sut.DispatchAsync(
-            ticketAssignedEvent,
+            userDeletedEvent,
             CancellationToken.None);
 
         // Assert
         handler.Verify(
             x => x.HandleAsync(
-                ticketAssignedEvent,
+                userDeletedEvent,
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

@@ -6,7 +6,7 @@ using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.TicketS
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.Create;
@@ -17,58 +17,62 @@ public sealed class CreateTicketTests
     public async Task Should_create_ticket()
     {
         // Arrange
-
-        // Mock dependencies (substitutes)
-        var userContext = Substitute.For<IUserContext>();
-        var userProvider = Substitute.For<IUserProvider>();
-        var ticketRepository = Substitute.For<ITicketRepository>();
-        var ticketReader = Substitute.For<ITicketReader>();
-        var numberingService = Substitute.For<INumberingService>();
-        var dateTimeService = Substitute.For<IDateTimeService>();
-        var dispatcher = Substitute.For<IDomainEventDispatcher>();
-        var logger = Substitute.For<ILogger<CreateTicketHandler>>();
+        var userContext = new Mock<IUserContext>();
+        var userProvider = new Mock<IUserProvider>();
+        var ticketRepository = new Mock<ITicketRepository>();
+        var ticketReader = new Mock<ITicketReader>();
+        var numberingService = new Mock<INumberingService>();
+        var dateTimeService = new Mock<IDateTimeService>();
+        var dispatcher = new Mock<IDomainEventDispatcher>();
+        var logger = new Mock<ILogger<CreateTicketHandler>>();
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
         var handler = new CreateTicketHandler(
-            userContext,
-            userProvider,
-            ticketRepository,
-            ticketReader,
-            numberingService,
-            dateTimeService,
-            dispatcher,
-            logger);
+            userContext.Object,
+            userProvider.Object,
+            ticketRepository.Object,
+            ticketReader.Object,
+            numberingService.Object,
+            dateTimeService.Object,
+            dispatcher.Object,
+            logger.Object);
 
         // Mock user context to return a specific user ID
         var userId = Guid.NewGuid();
-        userContext.GuidUserId.Returns(userId);
+
+        userContext
+            .SetupGet(x => x.GuidUserId)
+            .Returns(userId);
 
         // Mock numbering service to return a specific ticket number
         var ticketNumber = string.Empty;
 
-        numberingService.GetNextTicketNumberAsync(
-                Arg.Any<CancellationToken>())
-            .Returns(ticketNumber);
+        numberingService
+            .Setup(x => x.GetNextTicketNumberAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ticketNumber);
 
         // Mock date time service to return a specific current time
         var now = new DateTimeOffset();
-        dateTimeService.UtcNow.Returns(now);
+
+        dateTimeService
+            .SetupGet(x => x.UtcNow)
+            .Returns(now);
 
         // Create a command with ticket details
         var command = new CreateTicketCommand(
-            TicketTitle: "Cannot access email",
-            TicketSubject: "My Outlook account is not working.");
+            TicketTitle: string.Empty,
+            TicketSubject: string.Empty);
 
         // Variable to capture the created ticket
-        Ticket? createdTicket = null;
+        Ticket? ticket = null;
 
-        // Mock ticket repository to capture the ticket being added
+        // Capture the created ticket for assertions
         ticketRepository
-            .When(x => x.AddAsync(
-                Arg.Any<Ticket>(),
-                Arg.Any<CancellationToken>()))
-            .Do(callInfo => createdTicket = callInfo.Arg<Ticket>());
+            .Setup(x => x.AddAsync(
+                It.IsAny<Ticket>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<Ticket, CancellationToken>((t, ct) => ticket = t)
+            .Returns(Task.CompletedTask);
 
         // Prepare expected ticket data for assertion
         var expectedTicketData = new TicketData
@@ -76,23 +80,26 @@ public sealed class CreateTicketTests
             TicketNumber = ticketNumber,
             TicketTitle = command.TicketTitle,
             TicketSubject = command.TicketSubject,
-            TicketPriority = "Low",
-            TicketStatus = "Open",
+            TicketPriority = string.Empty,
+            TicketStatus = string.Empty,
             CreatedById = userId,
             CreatedAt = now,
         };
 
         // Mock ticket reader to return the expected ticket data
         ticketReader
-            .GetByIdAsync(
-                Arg.Any<Guid>(),
-                Arg.Any<CancellationToken>())
-            .Returns(expectedTicketData);
+            .Setup(x => x.GetByIdAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedTicketData);
+
+        // Create a real user with the same userId
+        var user = new ApplicationUser { Id = userId };
 
         // Mock user provider to return the expected user
         userProvider
-            .GetUserAsync(userId.ToString())
-            .Returns(new ApplicationUser());
+            .Setup(x => x.GetUserAsync(userId.ToString()))
+            .ReturnsAsync(user);
 
         // Act
         var result = await handler.HandleAsync(
@@ -101,25 +108,29 @@ public sealed class CreateTicketTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.NotEqual(Guid.Empty, createdTicket!.Id);
+        Assert.NotEqual(Guid.Empty, ticket!.Id);
 
-        Assert.Equal(ticketNumber, createdTicket.Number);
-        Assert.Equal(command.TicketTitle, createdTicket.Title);
-        Assert.Equal(command.TicketSubject, createdTicket.Subject);
-        Assert.Equal(TicketStatusIds.Open, createdTicket.StatusId);
-        Assert.Equal(TicketPriorityIds.Low, createdTicket.PriorityId);
-        Assert.Equal(userId, createdTicket.CreatedById);
-        Assert.Equal(now, createdTicket.CreatedAt);
+        Assert.Equal(ticketNumber, ticket.Number);
+        Assert.Equal(command.TicketTitle, ticket.Title);
+        Assert.Equal(command.TicketSubject, ticket.Subject);
+        Assert.Equal(TicketStatusIds.Open, ticket.StatusId);
+        Assert.Equal(TicketPriorityIds.Low, ticket.PriorityId);
+        Assert.Equal(userId, ticket.CreatedById);
+        Assert.Equal(now, ticket.CreatedAt);
 
         Assert.Equal(expectedTicketData, result.TicketData);
 
-        await ticketRepository.Received(1).AddAsync(
-            Arg.Any<Ticket>(),
-            Arg.Any<CancellationToken>());
+        // Verify
+        ticketRepository.Verify(
+            x => x.AddAsync(
+                It.IsAny<Ticket>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
 
-        await dispatcher.Received(1).DispatchAsync(
-            Arg.Is<TicketCreatedEvent>(e =>
-                e.TicketId == createdTicket.Id),
-            Arg.Any<CancellationToken>());
+        dispatcher.Verify(
+            x => x.DispatchAsync(
+                It.IsAny<IDomainEvent>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

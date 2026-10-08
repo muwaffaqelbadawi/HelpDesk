@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Features.Users.Create;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Users.Create;
@@ -12,9 +12,7 @@ public sealed class UserAccountCreatedEventTests
     public async Task Should_publish_user_account_created_event()
     {
         // Arrange
-
-        // Mock dependencies (substitutes)
-        var repository = Substitute.For<IUserRepository>();
+        var repository = new Mock<IUserRepository>();
 
         // userId
         var userId = Guid.NewGuid();
@@ -38,8 +36,7 @@ public sealed class UserAccountCreatedEventTests
             TempPassword: tempPassword);
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
-        var sut = new UserAccountCreatedEventHandler(repository);
+        var sut = new UserAccountCreatedEventHandler(repository.Object);
 
         // Act
         await sut.HandleAsync(
@@ -47,10 +44,12 @@ public sealed class UserAccountCreatedEventTests
             CancellationToken.None);
 
         // Assert
-        await repository.Received(1).AddToHistory(
-            Arg.Is(userId),
-            Arg.Any<UserHistoryType>(),
-            Arg.Is(now),
-            Arg.Any<CancellationToken>());
+        repository.Verify(
+            x => x.AddToHistory(
+                It.IsAny<Guid>(),
+                It.IsAny<UserHistoryType>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

@@ -1,40 +1,40 @@
-﻿using HelpDesk.src.Features.Tickets.Delete;
+﻿using HelpDesk.src.Features.Users.Delete;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace HelpDesk.Tests.Unit.Features.Tickets.Delete;
+namespace HelpDesk.Tests.Unit.Features.Users.Delete;
 
-public sealed class DeleteTicketTests
+public sealed class DeleteUserAccountTests
 {
     [Fact]
-    public async Task Should_delete_ticket()
+    public async Task Should_delete_user_account()
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
         var userProvider = new Mock<IUserProvider>();
-        var ticketRepository = new Mock<ITicketRepository>();
+        var userRepository = new Mock<IUserRepository>();
         var dateTimeService = new Mock<IDateTimeService>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
-        var logger = new Mock<ILogger<DeleteTicketHandler>>();
+        var logger = new Mock<ILogger<DeleteUserAccountHandler>>();
 
         // SUT (System Under Test)
-        var handler = new DeleteTicketHandler(
+        var handler = new DeleteUserAccountHandler(
             userContext.Object,
             userProvider.Object,
-            ticketRepository.Object,
+            userRepository.Object,
             dateTimeService.Object,
             dispatcher.Object,
             logger.Object);
 
-        // Mock user context to return user ID
-        var userId = Guid.NewGuid();
+        // Mock user context to return current user ID
+        var currentUserId = Guid.NewGuid();
 
         userContext
             .SetupGet(x => x.GuidUserId)
-            .Returns(userId);
+            .Returns(currentUserId);
 
         // Mock date time service to return a specific current time
         var now = new DateTimeOffset();
@@ -43,26 +43,8 @@ public sealed class DeleteTicketTests
             .SetupGet(x => x.UtcNow)
             .Returns(now);
 
-        // Mock ticketId
-        var ticketId = Guid.NewGuid();
-
-        // Mock ticket row version
-        byte[] ticketRowVersion = [];
-
-        // Mock DeleteTicketCommand
-        var command = new DeleteTicketCommand(
-            ticketId,
-            ticketRowVersion);
-
-        // Mock ticket repository
-        ticketRepository
-            .Setup(x => x.DeleteAsync(
-                It.IsAny<Guid>(),
-                It.IsAny<Guid>(),
-                It.IsAny<byte[]>(),
-                It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(1));
+        // Mock userId to be deleted
+        var userId = Guid.NewGuid();
 
         // Mock a real user with the same userId
         var user = new ApplicationUser { Id = userId };
@@ -72,23 +54,35 @@ public sealed class DeleteTicketTests
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 
+        // Mock user row version
+        byte[] userRowVersion = [];
+
+        // Mock employee row version
+        byte[] employeeRowVersion = [];
+
+        // Mock DeleteUserCommand
+        var command = new DeleteUserAccountCommand(
+            userId,
+            userRowVersion,
+            employeeRowVersion);
+
         // Act
         await handler.HandleAsync(
             command,
             CancellationToken.None);
 
         // Assert
-        ticketRepository.Verify(
+        userRepository.Verify(
             x => x.DeleteAsync(
-                It.IsAny<Guid>(),
-                It.IsAny<Guid>(),
-                It.IsAny<byte[]>(),
+                It.Is<ApplicationUser>(u => u == user),
+                It.Is<Guid>(u => u == currentUserId),
                 It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()));
+                It.IsAny<CancellationToken>()),
+            Times.Once);
 
         dispatcher.Verify(
             x => x.DispatchAsync(
-                It.IsAny<TicketDeletedEvent>(),
+                It.IsAny<IDomainEvent>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

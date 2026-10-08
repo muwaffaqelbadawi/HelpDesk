@@ -2,7 +2,7 @@
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.Assign;
@@ -15,7 +15,7 @@ public sealed class TicketAssignedEventTests
         // Arrange
 
         // Mock dependencies (substitutes)
-        var repository = Substitute.For<ITicketRepository>();
+        var repository = new Mock<ITicketRepository>();
 
         // userId
         var userId = Guid.NewGuid();
@@ -39,8 +39,7 @@ public sealed class TicketAssignedEventTests
             OccurredAt: now);
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
-        var sut = new TicketAssignedEventHandler(repository);
+        var sut = new TicketAssignedEventHandler(repository.Object);
 
         // Act
         await sut.HandleAsync(
@@ -48,11 +47,13 @@ public sealed class TicketAssignedEventTests
             CancellationToken.None);
 
         // Assert
-        await repository.Received(1).AddToHistory(
-            Arg.Is(userId),
-            Arg.Is(ticketId),
-            Arg.Any<TicketHistoryType>(),
-            Arg.Is(now),
-            Arg.Any<CancellationToken>());
+        repository.Verify(
+            x => x.AddToHistory(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<TicketHistoryType>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

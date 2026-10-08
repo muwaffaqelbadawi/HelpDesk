@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Features.Tickets.GetMy;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.GetMy;
@@ -12,20 +12,19 @@ public sealed class GetMyTicketsTests
     public async Task Should_get_my_tickets()
     {
         // Arrange
-
-        // Mock dependencies (substitutes)
-        var userContext = Substitute.For<IUserContext>();
-        var ticketReader = Substitute.For<ITicketReader>();
+        var userContext = new Mock<IUserContext>();
+        var ticketReader = new Mock<ITicketReader>();
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
-        var handler = new GetMyTicketsHandler(userContext, ticketReader);
+        var handler = new GetMyTicketsHandler(
+            userContext.Object,
+            ticketReader.Object);
 
         // userId
         var userId = Guid.NewGuid();
 
         userContext
-            .GuidUserId
+            .Setup(x => x.GuidUserId)
             .Returns(userId);
 
         // ticketData
@@ -36,13 +35,13 @@ public sealed class GetMyTicketsTests
 
         // Mock ticket reader to return the expected ticket data
         ticketReader
-            .GetMyTicketsAsync(
-                userId,
-                Arg.Any<CancellationToken>())
-            .Returns(ticketData);
+            .Setup(
+                x => x.GetMyTicketsAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ticketData);
 
         // Act
-        // One specific action
         var result = await handler.HandleAsync(CancellationToken.None);
 
         // Assert
@@ -53,8 +52,10 @@ public sealed class GetMyTicketsTests
         Assert.Equal(expectedTickets, result);
 
         // Test the dependencies were called as expected
-        await ticketReader.Received(1).GetMyTicketsAsync(
-            userId,
-            Arg.Any<CancellationToken>());
+        ticketReader.Verify(
+            x => x.GetMyTicketsAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

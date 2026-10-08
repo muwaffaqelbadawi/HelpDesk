@@ -1,8 +1,8 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Shared.DataAccess.Projections;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Projections;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

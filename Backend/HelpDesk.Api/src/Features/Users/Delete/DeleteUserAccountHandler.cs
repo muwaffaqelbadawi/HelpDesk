@@ -33,10 +33,8 @@ public sealed class DeleteUserAccountHandler :
         DeleteUserAccountCommand command,
         CancellationToken cancellationToken)
     {
-        // admin-initiated
         var currentUserId = _userContext.GuidUserId;
 
-        // user
         var userId = command.UserId;
 
         var user = await _userProvider.GetUserAsync(userId.ToString())
@@ -46,10 +44,10 @@ public sealed class DeleteUserAccountHandler :
 
         // User repo
         await _userRepository.DeleteAsync(
-            user: user,
-            currentUserId: currentUserId,
-            now: now,
-            cancellationToken: cancellationToken);
+            user,
+            currentUserId,
+            now,
+            cancellationToken);
 
         // Successful log
         _logger.LogInformation(

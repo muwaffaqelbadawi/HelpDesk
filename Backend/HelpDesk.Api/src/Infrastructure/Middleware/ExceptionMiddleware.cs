@@ -9,8 +9,7 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
     public async Task InvokeAsync(
         HttpContext context,
         IApiContext apiContext,
-        IUserContext userContext,
-        ILogger<ExceptionMiddleware> logger)
+        IUserContext userContext)
     {
         try
         {
@@ -27,17 +26,18 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 ForbiddenException => StatusCodes.Status403Forbidden,
                 NotFoundException => StatusCodes.Status404NotFound,
                 ConflictException => StatusCodes.Status409Conflict,
+                ConcurrencyException => StatusCodes.Status409Conflict,
                 BusinessRuleViolationException => StatusCodes.Status422UnprocessableEntity,
                 IdentityOperationException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             };
 
             var response = CreateErrorResponse(
-                ex: ex,
-                httpContext: context,
-                apiContext: apiContext,
-                traceId: userContext.TraceId,
-                correlationId: userContext.CorrelationId);
+                ex,
+                context,
+                apiContext,
+                userContext.TraceId,
+                userContext.CorrelationId);
 
             await context.Response.WriteAsJsonAsync(response);
         }

@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Shared.DataAccess.Projections;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Projections;
 using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.EntityFrameworkCore;
@@ -76,7 +76,7 @@ public sealed class UserReader(AppDbContext dbContext) : IUserReader
             .SingleAsync(cancellationToken);
     }
 
-    public async Task<UserAccountRowVersionData> GetNewRowAsync(
+    public async Task<UserAccountRowVersionData> GetNewRowVersionAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
     {

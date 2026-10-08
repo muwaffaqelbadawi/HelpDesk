@@ -3,60 +3,52 @@ using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Users.GetAll;
 
-public sealed class GetUsersHandlerTests
+public sealed class GetUsersTests
 {
     [Fact]
 
     public async Task Should_get_users()
     {
         // Arrange
-
-        // Mock dependencies (substitutes)
-        var userReader = Substitute.For<IUserReader>();
+        var userReader = new Mock<IUserReader>();
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
-        var handler = new GetUsersAccountHandler(userReader);
-
-        // Query parameters
-        var query = new GetUsersParameters();
+        var handler = new GetUsersAccountHandler(userReader.Object);
 
         // Prepare expected user data for assertion
         var expectedUserData = new PagedResult<UserAccountData>(
             Items: [],
-            PageNumber: query.PageNumber,
-            PageSize: query.PageSize,
+            PageNumber: 1,
+            PageSize: 10,
             TotalCount: 1,
             TotalPages: 1);
 
         // Mock user reader to return the expected user data
         userReader
-            .GetAllAsync(
-                query,
-                Arg.Any<CancellationToken>())
-            .Returns(expectedUserData);
+            .Setup(x => x.GetAllAsync(
+                It.IsAny<GetUsersParameters>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedUserData);
 
         // Act
-        // One specific action
         var result = await handler.HandleAsync(
-            query,
+            new GetUsersParameters(),
             CancellationToken.None);
 
         // Assert
-        // Verify that the result is not null
         Assert.NotNull(result);
 
-        // Verify the output
         Assert.Equal(expectedUserData, result);
 
-        // Test the dependencies were called as expected
-        await userReader.Received(1).GetAllAsync(
-            query,
-            Arg.Any<CancellationToken>());
+        userReader.Verify(
+            x => x.GetAllAsync(
+                It.IsAny<GetUsersParameters>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

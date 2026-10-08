@@ -2,7 +2,7 @@
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Events.DomainEvents;
 using HelpDesk.src.Shared.Interfaces;
-using NSubstitute;
+using Moq;
 using Xunit;
 
 namespace HelpDesk.Tests.Unit.Features.Tickets.Create;
@@ -13,28 +13,44 @@ public sealed class TicketCreatedEventDispatcherTests
     public async Task Should_dispatch_ticket_created_event()
     {
         // Arrange
+        var serviceProvider = new Mock<IServiceProvider>();
+        var dateTimeService = new Mock<IDateTimeService>();
 
-        // Mock dependencies (substitutes)
-        var serviceProvider = Substitute.For<IServiceProvider>();
-        var dateTimeService = Substitute.For<IDateTimeService>();
+        // Mock user context to return a specific user ID
+        var userId = Guid.NewGuid();
+
+        // Create a real user with the same userId
+        var user = new ApplicationUser { Id = userId };
+
+        // Mock date time service to return a specific current time
+        var now = new DateTimeOffset();
+
+        dateTimeService
+            .SetupGet(x => x.UtcNow)
+            .Returns(now);
+
+        // ticket ID
+        var ticketId = Guid.NewGuid();
 
         var ticketCreatedEvent = new TicketCreatedEvent(
-            User: new ApplicationUser(),
-            OccurredAt: dateTimeService.UtcNow,
-            TicketId: Guid.NewGuid());
+            user,
+            ticketId,
+            now);
 
         // Handler
-        var handler = Substitute.For<IDomainEventHandler<TicketCreatedEvent>>();
+        var handler = new Mock<IDomainEventHandler<TicketCreatedEvent>>();
 
         // Mock service provider
         serviceProvider
-            .GetService(
-                typeof(IEnumerable<IDomainEventHandler<TicketCreatedEvent>>))
-            .Returns(new[] { handler });
+            .Setup(x => x.GetService(
+                typeof(IEnumerable<IDomainEventHandler<TicketCreatedEvent>>)))
+            .Returns(new[]
+            {
+                handler.Object
+            });
 
         // SUT (System Under Test)
-        // Real handler instance with mocked dependencies
-        var sut = new DomainEventDispatcher(serviceProvider);
+        var sut = new DomainEventDispatcher(serviceProvider.Object);
 
         // Act
         await sut.DispatchAsync(
@@ -42,8 +58,10 @@ public sealed class TicketCreatedEventDispatcherTests
             CancellationToken.None);
 
         // Assert
-        await handler.Received(1).HandleAsync(
-            ticketCreatedEvent,
-            Arg.Any<CancellationToken>());
+        handler.Verify(
+            x => x.HandleAsync(
+                ticketCreatedEvent,
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

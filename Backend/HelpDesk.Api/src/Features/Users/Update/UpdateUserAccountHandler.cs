@@ -67,8 +67,8 @@ public sealed class UpdateUserAccountHandler :
         }
 
         // User reader
-        var newRowVersion = await _userReader.GetNewRowAsync(
-            userId: command.UserId,
+        var newRowVersion = await _userReader.GetNewRowVersionAsync(
+            userId: userId,
             cancellationToken: cancellationToken);
 
         var userRowVersion = newRowVersion.UserRowVersion;
@@ -89,7 +89,6 @@ public sealed class UpdateUserAccountHandler :
                 User: user,
                 OccurredAt: now),
             cancellationToken: cancellationToken);
-
 
         return new UpdateUserAccountResponse(
             UserRowVersion: userRowVersion,

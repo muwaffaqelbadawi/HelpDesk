@@ -36,13 +36,12 @@ public sealed class UpdateMyUserAccountHandler
         UpdateMyUserAccountCommand command,
         CancellationToken cancellationToken)
     {
-        // Self-service
         var userId = _userContext.GuidUserId;
 
         var now = _dateTimeService.UtcNow;
 
         // User repo
-        var rows = await _userRepository.UpdateCurrentAsync(
+        var rows = await _userRepository.UpdateAsync(
             userId: userId,
             userName: command.UserName,
             email: command.Email,
@@ -61,12 +60,14 @@ public sealed class UpdateMyUserAccountHandler
         }
 
         // User reader
-        var newRowVersion = await _userReader.GetNewRowAsync(
-            userId: userId,
-            cancellationToken: cancellationToken);
+        var newRowVersion = await _userReader.GetNewRowVersionAsync(
+            userId,
+            cancellationToken);
 
         var userRowVersion = newRowVersion.UserRowVersion;
-        var employeeRowVersion = newRowVersion.EmployeeRowVersion;
+
+        var employeeRowVersion = newRowVersion.EmployeeRowVersion
+            ?? throw new ConcurrencyException("The employee row version is null.");
 
         // Successful log
         _logger.LogInformation(
@@ -80,13 +81,12 @@ public sealed class UpdateMyUserAccountHandler
         // Domain event
         await _dispatcher.DispatchAsync(
             @event: new MyUserAccountUpdatedEvent(
-                User: user,
-                OccurredAt: now),
-            cancellationToken: cancellationToken);
-
+                user,
+                now),
+            cancellationToken);
 
         return new UpdateMyUserAccountResponse(
-            UserRowVersion: userRowVersion,
-            EmployeeRowVersion: employeeRowVersion!);
+            userRowVersion,
+            employeeRowVersion);
     }
 }

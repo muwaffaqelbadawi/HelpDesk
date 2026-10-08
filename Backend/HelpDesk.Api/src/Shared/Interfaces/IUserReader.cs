@@ -20,7 +20,7 @@ public interface IUserReader
         Guid userId,
         CancellationToken cancellationToken = default);
 
-    Task<UserAccountRowVersionData> GetNewRowAsync(
+    Task<UserAccountRowVersionData> GetNewRowVersionAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 
