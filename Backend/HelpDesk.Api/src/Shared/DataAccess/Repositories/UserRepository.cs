@@ -75,12 +75,12 @@ public sealed class UserRepository(
                     "Failed to create user. Errors: {Errors}",
                     string.Join(
                         ", ",
-                        userResult.Errors.Select(e => e.Description)));
+                        userResult.Errors.First().Description));
 
                 throw new InvalidOperationException(
                     string.Join(
                         ", ",
-                        userResult.Errors.Select(e => e.Description)));
+                        userResult.Errors.First().Description));
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -201,5 +201,19 @@ public sealed class UserRepository(
                 .SetProperty(u => u.UpdatedById, userId)
                 .SetProperty(u => u.UpdatedAt, now),
             cancellationToken);
+    }
+
+    public async Task<int> UpdatePasswordAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.LastPasswordChangedAt, now)
+                .SetProperty(u => u.LastPasswordChangedById, userId)
+                .SetProperty(u => u.MustResetPassword, false),
+                cancellationToken);
     }
 }

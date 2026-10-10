@@ -14,8 +14,6 @@ public sealed class GetAllTicketsTests
     public async Task Should_get_all_tickets()
     {
         // Arrange
-
-        // Mock dependencies (substitutes)
         var ticketReader = new Mock<ITicketReader>();
 
         // SUT (System Under Test)

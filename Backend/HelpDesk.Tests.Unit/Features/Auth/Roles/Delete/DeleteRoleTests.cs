@@ -1,35 +1,30 @@
-﻿using HelpDesk.src.Features.Tickets.Assign;
+﻿using HelpDesk.src.Features.Auth.Roles.Delete;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace HelpDesk.Tests.Unit.Features.Tickets.Assign;
+namespace HelpDesk.Tests.Unit.Features.Auth.Roles.Delete;
 
-public sealed class AssignTicketTests
+public sealed class DeleteRoleTests
 {
     [Fact]
-    public async Task Should_assign_ticket()
+    public async Task Should_delete_role()
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
         var userProvider = new Mock<IUserProvider>();
-        var ticketRepository = new Mock<ITicketRepository>();
-        var ticketReader = new Mock<ITicketReader>();
-        var userReader = new Mock<IUserReader>();
+        var rolesRepository = new Mock<IRolesRepository>();
         var dateTimeService = new Mock<IDateTimeService>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
-        var logger = new Mock<ILogger<AssignTicketHandler>>();
+        var logger = new Mock<ILogger<DeleteRoleHandler>>();
 
         // SUT (System Under Test)
-        var handler = new AssignTicketHandler(
+        var handler = new DeleteRoleHandler(
             userContext.Object,
             userProvider.Object,
-            ticketRepository.Object,
-            ticketReader.Object,
-            userReader.Object,
+            rolesRepository.Object,
             dateTimeService.Object,
             dispatcher.Object,
             logger.Object);
@@ -41,6 +36,12 @@ public sealed class AssignTicketTests
             .SetupGet(x => x.GuidUserId)
             .Returns(currentUserId);
 
+        // create new user ID
+        var userId = Guid.NewGuid();
+
+        // Create new role ID
+        var roleId = Guid.NewGuid();
+
         // create new clock
         var now = new DateTimeOffset();
 
@@ -48,48 +49,21 @@ public sealed class AssignTicketTests
             .SetupGet(x => x.UtcNow)
             .Returns(now);
 
-        // Create new ticket ID
-        var ticketId = Guid.NewGuid();
-
-        // create new user ID
-        var userId = Guid.NewGuid();
-
-        // Create new ticket row version
-        byte[] ticketRowVersion = [];
-
-        // Assign a command with ticket details
-        var command = new AssignTicketCommand(
+        // Delete a command with role details
+        var command = new DeleteRoleCommand(
             userId,
-            ticketId,
-            ticketRowVersion);
+            roleId);
 
-        // Mock userReader to return true for IsEmployee
-        userReader
-            .Setup(x => x.IsEmployee(
-                It.IsAny<Guid>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        // Mock ticket repository to capture the ticket being added
-        ticketRepository
-            .Setup(x => x.AssignAsync(
+        // Mock role repository to capture the role being deleted
+        // And return 0 to simulate that the role does not exist
+        rolesRepository
+            .Setup(x => x.DeleteAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<byte[]>(),
                 It.IsAny<DateTimeOffset>(),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(1));
-
-        // Prepare expected ticket data for assertion
-        var expectedTicketData = new TicketData();
-
-        // Mock ticket reader to return the expected ticket data
-        ticketReader
-            .Setup(x => x.GetByIdAsync(
-                It.IsAny<Guid>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedTicketData);
 
         // Create user returned by the provider
         var user = new ApplicationUser();
@@ -100,18 +74,16 @@ public sealed class AssignTicketTests
             .ReturnsAsync(user);
 
         // Act
-        // One specific action
-        var result = await handler.HandleAsync(
+        await handler.HandleAsync(
             command,
             CancellationToken.None);
 
         // Assert
-        ticketRepository.Verify(
-            x => x.AssignAsync(
+        rolesRepository.Verify(
+            x => x.DeleteAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<byte[]>(),
                 It.IsAny<DateTimeOffset>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);

@@ -129,7 +129,7 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
 
             NotFoundException => new ProblemDetails
             {
-                Type = $"{baseUrl}/errors/not-found",
+                Type = $"{baseUrl}/errors/resource-not-found",
                 Title = nameof(NotFoundException),
                 Status = status,
                 Detail = details,

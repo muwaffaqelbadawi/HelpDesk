@@ -1,10 +1,12 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.HttpContexts;
+using HelpDesk.src.Infrastructure.Services.ChangePassword;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Infrastructure.Services.ResetPassword;
-using HelpDesk.src.Infrastructure.Services.RoleProviders;
 using HelpDesk.src.Infrastructure.Services.Security;
 using HelpDesk.src.Infrastructure.Services.UserProviders;
+using HelpDesk.src.Shared.DataAccess.Readers;
+using HelpDesk.src.Shared.DataAccess.Repositories;
 using HelpDesk.src.Shared.IdentityBuilders;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -22,17 +24,23 @@ public static class AuthenticationServicesExtension
         // Register HttpContextAccessor
         builder.Services.AddHttpContextAccessor();
 
-        // UserContext
         // Register the UserContext as a scoped service
         builder.Services.AddScoped<IUserContext, UserContext>();
 
-        // UserProvider
         // Register the UserProvider as a scoped service
         builder.Services.AddScoped<IUserProvider, UserProvider>();
 
-        // RoleProvider
-        // Register the RoleProvider as a scoped service
-        builder.Services.AddScoped<IRoleProvider, RoleProvider>();
+        // Register the RoleReader as a scoped service
+        builder.Services.AddScoped<IRolesReader, RolesReader>();
+
+        // Register the RoleRepository as a scoped service
+        builder.Services.AddScoped<IRolesRepository, RolesRepository>();
+
+        // Register the PermissionReader as a scoped service
+        builder.Services.AddScoped<IPermissionsReader, PermissionsReader>();
+
+        // Register the PermissionRepository as a scoped service
+        builder.Services.AddScoped<IPermissionsRepository, PermissionsRepository>();
 
         // Register the UserIdentityFilter as a scoped service
         builder.Services.AddScoped<IdentityFilter>();
@@ -46,6 +54,20 @@ public static class AuthenticationServicesExtension
         // Register the TemporaryPasswordGenerator as a singleton service
         builder.Services.AddSingleton<ITemporaryPasswordGenerator, TemporaryPasswordGenerator>();
 
+        // Register ResetPasswordPolicy as scoped service
+        builder.Services.AddScoped<IResetPasswordPolicy, ResetPasswordPolicy>();
+
+        // Register ResetPasswordState as scoped service
+        builder.Services.AddScoped<IResetPasswordState, ResetPasswordState>();
+
+        // Register ResetPasswordService as scoped service
+        builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
+
+        // Register ChangePasswordService as scoped service
+        builder.Services.AddScoped<IChangePasswordService, ChangePasswordService>();
+
+
+        // JWT
         // Register the ClaimProvider as a scoped service
         builder.Services.AddScoped<IClaimProvider, ClaimProvider>();
 
@@ -63,15 +85,6 @@ public static class AuthenticationServicesExtension
 
         // Register the RefreshTokenService as a scoped service
         builder.Services.AddScoped<ITokenService, TokenService>();
-
-        // Register ResetPasswordPolicy as scoped service
-        builder.Services.AddScoped<IResetPasswordPolicy, ResetPasswordPolicy>();
-
-        // Register ResetPasswordState as scoped service
-        builder.Services.AddScoped<IResetPasswordState, ResetPasswordState>();
-
-        // Register ResetPasswordService as scoped service
-        builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 
         return builder;
     }

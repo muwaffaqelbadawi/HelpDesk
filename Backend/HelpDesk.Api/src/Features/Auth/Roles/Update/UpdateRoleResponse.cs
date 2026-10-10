@@ -1,3 +1,6 @@
-﻿namespace HelpDesk.src.Features.Auth.Roles.Update;
+﻿using HelpDesk.src.Shared.Responses.Data;
 
-public sealed record class UpdateRoleResponse();
+namespace HelpDesk.src.Features.Auth.Roles.Update;
+
+public sealed record class UpdateRoleResponse(
+    UserAccountData UserAccountData);

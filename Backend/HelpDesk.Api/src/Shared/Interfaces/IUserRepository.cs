@@ -53,4 +53,9 @@ public interface IUserRepository
         byte[] employeeRowVersion,
         byte[] userRowVersion,
         CancellationToken cancellationToken);
+
+    Task<int> UpdatePasswordAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
 }

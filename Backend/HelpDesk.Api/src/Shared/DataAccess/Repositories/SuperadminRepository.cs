@@ -33,12 +33,12 @@ public sealed class SuperadminRepository(
                     "Failed to create superadmin. Errors: {Errors}",
                     string.Join(
                         ", ",
-                        superadminResult.Errors.Select(e => e.Description)));
+                        superadminResult.Errors.First().Description));
 
                 throw new InvalidOperationException(
                     string.Join(
                         ", ",
-                        superadminResult.Errors.Select(e => e.Description)));
+                        superadminResult.Errors.First().Description));
             }
 
             dbContext.UserRoles.Add(superadminRoleEntity);

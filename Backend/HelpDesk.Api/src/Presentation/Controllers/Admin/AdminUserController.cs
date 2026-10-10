@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Features.Auth.Roles.Assign;
 using HelpDesk.src.Features.Auth.Roles.Delete;
 using HelpDesk.src.Features.Auth.Roles.GetAll;
-using HelpDesk.src.Features.Auth.Roles.GetById;
 using HelpDesk.src.Features.Auth.Roles.Update;
 using HelpDesk.src.Features.Users.Create;
 using HelpDesk.src.Features.Users.Delete;
@@ -142,31 +141,13 @@ public sealed class AdminUserController(IDateTimeService dateTimeService)
     [HttpGet("roles")]
     [Authorize(Policy = "Permission:Roles.View")]
     public async Task<IActionResult> GetRoles(
-        [FromServices] IQueryHandler<RolesResponse> handler,
+        [FromServices] IQueryHandler<GetAllUserRolesResponse> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(cancellationToken);
 
-        return Ok(new ApiResponse<IReadOnlyCollection<RoleData>>(
+        return Ok(new ApiResponse<GetAllUserRolesResponse>(
             message: ApiMessages.RolesRetrieved,
-            time: dateTimeService,
-            data: result.Roles));
-    }
-
-    // GetById a user with their roles
-    [HttpGet("{userId}/roles")]
-    [Authorize(Policy = "Permission:Roles.View")]
-    public async Task<IActionResult> GetRole(
-        [FromServices] IQueryHandler<GetByIdRoleQuery, GetByIdRoleResponse> handler,
-        [FromRoute] Guid userId,
-        CancellationToken cancellationToken)
-    {
-        var query = new GetByIdRoleQuery(userId);
-
-        var result = await handler.HandleAsync(query, cancellationToken);
-
-        return Ok(new ApiResponse<GetByIdRoleResponse>(
-            message: ApiMessages.RoleRetrieved,
             time: dateTimeService,
             data: result));
     }

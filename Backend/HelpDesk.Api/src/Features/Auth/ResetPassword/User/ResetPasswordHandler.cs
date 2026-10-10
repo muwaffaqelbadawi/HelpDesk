@@ -91,7 +91,7 @@ public sealed class ResetPasswordHandler :
                 "Failed to reset password for user: {ser}." +
                 "Errors: {Errors}.",
                 user.Id,
-                string.Join(", ", result.Errors.Select(e => e.Description)));
+                string.Join(", ", result.Errors.First().Description));
 
             if (result.Errors.Any(e => e.Code == "InvalidToken"))
             {

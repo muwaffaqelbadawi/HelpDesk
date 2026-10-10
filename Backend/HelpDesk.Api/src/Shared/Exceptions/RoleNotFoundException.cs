@@ -7,6 +7,11 @@ public sealed class RoleNotFoundException : NotFoundException
     {
     }
 
+    public RoleNotFoundException(string message)
+        : base(message)
+    {
+    }
+
     public RoleNotFoundException(string message, Exception innerException)
         : base(message, innerException)
     {

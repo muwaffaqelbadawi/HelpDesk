@@ -1,18 +1,17 @@
-﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace HelpDesk.src.Features.Auth.ChangePassword;
 
-public sealed class ChangePasswordHandler :
-    ICommandHandler<ChangePasswordCommand, ChangePasswordResponse>
+public sealed class ChangePasswordHandler
+    : ICommandHandler<ChangePasswordCommand, ChangePasswordResponse>
 {
     private readonly IDateTimeService _dateTimeService;
     private readonly IUserContext _userContext;
     private readonly IUserProvider _userProvider;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IChangePasswordService _changePasswordService;
     private readonly ITokenService _tokenService;
+    private readonly IUserRepository _userRepository;
     private readonly IUserReader _userReader;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<ChangePasswordHandler> _logger;
@@ -21,8 +20,9 @@ public sealed class ChangePasswordHandler :
         IDateTimeService dateTimeService,
         IUserContext userContext,
         IUserProvider userProvider,
-        UserManager<ApplicationUser> userManager,
+        IChangePasswordService changePasswordService,
         ITokenService tokenService,
+        IUserRepository userRepository,
         IUserReader userReader,
         IDomainEventDispatcher dispatcher,
         ILogger<ChangePasswordHandler> logger)
@@ -30,8 +30,9 @@ public sealed class ChangePasswordHandler :
         _dateTimeService = dateTimeService;
         _userContext = userContext;
         _userProvider = userProvider;
-        _userManager = userManager;
+        _changePasswordService = changePasswordService;
         _tokenService = tokenService;
+        _userRepository = userRepository;
         _userReader = userReader;
         _dispatcher = dispatcher;
         _logger = logger;
@@ -42,11 +43,11 @@ public sealed class ChangePasswordHandler :
         CancellationToken cancellationToken)
     {
         // Self-service
-        var userId = _userContext.UserId;
+        var userId = _userContext.GuidUserId;
 
         // Resolve currentUser with ID
-        var user = await _userProvider.GetUserAsync(userId)
-            ?? throw new AuthenticationRequiredException();
+        var user = await _userProvider.GetUserAsync(userId.ToString())
+            ?? throw new UserNotFoundException(userId);
 
         var currentPassword = command.CurrentPassword;
         var newPassword = command.NewPassword;
@@ -79,8 +80,7 @@ public sealed class ChangePasswordHandler :
                 });
         }
 
-        // Change password
-        var changePasswordResult = await _userManager.ChangePasswordAsync(
+        var changePasswordResult = await _changePasswordService.ChangePasswordAsync(
             user,
             currentPassword,
             newPassword);
@@ -91,7 +91,7 @@ public sealed class ChangePasswordHandler :
             _logger.LogWarning(
                 "Failed to change password for user: {UserId}. Errors: {Errors}",
                 userId,
-                string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)));
+                string.Join(", ", changePasswordResult.Errors.First().Description));
 
             throw new PasswordChangeFailedException(
                 errors: new()
@@ -103,14 +103,21 @@ public sealed class ChangePasswordHandler :
                 });
         }
 
-        var guidUserId = _userContext.GuidUserId;
+        // now
+        var now = _dateTimeService.UtcNow;
 
-        user.LastPasswordChangedAt = _dateTimeService.UtcNow;
-        user.LastPasswordChangedById = guidUserId;
-        user.MustResetPassword = false;
+        var rows = await _userRepository.UpdatePasswordAsync(
+            userId,
+            now,
+            cancellationToken);
 
-        await _userManager.UpdateAsync(user);
+        if (rows == 0)
+        {
+            throw new ConcurrencyException(
+                $"Password for user {userId} was modified or deleted by another user.");
+        }
 
+        // session ID
         var sessionId = _userContext.SessionId;
 
         // Issue new token
@@ -125,18 +132,18 @@ public sealed class ChangePasswordHandler :
 
         // Get user
         var userAccountData = await _userReader.GetByIdAsync(
-            user.Id,
+            userId,
             cancellationToken);
 
         // Domain event
         await _dispatcher.DispatchAsync(
             @event: new PasswordChangedEvent(
                 User: user,
-                OccurredAt: _dateTimeService.UtcNow),
+                OccurredAt: now),
             cancellationToken: cancellationToken);
 
         return new ChangePasswordResponse(
-            UserAccountData: userAccountData,
-            Token: token);
+            userAccountData,
+            token);
     }
 }

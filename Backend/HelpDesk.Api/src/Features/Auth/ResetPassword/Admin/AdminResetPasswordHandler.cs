@@ -42,17 +42,24 @@ public sealed class AdminResetPasswordHandler :
         AdminResetPasswordCommand command,
         CancellationToken cancellationToken)
     {
+        // admin
         var currentUserId = _userContext.GuidUserId;
 
-        var user = await _userProvider.GetUserAsync(command.UserId.ToString())
-            ?? throw new AuthenticationRequiredException();
+        // user
+        var userId = command.UserId;
+
+        var user = await _userProvider.GetUserAsync(userId.ToString())
+            ?? throw new UserNotFoundException(userId);
 
         var resetToken = await _resetPasswordService.GeneratePasswordAsync(user);
+
+        // new password
+        var newPassword = command.NewPassword;
 
         var result = await _resetPasswordService.ResetPasswordAsync(
             user,
             resetToken,
-            command.NewPassword);
+            newPassword);
 
         // Check if the password reset succeeded
         if (!result.Succeeded)
@@ -61,7 +68,7 @@ public sealed class AdminResetPasswordHandler :
                 "Failed to reset password for user {UserId} by admin {admin}. Errors: {Errors}",
                 user.Id,
                 currentUserId,
-                string.Join(", ", result.Errors.Select(e => e.Description)));
+                string.Join(", ", result.Errors.First().Description));
 
             // Check for specific error types
             if (result.Errors.Any(e => e.Code == "InvalidToken"))
@@ -97,13 +104,13 @@ public sealed class AdminResetPasswordHandler :
 
         // Get user
         var userAccountData = await _userReader.GetByIdAsync(
-            userId: user.Id,
-            cancellationToken: cancellationToken);
+            userId,
+            cancellationToken);
 
         // Successful log
         _logger.LogInformation(
             "User {UserId} password was reset successfully by admin: {admin}",
-            user.Id,
+            userId,
             currentUserId);
 
         // Domain event
@@ -114,7 +121,7 @@ public sealed class AdminResetPasswordHandler :
             cancellationToken: cancellationToken);
 
         return new AdminResetPasswordResponse(
-            UserAccountData: userAccountData,
-            Token: token);
+            userAccountData,
+            token);
     }
 }

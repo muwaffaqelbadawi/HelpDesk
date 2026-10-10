@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Features.Auth.Modules.GetCurrent;
 using HelpDesk.src.Features.Auth.Permissions.GetCurrent;
-using HelpDesk.src.Features.Auth.Roles.GetCurrent;
+using HelpDesk.src.Features.Auth.Roles.GetMy;
 using HelpDesk.src.Features.Users.GetMy;
 using HelpDesk.src.Features.Users.UpdateMy;
 using HelpDesk.src.Shared.Interfaces;
@@ -57,12 +57,12 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
     // GetCurrent
     [HttpGet("me/roles")]
     public async Task<IActionResult> GetCurrentRoles(
-        [FromServices] IQueryHandler<CurrentRolesResponse> handler,
+        [FromServices] IQueryHandler<GetMyRolesResponse> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(cancellationToken);
 
-        return Ok(new ApiResponse<CurrentRolesResponse>(
+        return Ok(new ApiResponse<GetMyRolesResponse>(
             message: ApiMessages.RolesRetrieved,
             time: dateTimeService,
             data: result));

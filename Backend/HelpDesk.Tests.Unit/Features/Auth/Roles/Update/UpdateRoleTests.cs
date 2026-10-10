@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Tickets.Assign;
+﻿using HelpDesk.src.Features.Auth.Roles.Update;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
@@ -6,31 +6,29 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace HelpDesk.Tests.Unit.Features.Tickets.Assign;
+namespace HelpDesk.Tests.Unit.Features.Auth.Roles.Update;
 
-public sealed class AssignTicketTests
+public sealed class UpdateRoleTests
 {
     [Fact]
-    public async Task Should_assign_ticket()
+    public async Task Should_update_role()
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
         var userProvider = new Mock<IUserProvider>();
-        var ticketRepository = new Mock<ITicketRepository>();
-        var ticketReader = new Mock<ITicketReader>();
-        var userReader = new Mock<IUserReader>();
+        var rolesRepository = new Mock<IRolesRepository>();
         var dateTimeService = new Mock<IDateTimeService>();
+        var userReader = new Mock<IUserReader>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
-        var logger = new Mock<ILogger<AssignTicketHandler>>();
+        var logger = new Mock<ILogger<UpdateRoleHandler>>();
 
         // SUT (System Under Test)
-        var handler = new AssignTicketHandler(
+        var handler = new UpdateRoleHandler(
             userContext.Object,
             userProvider.Object,
-            ticketRepository.Object,
-            ticketReader.Object,
-            userReader.Object,
+            rolesRepository.Object,
             dateTimeService.Object,
+            userReader.Object,
             dispatcher.Object,
             logger.Object);
 
@@ -41,6 +39,12 @@ public sealed class AssignTicketTests
             .SetupGet(x => x.GuidUserId)
             .Returns(currentUserId);
 
+        // Create new role ID
+        var roleId = Guid.NewGuid();
+
+        // create new user ID
+        var userId = Guid.NewGuid();
+
         // create new clock
         var now = new DateTimeOffset();
 
@@ -48,48 +52,30 @@ public sealed class AssignTicketTests
             .SetupGet(x => x.UtcNow)
             .Returns(now);
 
-        // Create new ticket ID
-        var ticketId = Guid.NewGuid();
-
-        // create new user ID
-        var userId = Guid.NewGuid();
-
-        // Create new ticket row version
-        byte[] ticketRowVersion = [];
-
-        // Assign a command with ticket details
-        var command = new AssignTicketCommand(
+        // Update a command with role details
+        var command = new UpdateRoleCommand(
             userId,
-            ticketId,
-            ticketRowVersion);
+            roleId);
 
-        // Mock userReader to return true for IsEmployee
-        userReader
-            .Setup(x => x.IsEmployee(
-                It.IsAny<Guid>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        // Mock ticket repository to capture the ticket being added
-        ticketRepository
-            .Setup(x => x.AssignAsync(
+        // Mock role repository to capture the role being updated
+        // And return 0 to simulate that the role does not exist
+        rolesRepository
+            .Setup(x => x.UpdateAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<byte[]>(),
                 It.IsAny<DateTimeOffset>(),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(1));
 
-        // Prepare expected ticket data for assertion
-        var expectedTicketData = new TicketData();
+        // create new user account data
+        var userAccountData = new UserAccountData();
 
-        // Mock ticket reader to return the expected ticket data
-        ticketReader
+        userReader
             .Setup(x => x.GetByIdAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedTicketData);
+            .ReturnsAsync(userAccountData);
 
         // Create user returned by the provider
         var user = new ApplicationUser();
@@ -106,12 +92,11 @@ public sealed class AssignTicketTests
             CancellationToken.None);
 
         // Assert
-        ticketRepository.Verify(
-            x => x.AssignAsync(
+        rolesRepository.Verify(
+            x => x.UpdateAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<byte[]>(),
                 It.IsAny<DateTimeOffset>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
