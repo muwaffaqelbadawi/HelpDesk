@@ -479,6 +479,9 @@ public partial class AppDbContext
             // ExpiresAt (Property)
             entity.Property(e => e.ExpiresAt);
 
+            // RevokedAt (Property)
+            entity.Property(e => e.RevokedAt);
+
             // IsPersistent (Property)
             entity.Property(e => e.IsPersistent)
                 .HasDefaultValue(false);

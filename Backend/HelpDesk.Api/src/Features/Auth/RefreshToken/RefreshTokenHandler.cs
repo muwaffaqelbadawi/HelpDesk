@@ -8,7 +8,7 @@ public sealed class RefreshTokenHandler :
 {
     private readonly IRefreshTokenReader _refreshTokenReader;
     private readonly IDateTimeService _dateTimeService;
-    private readonly IRefreshTokenRevocationService _refreshTokenRevocationService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenService _tokenService;
     private readonly IUserContext _userContext;
     private readonly IUserReader _userReader;
@@ -20,7 +20,7 @@ public sealed class RefreshTokenHandler :
     public RefreshTokenHandler(
         IRefreshTokenReader refreshTokenReader,
         IDateTimeService dateTimeService,
-        IRefreshTokenRevocationService refreshTokenRevocationService,
+        IRefreshTokenRepository refreshTokenRepository,
         ITokenService tokenService,
         IUserContext userContext,
         IUserReader userReader,
@@ -31,7 +31,7 @@ public sealed class RefreshTokenHandler :
     {
         _refreshTokenReader = refreshTokenReader;
         _dateTimeService = dateTimeService;
-        _refreshTokenRevocationService = refreshTokenRevocationService;
+        _refreshTokenRepository = refreshTokenRepository;
         _tokenService = tokenService;
         _userContext = userContext;
         _userReader = userReader;
@@ -60,6 +60,9 @@ public sealed class RefreshTokenHandler :
         var userId = existingToken.UserId;
         var revokedAt = existingToken.RevokedAt;
 
+        // now
+        var now = _dateTimeService.UtcNow;
+
         // Check if already revoked
         if (revokedAt is not null)
         {
@@ -70,14 +73,13 @@ public sealed class RefreshTokenHandler :
 
             // Security: If a revoked token is used, revoke ALL tokens for this user
             // This handles token theft detection
-            await _refreshTokenRevocationService.RevokeAllAsync(
+            await _refreshTokenRepository.RevokeAllAsync(
                 userId,
+                now,
                 cancellationToken);
 
             throw new AuthenticationFailedException("Invalid refresh token.");
         }
-
-        var now = _dateTimeService.UtcNow;
 
         var userSessionExpiresAt = await _userSessionReader.GetExpiresAtAsync(
             userId,

@@ -26,8 +26,8 @@ public sealed class RolesReader(AppDbContext dbContext) : IRolesReader
         return await dbContext.UserRoles
             .AsNoTracking()
             .FirstOrDefaultAsync(
-            x => x.UserId == userId &&
-                 x.RoleId == roleId,
-                 cancellationToken);
+                x => x.UserId == userId &&
+                     x.RoleId == roleId,
+                     cancellationToken);
     }
 }

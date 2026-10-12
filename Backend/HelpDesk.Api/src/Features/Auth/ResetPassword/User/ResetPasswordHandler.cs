@@ -108,7 +108,9 @@ public sealed class ResetPasswordHandler :
                 });
         }
 
-        user.LastPasswordChangedAt = _dateTimeService.UtcNow;
+        var now = _dateTimeService.UtcNow;
+
+        user.LastPasswordChangedAt = now;
         user.LastPasswordChangedById = user.Id;
         user.MustResetPassword = false;
 
@@ -123,6 +125,7 @@ public sealed class ResetPasswordHandler :
         var token = await _tokenService.IssueAfterResetPasswordAsync(
             user,
             sessionId,
+            now,
             cancellationToken);
 
         // Successful log
@@ -139,7 +142,7 @@ public sealed class ResetPasswordHandler :
         await _dispatcher.DispatchAsync(
             @event: new PasswordResetEvent(
                 User: user,
-                OccurredAt: _dateTimeService.UtcNow),
+                OccurredAt: now),
             cancellationToken: cancellationToken);
 
 

@@ -1,5 +1,6 @@
 ﻿using HelpDesk.src.Features.Auth.Roles.Delete;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -63,7 +64,7 @@ public sealed class DeleteRoleTests
                 It.IsAny<Guid>(),
                 It.IsAny<DateTimeOffset>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(1));
+            .Returns(Task.FromResult(0));
 
         // Create user returned by the provider
         var user = new ApplicationUser();
@@ -73,12 +74,11 @@ public sealed class DeleteRoleTests
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 
-        // Act
-        await handler.HandleAsync(
-            command,
-            CancellationToken.None);
+        // Act + Assert: expect the handler to throw a ConcurrencyException
+        var exception = await Assert.ThrowsAsync<ConcurrencyException>(
+            () => handler.HandleAsync(command, CancellationToken.None));
 
-        // Assert
+        // Verify repository was called once
         rolesRepository.Verify(
             x => x.DeleteAsync(
                 It.IsAny<Guid>(),
@@ -88,10 +88,16 @@ public sealed class DeleteRoleTests
                 It.IsAny<CancellationToken>()),
             Times.Once);
 
+        // Verify dispatcher was not called because deletion failed due to concurrency
         dispatcher.Verify(
             x => x.DispatchAsync(
                 It.IsAny<IDomainEvent>(),
                 It.IsAny<CancellationToken>()),
-            Times.Once);
+            Times.Never);
+
+        // Assert exception message (use the same roleId used in the command)
+        Assert.Equal(
+            $"Role {roleId} was modified or deleted by another user.",
+            exception.Message);
     }
 }

@@ -93,7 +93,6 @@ public sealed class AssignRoleTests
             .ReturnsAsync(user);
 
         // Act
-        // One specific action
         var result = await handler.HandleAsync(
             command,
             CancellationToken.None);

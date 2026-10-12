@@ -44,11 +44,19 @@ public sealed class UserSessionActivityHandler
             throw new AuthenticationFailedException("User session has expired.");
         }
 
+        if (session.RevokedAt is not null && session.RevokedAt <= now)
+        {
+            throw new AuthenticationRequiredException("User session has been revoked.");
+        }
+
         var lifetime = session.IsPersistent
             ? _userSessionOptions.Value.PersistentSessionLifetime
             : _userSessionOptions.Value.DefaultSessionLifetime;
 
+        // Update the last activity timestamp
         session.LastActivityAt = now;
+
+        // Extend the session expiration time based on the session lifetime
         session.ExpiresAt = now.Add(lifetime);
 
         await _userSessionRepository.UpdateAsync(

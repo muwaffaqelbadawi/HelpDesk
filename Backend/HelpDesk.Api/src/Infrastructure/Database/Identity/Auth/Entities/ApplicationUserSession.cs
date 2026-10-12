@@ -30,6 +30,8 @@ public sealed class ApplicationUserSession
 
 
     public DateTimeOffset? ExpiresAt { get; set; }
+    public DateTimeOffset? RevokedAt { get; set; }
+
 
 
     // Check if the session is persistent

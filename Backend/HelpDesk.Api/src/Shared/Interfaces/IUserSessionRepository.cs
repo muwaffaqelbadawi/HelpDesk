@@ -11,4 +11,9 @@ public interface IUserSessionRepository
     Task UpdateAsync(
         ApplicationUserSession userSession,
         CancellationToken cancellationToken);
+
+    Task<int> RevokeAsync(
+        Guid sessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
 }

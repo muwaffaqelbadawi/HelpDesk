@@ -1,34 +1,35 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
-using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.DataAccess.Projections;
-using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Features.Auth.ForgotPassword.ResetForgottenPassword;
 
-public sealed class ResetForgottenPasswordHandler :
-    ICommandHandler<ResetForgottenPasswordCommand, ResetForgottenPasswordResponse>
+public sealed class ResetForgottenPasswordHandler
+    : ICommandHandler<ResetForgottenPasswordCommand, ResetForgottenPasswordResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly AppDbContext _dbContext;
+    private readonly IUserProvider _userProvider;
+    private readonly IResetPasswordService _resetPasswordService;
+    private readonly IUserRepository _userRepository;
+    private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
     private readonly ITokenService _tokenService;
     private readonly ILogger<ResetForgottenPasswordHandler> _logger;
 
     public ResetForgottenPasswordHandler(
         IUserContext userContext,
-        UserManager<ApplicationUser> userManager,
-        AppDbContext dbContext,
+        IUserProvider userProvider,
+        IResetPasswordService resetPasswordService,
+        IUserRepository userRepository,
+        IUserReader userReader,
         IDateTimeService dateTimeService,
         ITokenService tokenService,
         ILogger<ResetForgottenPasswordHandler> logger)
     {
         _userContext = userContext;
-        _userManager = userManager;
-        _dbContext = dbContext;
+        _userProvider = userProvider;
+        _resetPasswordService = resetPasswordService;
+        _userRepository = userRepository;
+        _userReader = userReader;
         _dateTimeService = dateTimeService;
         _tokenService = tokenService;
         _logger = logger;
@@ -38,13 +39,13 @@ public sealed class ResetForgottenPasswordHandler :
         ResetForgottenPasswordCommand command,
         CancellationToken cancellationToken)
     {
+        var userId = command.UserId;
 
         // Find user by ID
-        var user = await _userManager.FindByIdAsync(command.UserId.ToString())
-            ?? throw new UserNotFoundException(command.UserId);
+        var user = await _userProvider.GetUserAsync(userId.ToString())
+            ?? throw new UserNotFoundException(userId);
 
-        // Reset password using the reset token
-        var result = await _userManager.ResetPasswordAsync(
+        var result = await _resetPasswordService.ResetPasswordAsync(
             user,
             command.Token,
             command.NewPassword);
@@ -72,34 +73,37 @@ public sealed class ResetForgottenPasswordHandler :
                 });
         }
 
-        user.LastPasswordChangedAt = _dateTimeService.UtcNow;
-        user.LastPasswordChangedById = user.Id;
-        user.MustResetPassword = false;
+        // now
+        var now = _dateTimeService.UtcNow;
 
-        await _userManager.UpdateAsync(user);
+        var rows = await _userRepository.UpdatePasswordAsync(
+            userId,
+            now,
+            cancellationToken);
 
+        // session ID
         var sessionId = _userContext.SessionId;
 
         // Issue new token
         var token = await _tokenService.IssueAfterResetForgottenPasswordAsync(
             user,
             sessionId,
+            now,
             cancellationToken);
 
         // Successful log
         _logger.LogInformation(
             "User {UserId} reset their password via forgot password flow",
-            user.Id);
+            userId);
 
 
         // TODO: Domain event
 
-        // TODO: use user reader instead
-        var userAccountData = await _dbContext.Users
-            .AsNoTracking()
-            .Where(u => u.Id == user.Id)
-            .SelectUserAccount()
-            .SingleAsync(cancellationToken);
+
+
+        var userAccountData = await _userReader.GetByIdAsync(
+            userId,
+            cancellationToken);
 
         return new ResetForgottenPasswordResponse(userAccountData);
     }

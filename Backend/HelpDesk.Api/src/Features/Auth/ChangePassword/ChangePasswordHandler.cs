@@ -124,6 +124,7 @@ public sealed class ChangePasswordHandler
         var token = await _tokenService.IssueAfterPasswordChangeAsync(
             user,
             sessionId,
+            now,
             cancellationToken);
 
         // Success log

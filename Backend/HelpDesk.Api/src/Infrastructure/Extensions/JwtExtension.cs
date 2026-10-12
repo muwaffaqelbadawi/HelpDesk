@@ -33,6 +33,21 @@ public static class JwtExtension
         // Register RefreshTokenReader as scoped
         builder.Services.AddScoped<IRefreshTokenReader, RefreshTokenReader>();
 
+        // Register the ClaimProvider as a scoped service
+        builder.Services.AddScoped<IClaimProvider, ClaimProvider>();
+
+        // Register the JwtProvider as a scoped service
+        builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+        // Register the TokenService as a scoped service
+        builder.Services.AddScoped<ITokenIssuer, TokenIssuer>();
+
+        // Register the RefreshTokenProvider as a scoped service
+        builder.Services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
+
+        // Register the RefreshTokenService as a scoped service
+        builder.Services.AddScoped<ITokenService, TokenService>();
+
         return builder;
     }
 

@@ -24,15 +24,18 @@ public interface ITokenService
     Task<TokenResult> IssueAfterPasswordChangeAsync(
         ApplicationUser user,
         Guid sessionId,
+        DateTimeOffset now,
         CancellationToken cancellationToken);
 
     Task<TokenResult> IssueAfterResetPasswordAsync(
         ApplicationUser user,
         Guid sessionId,
+        DateTimeOffset now,
         CancellationToken cancellationToken);
 
     Task<TokenResult> IssueAfterResetForgottenPasswordAsync(
         ApplicationUser user,
         Guid sessionId,
+        DateTimeOffset now,
         CancellationToken cancellationToken);
 }

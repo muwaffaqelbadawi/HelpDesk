@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.HttpContexts;
 using HelpDesk.src.Infrastructure.Services.ChangePassword;
-using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Infrastructure.Services.ResetPassword;
 using HelpDesk.src.Infrastructure.Services.Security;
 using HelpDesk.src.Infrastructure.Services.UserProviders;
@@ -65,26 +64,6 @@ public static class AuthenticationServicesExtension
 
         // Register ChangePasswordService as scoped service
         builder.Services.AddScoped<IChangePasswordService, ChangePasswordService>();
-
-
-        // JWT
-        // Register the ClaimProvider as a scoped service
-        builder.Services.AddScoped<IClaimProvider, ClaimProvider>();
-
-        // Register the JwtProvider as a scoped service
-        builder.Services.AddScoped<IJwtProvider, JwtProvider>();
-
-        // Register the TokenService as a scoped service
-        builder.Services.AddScoped<ITokenIssuer, TokenIssuer>();
-
-        // Register the RefreshTokenProvider as a scoped service
-        builder.Services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
-
-        // Register Refresh Token Revocation Service as a scoped service
-        builder.Services.AddScoped<IRefreshTokenRevocationService, RefreshTokenRevocationService>();
-
-        // Register the RefreshTokenService as a scoped service
-        builder.Services.AddScoped<ITokenService, TokenService>();
 
         return builder;
     }

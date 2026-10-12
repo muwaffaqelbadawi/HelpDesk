@@ -6,16 +6,19 @@ public sealed class RevokeTokenHandler :
     ICommandHandler<RevokeTokenCommand, RevokeTokenResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IRefreshTokenRevocationService _refreshTokenRevocationService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IDateTimeService _dateTimeService;
     private readonly ILogger<RevokeTokenHandler> _logger;
 
     public RevokeTokenHandler(
         IUserContext userContext,
-        IRefreshTokenRevocationService refreshTokenRevocationService,
+        IRefreshTokenRepository refreshTokenRepository,
+        IDateTimeService dateTimeService,
         ILogger<RevokeTokenHandler> logger)
     {
         _userContext = userContext;
-        _refreshTokenRevocationService = refreshTokenRevocationService;
+        _refreshTokenRepository = refreshTokenRepository;
+        _dateTimeService = dateTimeService;
         _logger = logger;
     }
 
@@ -23,13 +26,14 @@ public sealed class RevokeTokenHandler :
         RevokeTokenCommand command,
         CancellationToken cancellationToken)
     {
-        // Self-service
-
         var userId = _userContext.GuidUserId;
 
+        var now = _dateTimeService.UtcNow;
+
         // Revoke all refresh tokens
-        var count = await _refreshTokenRevocationService.RevokeAllAsync(
+        var count = await _refreshTokenRepository.RevokeAllAsync(
             userId,
+            now,
             cancellationToken);
 
         // Success log

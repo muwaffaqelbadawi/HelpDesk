@@ -1117,6 +1117,9 @@ namespace HelpDesk.Migrations
                     b.Property<DateTimeOffset?>("LastActivityAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("UserAgent")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");

@@ -9,20 +9,17 @@ public sealed class TokenService : ITokenService
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenIssuer _tokenIssuer;
     private readonly IUserContext _userContext;
-    private readonly IRefreshTokenRevocationService _refreshTokenRevocationService;
 
     public TokenService(
         IDateTimeService dateTimeService,
         IRefreshTokenRepository refreshTokenRepository,
         ITokenIssuer tokenIssuer,
-        IUserContext userContext,
-        IRefreshTokenRevocationService refreshTokenRevocationService)
+        IUserContext userContext)
     {
         _dateTimeService = dateTimeService;
         _refreshTokenRepository = refreshTokenRepository;
         _tokenIssuer = tokenIssuer;
         _userContext = userContext;
-        _refreshTokenRevocationService = refreshTokenRevocationService;
     }
 
     public async Task<TokenResult> IssueAsync(
@@ -37,7 +34,6 @@ public sealed class TokenService : ITokenService
             user,
             sessionId);
 
-        // Create RefreshToken entity
         var newRefreshTokenEntity = new ApplicationRefreshToken
         {
             Id = Guid.NewGuid(),
@@ -51,7 +47,6 @@ public sealed class TokenService : ITokenService
             UserAgent = _userContext.UserAgent,
         };
 
-        // Refresh token repo
         await _refreshTokenRepository.AddAsync(
             newRefreshTokenEntity,
             cancellationToken);
@@ -87,11 +82,13 @@ public sealed class TokenService : ITokenService
     public async Task<TokenResult> IssueAfterPasswordChangeAsync(
         ApplicationUser user,
         Guid sessionId,
+        DateTimeOffset now,
         CancellationToken cancellationToken)
     {
         // Revoke all refresh tokens
-        await _refreshTokenRevocationService.RevokeAllAsync(
+        await _refreshTokenRepository.RevokeAllAsync(
             user.Id,
+            now,
             cancellationToken);
 
         return await IssueAsync(
@@ -103,11 +100,12 @@ public sealed class TokenService : ITokenService
     public async Task<TokenResult> IssueAfterResetPasswordAsync(
         ApplicationUser user,
         Guid sessionId,
+        DateTimeOffset now,
         CancellationToken cancellationToken)
     {
-        // Revoke all refresh tokens
-        await _refreshTokenRevocationService.RevokeAllAsync(
+        await _refreshTokenRepository.RevokeAllAsync(
             user.Id,
+            now,
             cancellationToken);
 
         return await IssueAsync(
@@ -119,11 +117,13 @@ public sealed class TokenService : ITokenService
     public async Task<TokenResult> IssueAfterResetForgottenPasswordAsync(
         ApplicationUser user,
         Guid sessionId,
+        DateTimeOffset now,
         CancellationToken cancellationToken)
     {
         // Revoke all refresh tokens
-        await _refreshTokenRevocationService.RevokeAllAsync(
+        await _refreshTokenRepository.RevokeAllAsync(
             user.Id,
+            now,
             cancellationToken);
 
         return await IssueAsync(

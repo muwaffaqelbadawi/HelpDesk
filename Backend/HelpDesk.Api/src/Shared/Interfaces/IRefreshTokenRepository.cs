@@ -7,4 +7,9 @@ public interface IRefreshTokenRepository
     Task AddAsync(
         ApplicationRefreshToken refreshToken,
         CancellationToken cancellationToken);
+
+    Task<int> RevokeAllAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
 }

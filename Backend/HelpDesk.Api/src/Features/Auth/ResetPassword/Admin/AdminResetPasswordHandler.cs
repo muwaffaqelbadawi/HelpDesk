@@ -86,7 +86,9 @@ public sealed class AdminResetPasswordHandler :
                 });
         }
 
-        user.LastPasswordChangedAt = _dateTimeService.UtcNow;
+        var now = _dateTimeService.UtcNow;
+
+        user.LastPasswordChangedAt = now;
         user.LastPasswordChangedById = currentUserId;
         user.MustResetPassword = true;
 
@@ -100,6 +102,7 @@ public sealed class AdminResetPasswordHandler :
         var token = await _tokenService.IssueAfterResetPasswordAsync(
             user,
             sessionId,
+            now,
             cancellationToken);
 
         // Get user
@@ -117,7 +120,7 @@ public sealed class AdminResetPasswordHandler :
         await _dispatcher.DispatchAsync(
             @event: new AdminPasswordResetEvent(
                 User: user,
-                OccurredAt: _dateTimeService.UtcNow),
+                OccurredAt: now),
             cancellationToken: cancellationToken);
 
         return new AdminResetPasswordResponse(
