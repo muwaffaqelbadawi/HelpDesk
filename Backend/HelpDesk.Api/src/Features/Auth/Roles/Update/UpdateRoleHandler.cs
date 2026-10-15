@@ -7,7 +7,6 @@ public sealed class UpdateRoleHandler
     : ICommandHandler<UpdateRoleCommand, UpdateRoleResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
     private readonly IRolesRepository _rolesRepository;
     private readonly IDateTimeService _dateTimeService;
     private readonly IUserReader _userReader;
@@ -16,7 +15,6 @@ public sealed class UpdateRoleHandler
 
     public UpdateRoleHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
         IRolesRepository rolesRepository,
         IDateTimeService dateTimeService,
         IUserReader userReader,
@@ -24,7 +22,6 @@ public sealed class UpdateRoleHandler
         ILogger<UpdateRoleHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
         _rolesRepository = rolesRepository;
         _dateTimeService = dateTimeService;
         _userReader = userReader;
@@ -73,7 +70,7 @@ public sealed class UpdateRoleHandler
             cancellationToken);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
         // Domain event

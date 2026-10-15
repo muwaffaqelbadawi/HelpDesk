@@ -1,8 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.Roles.Assign;
-using HelpDesk.src.Features.Auth.Roles.Delete;
-using HelpDesk.src.Features.Auth.Roles.GetAll;
-using HelpDesk.src.Features.Auth.Roles.Update;
-using HelpDesk.src.Features.Users.Create;
+﻿using HelpDesk.src.Features.Users.Create;
 using HelpDesk.src.Features.Users.Delete;
 using HelpDesk.src.Features.Users.GetById;
 using HelpDesk.src.Features.Users.Update;
@@ -19,11 +15,8 @@ namespace HelpDesk.src.Presentation.Controllers.Admin;
 [ApiController]
 [Route("api/admin/users")]
 [Authorize]
-public sealed class AdminUserController(IDateTimeService dateTimeService)
-    : ControllerBase
+public sealed class AdminUserController(IDateTimeService dateTimeService) : ControllerBase
 {
-    // Admin-level permission
-
     // GetAll
     [HttpGet]
     [Authorize(Policy = "Permission:Users.View")]
@@ -135,80 +128,5 @@ public sealed class AdminUserController(IDateTimeService dateTimeService)
         await handler.HandleAsync(command, cancellationToken);
 
         return NoContent();
-    }
-
-    // GetAll
-    [HttpGet("roles")]
-    [Authorize(Policy = "Permission:Roles.View")]
-    public async Task<IActionResult> GetRoles(
-        [FromServices] IQueryHandler<GetAllUserRolesResponse> handler,
-        CancellationToken cancellationToken)
-    {
-        var result = await handler.HandleAsync(cancellationToken);
-
-        return Ok(new ApiResponse<GetAllUserRolesResponse>(
-            message: ApiMessages.RolesRetrieved,
-            time: dateTimeService,
-            data: result));
-    }
-
-    // UpdateRole
-    [Authorize(Policy = "Permission:Roles.Update")]
-    [HttpPut("{userId:guid}/roles")]
-    public async Task<IActionResult> UpdateRole(
-         [FromServices] ICommandHandler<UpdateRoleCommand, UpdateRoleResponse> handler,
-         [FromRoute] Guid userId,
-         [FromBody] UpdateRoleBody body,
-         CancellationToken cancellationToken)
-    {
-        var command = new UpdateRoleCommand(
-            UserId: userId,
-            RoleId: body.RoleId);
-
-        var result = await handler.HandleAsync(command, cancellationToken);
-
-        return Ok(new ApiResponse<UpdateRoleResponse>(
-            message: ApiMessages.RoleUpdated,
-            time: dateTimeService,
-            data: result));
-    }
-
-    // DeleteRole
-    [Authorize(Policy = "Permission:Roles.Delete")]
-    [HttpDelete("{userId:guid}/roles")]
-    public async Task<IActionResult> DeleteRole(
-         [FromServices] ICommandHandler<DeleteRoleCommand> handler,
-         [FromRoute] Guid userId,
-         [FromBody] DeleteRoleBody body,
-         CancellationToken cancellationToken)
-    {
-        var command = new DeleteRoleCommand(
-            UserId: userId,
-            RoleId: body.RoleId);
-
-        await handler.HandleAsync(command, cancellationToken);
-
-        return NoContent();
-    }
-
-    // AssignRole
-    [Authorize(Policy = "Permission:Roles.Assign")]
-    [HttpPost("{userId:guid}/roles")]
-    public async Task<IActionResult> AssignRole(
-         [FromServices] ICommandHandler<AssignRoleCommand, AssignRoleResponse> handler,
-         [FromRoute] Guid userId,
-         [FromBody] AssignRoleBody body,
-         CancellationToken cancellationToken)
-    {
-        var command = new AssignRoleCommand(
-            UserId: userId,
-            RoleId: body.RoleId);
-
-        var result = await handler.HandleAsync(command, cancellationToken);
-
-        return Ok(new ApiResponse<AssignRoleResponse>(
-            message: ApiMessages.RoleAssigned,
-            time: dateTimeService,
-            data: result));
     }
 }

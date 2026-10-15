@@ -26,8 +26,6 @@ public sealed class RolesRepository(AppDbContext dbContext) : IRolesRepository
             .Where(ur => ur.UserId == userId
                 && ur.RoleId == roleId)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(ur => ur.RemovedAt, (DateTimeOffset?)null)
-                .SetProperty(ur => ur.RemovedById, (Guid?)null)
                 .SetProperty(ur => ur.AssignedAt, now)
                 .SetProperty(ur => ur.AssignedById, currentUserId),
             cancellationToken);

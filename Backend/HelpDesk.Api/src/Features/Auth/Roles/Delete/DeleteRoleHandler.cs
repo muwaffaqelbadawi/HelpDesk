@@ -7,7 +7,7 @@ public sealed class DeleteRoleHandler
     : ICommandHandler<DeleteRoleCommand>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
+    private readonly IUserReader _userReader;
     private readonly IRolesRepository _rolesRepository;
     private readonly IDateTimeService _dateTimeService;
     private readonly IDomainEventDispatcher _dispatcher;
@@ -15,14 +15,14 @@ public sealed class DeleteRoleHandler
 
     public DeleteRoleHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
+        IUserReader userReader,
         IRolesRepository rolesRepository,
         IDateTimeService dateTimeService,
         IDomainEventDispatcher dispatcher,
         ILogger<DeleteRoleHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
+        _userReader = userReader;
         _rolesRepository = rolesRepository;
         _dateTimeService = dateTimeService;
         _dispatcher = dispatcher;
@@ -63,7 +63,7 @@ public sealed class DeleteRoleHandler
             roleId);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
         // Domain event

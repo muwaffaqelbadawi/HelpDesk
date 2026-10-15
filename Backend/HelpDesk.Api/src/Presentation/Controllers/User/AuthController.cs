@@ -1,11 +1,13 @@
 ﻿using HelpDesk.src.Features.Auth.ChangePassword;
 using HelpDesk.src.Features.Auth.ForgotPassword;
-using HelpDesk.src.Features.Auth.ForgotPassword.ResetForgottenPassword;
 using HelpDesk.src.Features.Auth.Login;
 using HelpDesk.src.Features.Auth.Logout;
+using HelpDesk.src.Features.Auth.Modules.GetMy;
+using HelpDesk.src.Features.Auth.Permissions.GetMy;
 using HelpDesk.src.Features.Auth.RefreshToken;
 using HelpDesk.src.Features.Auth.ResetPassword.User;
 using HelpDesk.src.Features.Auth.RevokeToken;
+using HelpDesk.src.Features.Auth.Roles.GetMy;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
@@ -70,7 +72,6 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
         [FromServices] ICommandHandler<RefreshTokenCommand, RefreshTokenResponse> handler,
         CancellationToken cancellationToken)
     {
-        // Read from cookie (no body needed)
         var refreshTokenValue = Request.Cookies["refresh_token"];
 
         if (string.IsNullOrEmpty(refreshTokenValue))
@@ -128,33 +129,18 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
         [FromBody] ForgotPasswordBody body,
         CancellationToken cancellationToken)
     {
-        var command = new ForgotPasswordCommand(body.Email);
+        var command = new ForgotPasswordCommand(
+            UserId: body.UserId,
+            Email: body.Email,
+            Token: body.Token,
+            NewPassword: body.NewPassword,
+            ConfirmNewPassword: body.ConfirmNewPassword);
 
         await handler.HandleAsync(command, cancellationToken);
 
         return Ok(new ApiResponse(
            message: ApiMessages.ForgotPassword,
            time: dateTimeService));
-    }
-
-    [HttpPost("reset-forgotten-password")]
-    [AllowAnonymous]
-    public async Task<IActionResult> ResetForgottenPassword(
-        [FromServices] ICommandHandler<ResetForgottenPasswordCommand, ResetForgottenPasswordResponse> handler,
-        [FromBody] ResetForgottenPasswordBody body,
-        CancellationToken cancellationToken)
-    {
-        var command = new ResetForgottenPasswordCommand(
-            body.UserId,
-            body.Token,
-            body.NewPassword);
-
-        var result = await handler.HandleAsync(command, cancellationToken);
-
-        return Ok(new ApiResponse<ResetForgottenPasswordResponse>(
-           message: ApiMessages.ForgottenPasswordReset,
-           time: dateTimeService,
-           data: result));
     }
 
     [HttpPost("revoke-token")]
@@ -192,6 +178,51 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
 
         return Ok(new ApiResponse<ResetPasswordResponse>(
             message: ApiMessages.PasswordReset,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Roles
+    // GetMy
+    [HttpGet("me/roles")]
+    public async Task<IActionResult> GetMyRoles(
+        [FromServices] IQueryHandler<GetMyRolesResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(cancellationToken);
+
+        return Ok(new ApiResponse<GetMyRolesResponse>(
+            message: ApiMessages.RolesRetrieved,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Modules
+    // GetAll
+    [HttpGet("me/modules")]
+    public async Task<IActionResult> GetMyModules(
+        [FromServices] IQueryHandler<GetMyModulesResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(cancellationToken);
+
+        return Ok(new ApiResponse<GetMyModulesResponse>(
+            message: ApiMessages.ModulesRetrieved,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Permissions
+    // GetAll
+    [HttpGet("me/permissions")]
+    public async Task<IActionResult> GetMyPermissions(
+        [FromServices] IQueryHandler<GetMyPermissionsResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(cancellationToken);
+
+        return Ok(new ApiResponse<GetMyPermissionsResponse>(
+            message: ApiMessages.PermissionsRetrieved,
             time: dateTimeService,
             data: result));
     }

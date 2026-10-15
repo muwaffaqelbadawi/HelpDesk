@@ -15,7 +15,7 @@ public sealed class UpdateTicketTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
+        var userReader = new Mock<IUserReader>();
         var ticketRepository = new Mock<ITicketRepository>();
         var ticketReader = new Mock<ITicketReader>();
         var ticketLookup = new Mock<ITicketLookupService>();
@@ -26,7 +26,7 @@ public sealed class UpdateTicketTests
         // SUT (System Under Test)
         var handler = new UpdateTicketHandler(
             userContext.Object,
-            userProvider.Object,
+            userReader.Object,
             ticketRepository.Object,
             ticketReader.Object,
             ticketLookup.Object,
@@ -103,7 +103,7 @@ public sealed class UpdateTicketTests
         var user = new ApplicationUser { Id = userId };
 
         // Mock user provider to return a valid user with the same userId
-        userProvider
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 

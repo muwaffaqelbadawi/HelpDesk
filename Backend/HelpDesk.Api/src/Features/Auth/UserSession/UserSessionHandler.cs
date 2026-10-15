@@ -5,8 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace HelpDesk.src.Features.Auth.UserSession;
 
-public sealed class UserSessionHandler
-    : ICommandHandler<UserSessionCommand>
+public sealed class UserSessionHandler : ICommandHandler<UserSessionCommand>
 {
     private readonly IUserSessionRepository _userSessionRepository;
     private readonly IUserContext _userContext;

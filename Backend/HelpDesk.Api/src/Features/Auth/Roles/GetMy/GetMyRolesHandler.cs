@@ -18,7 +18,7 @@ public sealed class GetMyRolesHandler(
             cancellationToken);
 
         // Successful log
-        logger.LogInformation("User {user} roles retrieved",
+        logger.LogInformation("User {user} roles retrieved successfully",
             userId);
 
         return new GetMyRolesResponse(roles);

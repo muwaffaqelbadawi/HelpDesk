@@ -7,7 +7,6 @@ public sealed class UpdateMyUserAccountHandler
     : ICommandHandler<UpdateMyUserAccountCommand, UpdateMyUserAccountResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
     private readonly IUserRepository _userRepository;
     private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
@@ -16,7 +15,6 @@ public sealed class UpdateMyUserAccountHandler
 
     public UpdateMyUserAccountHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
         IUserRepository userRepository,
         IUserReader userReader,
         IDateTimeService dateTimeService,
@@ -24,7 +22,6 @@ public sealed class UpdateMyUserAccountHandler
         ILogger<UpdateMyUserAccountHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
         _userRepository = userRepository;
         _userReader = userReader;
         _dateTimeService = dateTimeService;
@@ -75,7 +72,7 @@ public sealed class UpdateMyUserAccountHandler
             userId);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new AuthenticationRequiredException();
 
         // Domain event

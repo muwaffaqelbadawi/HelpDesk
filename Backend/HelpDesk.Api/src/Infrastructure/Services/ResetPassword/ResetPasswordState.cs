@@ -4,11 +4,11 @@ namespace HelpDesk.src.Infrastructure.Services.ResetPassword;
 
 public sealed class ResetPasswordState(
     IUserContext userContext,
-    IUserProvider userProvider)
+    IUserReader userReader)
         : IResetPasswordState
 {
     public bool MustResetPassword
-        => userProvider
+        => userReader
             .GetUserAsync(userContext.UserId)
             .GetAwaiter()
             .GetResult()

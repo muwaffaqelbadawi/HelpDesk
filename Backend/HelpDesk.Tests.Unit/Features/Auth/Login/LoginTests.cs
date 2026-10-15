@@ -86,7 +86,6 @@ public sealed class LoginTests
             StaySignedIn: false);
 
         // Act
-        // One specific action
         var result = await handler.HandleAsync(
             command,
             CancellationToken.None);

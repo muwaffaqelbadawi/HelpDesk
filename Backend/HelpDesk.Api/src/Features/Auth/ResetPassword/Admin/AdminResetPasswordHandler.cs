@@ -7,7 +7,6 @@ public sealed class AdminResetPasswordHandler :
     ICommandHandler<AdminResetPasswordCommand, AdminResetPasswordResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
     private readonly IResetPasswordService _resetPasswordService;
     private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
@@ -18,7 +17,6 @@ public sealed class AdminResetPasswordHandler :
 
     public AdminResetPasswordHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
         IResetPasswordService resetPasswordService,
         IUserRepository userRepository,
         ITokenService tokenService,
@@ -28,7 +26,6 @@ public sealed class AdminResetPasswordHandler :
         ILogger<AdminResetPasswordHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
         _resetPasswordService = resetPasswordService;
         _userRepository = userRepository;
         _tokenService = tokenService;
@@ -48,7 +45,7 @@ public sealed class AdminResetPasswordHandler :
         // user
         var userId = command.UserId;
 
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
         var resetToken = await _resetPasswordService.GeneratePasswordAsync(user);

@@ -3,7 +3,6 @@ using HelpDesk.src.Infrastructure.HttpContexts;
 using HelpDesk.src.Infrastructure.Services.ChangePassword;
 using HelpDesk.src.Infrastructure.Services.ResetPassword;
 using HelpDesk.src.Infrastructure.Services.Security;
-using HelpDesk.src.Infrastructure.Services.UserProviders;
 using HelpDesk.src.Shared.DataAccess.Readers;
 using HelpDesk.src.Shared.DataAccess.Repositories;
 using HelpDesk.src.Shared.IdentityBuilders;
@@ -26,14 +25,17 @@ public static class AuthenticationServicesExtension
         // Register the UserContext as a scoped service
         builder.Services.AddScoped<IUserContext, UserContext>();
 
-        // Register the UserProvider as a scoped service
-        builder.Services.AddScoped<IUserProvider, UserProvider>();
-
-        // Register the RoleReader as a scoped service
+        // Register the RolesReader as a scoped service
         builder.Services.AddScoped<IRolesReader, RolesReader>();
 
         // Register the RoleRepository as a scoped service
         builder.Services.AddScoped<IRolesRepository, RolesRepository>();
+
+        // Register the ModulesReader as a scoped service
+        builder.Services.AddScoped<IModulesReader, ModulesReader>();
+
+        // Register the ModuleRepository as a scoped service
+        builder.Services.AddScoped<IModulesRepository, ModulesRepository>();
 
         // Register the PermissionReader as a scoped service
         builder.Services.AddScoped<IPermissionsReader, PermissionsReader>();

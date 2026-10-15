@@ -5,4 +5,6 @@ namespace HelpDesk.src.Shared.Interfaces;
 public interface IUserProvider
 {
     Task<ApplicationUser?> GetUserAsync(string userId);
+
+    Task<ApplicationUser?> GetUserByEmailAsync(string email);
 }

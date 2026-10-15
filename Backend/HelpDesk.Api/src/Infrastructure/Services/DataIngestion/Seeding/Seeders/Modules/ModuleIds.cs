@@ -17,9 +17,6 @@ public static class ModuleIds
     public static readonly Guid Tickets =
         new("1CB2F0A4-EB25-4CD3-93B4-B2513DF78143");
 
-    public static readonly Guid Employees =
-        new("6352FB5C-A55F-4F73-BB1A-9B3BA9E90B7B");
-
     public static IReadOnlyCollection<Guid> All { get; } =
     [
         Users,
@@ -27,6 +24,5 @@ public static class ModuleIds
         Permissions,
         Modules,
         Tickets,
-        Employees
     ];
 }

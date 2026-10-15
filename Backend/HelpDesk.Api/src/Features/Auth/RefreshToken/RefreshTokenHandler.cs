@@ -13,7 +13,6 @@ public sealed class RefreshTokenHandler :
     private readonly IUserContext _userContext;
     private readonly IUserReader _userReader;
     private readonly IUserSessionReader _userSessionReader;
-    private readonly IUserProvider _userProvider;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<RefreshTokenHandler> _logger;
 
@@ -25,7 +24,6 @@ public sealed class RefreshTokenHandler :
         IUserContext userContext,
         IUserReader userReader,
         IUserSessionReader userSessionReader,
-        IUserProvider userProvider,
         IDomainEventDispatcher dispatcher,
         ILogger<RefreshTokenHandler> logger)
     {
@@ -36,7 +34,6 @@ public sealed class RefreshTokenHandler :
         _userContext = userContext;
         _userReader = userReader;
         _userSessionReader = userSessionReader;
-        _userProvider = userProvider;
         _dispatcher = dispatcher;
         _logger = logger;
     }
@@ -104,7 +101,7 @@ public sealed class RefreshTokenHandler :
         }
 
         // lookup user
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
         var sessionId = _userContext.SessionId;

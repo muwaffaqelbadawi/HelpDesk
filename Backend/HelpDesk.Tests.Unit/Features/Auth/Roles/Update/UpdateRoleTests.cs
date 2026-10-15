@@ -15,7 +15,6 @@ public sealed class UpdateRoleTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
         var rolesRepository = new Mock<IRolesRepository>();
         var dateTimeService = new Mock<IDateTimeService>();
         var userReader = new Mock<IUserReader>();
@@ -25,7 +24,6 @@ public sealed class UpdateRoleTests
         // SUT (System Under Test)
         var handler = new UpdateRoleHandler(
             userContext.Object,
-            userProvider.Object,
             rolesRepository.Object,
             dateTimeService.Object,
             userReader.Object,
@@ -81,7 +79,7 @@ public sealed class UpdateRoleTests
         var user = new ApplicationUser();
 
         // Mock user provider to return the expected user
-        userProvider
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 

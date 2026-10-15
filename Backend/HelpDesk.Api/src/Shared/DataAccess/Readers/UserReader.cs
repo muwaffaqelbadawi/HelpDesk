@@ -1,15 +1,29 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.DataAccess.Projections;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.DataAccess.Readers;
 
-public sealed class UserReader(AppDbContext dbContext) : IUserReader
+public sealed class UserReader(
+    UserManager<ApplicationUser> userManager,
+    AppDbContext dbContext) : IUserReader
 {
+    public Task<ApplicationUser?> GetUserAsync(string userId)
+    {
+        return userManager.FindByIdAsync(userId);
+    }
+
+    public Task<ApplicationUser?> GetUserByEmailAsync(string email)
+    {
+        return userManager.FindByEmailAsync(email);
+    }
+
     public async Task<PagedResult<UserAccountData>> GetAllAsync(
         GetUsersParameters query,
         CancellationToken cancellationToken = default)

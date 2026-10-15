@@ -3,42 +3,34 @@ using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserSta
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Infrastructure.SystemAccounts.Superadmin;
 
 public sealed class SuperadminHandler
     : ICommandHandler<SuperadminCommand, SuperadminResponse>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly ISuperadminRepository _superadminRepository;
     private readonly ITemporaryPasswordGenerator _passwordGenerator;
     private readonly IDateTimeService _dateTimeService;
     private readonly ISuperadminReader _superadminReader;
-    private readonly IUserProvider _userProvider;
+    private readonly IUserReader _userReader;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<SuperadminHandler> _logger;
 
     public SuperadminHandler(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager,
         ISuperadminRepository superadminRepository,
         ITemporaryPasswordGenerator passwordGenerator,
         IDateTimeService dateTimeService,
         ISuperadminReader superadminReader,
-        IUserProvider userProvider,
+        IUserReader userReader,
         IDomainEventDispatcher dispatcher,
         ILogger<SuperadminHandler> logger)
     {
-        _userManager = userManager;
-        _roleManager = roleManager;
         _superadminRepository = superadminRepository;
         _passwordGenerator = passwordGenerator;
         _dateTimeService = dateTimeService;
         _superadminReader = superadminReader;
-        _userProvider = userProvider;
+        _userReader = userReader;
         _dispatcher = dispatcher;
         _logger = logger;
     }
@@ -47,11 +39,8 @@ public sealed class SuperadminHandler
        SuperadminCommand command,
        CancellationToken cancellationToken)
     {
-        // Find existing superadmin by normalized name
-        var existingSuperadmin = await _userManager.Users
-            .SingleOrDefaultAsync(
-                u => u.NormalizedUserName == "SUPERADMIN",
-                cancellationToken);
+        var existingSuperadmin = await _superadminReader
+            .CheckExistingSuperadminAsync(cancellationToken);
 
         // Ensure this is the very first user
         if (existingSuperadmin is not null)
@@ -89,11 +78,7 @@ public sealed class SuperadminHandler
         var tempPassword = _passwordGenerator.Generate();
 
         // Superadmin role ID
-        var roleId = command.RoleId.ToString();
-
-        // Find Superadmin role by ID
-        var superadminRole = await _roleManager.FindByIdAsync(roleId)
-            ?? throw new RoleNotFoundException(command.RoleId);
+        var roleId = command.RoleId;
 
         // Create Superadmin role to superadmin account
         // Create a new relationship between superadmin and
@@ -101,7 +86,7 @@ public sealed class SuperadminHandler
         var superadminRoleEntity = new ApplicationUserRole
         {
             UserId = superadmin.Id,
-            RoleId = superadminRole.Id,
+            RoleId = roleId,
             AssignedAt = now,
             AssignedById = null
         };
@@ -129,7 +114,7 @@ public sealed class SuperadminHandler
             superadmin.Id);
 
         // Retrieve current superadmin from database for domain event
-        var user = await _userProvider.GetUserAsync(superadmin.Id.ToString())
+        var user = await _userReader.GetUserAsync(superadmin.Id.ToString())
             ?? throw new AuthenticationRequiredException();
 
         // Domain event
@@ -140,8 +125,6 @@ public sealed class SuperadminHandler
                 TempPassword: tempPassword),
             cancellationToken: cancellationToken);
 
-
-        return new SuperadminResponse(
-            SuperadminData: superadminAccountData);
+        return new SuperadminResponse(superadminAccountData);
     }
 }

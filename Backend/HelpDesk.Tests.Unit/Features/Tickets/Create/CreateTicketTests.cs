@@ -18,7 +18,7 @@ public sealed class CreateTicketTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
+        var userReader = new Mock<IUserReader>();
         var ticketRepository = new Mock<ITicketRepository>();
         var ticketReader = new Mock<ITicketReader>();
         var numberingService = new Mock<INumberingService>();
@@ -29,7 +29,7 @@ public sealed class CreateTicketTests
         // SUT (System Under Test)
         var handler = new CreateTicketHandler(
             userContext.Object,
-            userProvider.Object,
+            userReader.Object,
             ticketRepository.Object,
             ticketReader.Object,
             numberingService.Object,
@@ -97,7 +97,7 @@ public sealed class CreateTicketTests
         var user = new ApplicationUser { Id = userId };
 
         // Mock user provider to return the expected user
-        userProvider
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 

@@ -15,7 +15,6 @@ public sealed class AssignTicketTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
         var ticketRepository = new Mock<ITicketRepository>();
         var ticketReader = new Mock<ITicketReader>();
         var userReader = new Mock<IUserReader>();
@@ -26,7 +25,6 @@ public sealed class AssignTicketTests
         // SUT (System Under Test)
         var handler = new AssignTicketHandler(
             userContext.Object,
-            userProvider.Object,
             ticketRepository.Object,
             ticketReader.Object,
             userReader.Object,
@@ -95,12 +93,11 @@ public sealed class AssignTicketTests
         var user = new ApplicationUser();
 
         // Mock user provider to return the expected user
-        userProvider
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 
         // Act
-        // One specific action
         var result = await handler.HandleAsync(
             command,
             CancellationToken.None);

@@ -3,11 +3,10 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Auth.ResetPassword.User;
 
-public sealed class ResetPasswordHandler :
-    ICommandHandler<ResetPasswordCommand, ResetPasswordResponse>
+public sealed class ResetPasswordHandler
+    : ICommandHandler<ResetPasswordCommand, ResetPasswordResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
     private readonly IResetPasswordService _resetPasswordService;
     private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
@@ -18,7 +17,6 @@ public sealed class ResetPasswordHandler :
 
     public ResetPasswordHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
         IResetPasswordService resetPasswordService,
         IUserRepository userRepository,
         ITokenService tokenService,
@@ -28,7 +26,6 @@ public sealed class ResetPasswordHandler :
         ILogger<ResetPasswordHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
         _resetPasswordService = resetPasswordService;
         _userRepository = userRepository;
         _tokenService = tokenService;
@@ -42,55 +39,23 @@ public sealed class ResetPasswordHandler :
         ResetPasswordCommand command,
         CancellationToken cancellationToken)
     {
-        // Anonymous service
         var userId = command.UserId;
 
-        //Get current user
-        var user = await _userProvider.GetUserAsync(userId)
-            ?? throw new AuthenticationRequiredException();
-
-        var resetToken = command.ResetToken;
-        var newPassword = command.NewPassword;
-        var confirmedPassword = command.ConfirmNewPassword;
-
-        if (string.IsNullOrWhiteSpace(resetToken))
-        {
-            throw new ValidationException(
-                errors: new()
-                {
-                    ["resetToken"] = ["resetToken is invalid or missing."]
-                });
-        }
-
-        if (string.IsNullOrWhiteSpace(newPassword))
-        {
-            throw new ValidationException(
-                errors: new()
-                {
-                    ["newPassword"] = ["newPassword is invalid or missing."]
-                });
-        }
-
-        if (string.IsNullOrWhiteSpace(confirmedPassword))
-        {
-            throw new ValidationException(
-                errors: new()
-                {
-                    ["confirmedPassword"] = ["confirmedPassword is invalid or missing."]
-                });
-        }
+        // user
+        var user = await _userReader.GetUserAsync(userId.ToString())
+            ?? throw new UserNotFoundException(userId);
 
         var result = await _resetPasswordService.ResetPasswordAsync(
             user,
-            resetToken,
-            newPassword);
+            command.ResetToken,
+            command.NewPassword);
 
         if (!result.Succeeded)
         {
             _logger.LogWarning(
                 "Failed to reset password for user: {ser}." +
                 "Errors: {Errors}.",
-                user.Id,
+                userId,
                 string.Join(", ", result.Errors.First().Description));
 
             if (result.Errors.Any(e => e.Code == "InvalidToken"))
@@ -108,17 +73,27 @@ public sealed class ResetPasswordHandler :
                 });
         }
 
+        // now
         var now = _dateTimeService.UtcNow;
 
-        user.LastPasswordChangedAt = now;
-        user.LastPasswordChangedById = user.Id;
-        user.MustResetPassword = false;
+        // update password
+        var rows = await _userRepository.UpdatePasswordAsync(
+            userId,
+            now,
+            cancellationToken);
+
+        if (rows == 0)
+        {
+            throw new ConcurrencyException(
+                $"Password for user {userId} was modified or deleted by another user.");
+        }
 
         // User repo
         await _userRepository.UpdateAsync(
             user,
             cancellationToken);
 
+        // session ID
         var sessionId = _userContext.SessionId;
 
         // Issue new token
@@ -131,11 +106,11 @@ public sealed class ResetPasswordHandler :
         // Successful log
         _logger.LogInformation(
             "User: {user} password was reset successfully.",
-            user.Id);
+            userId);
 
         // Get user
         var userAccountData = await _userReader.GetByIdAsync(
-            userId: user.Id,
+            userId: userId,
             cancellationToken: cancellationToken);
 
         // Domain event
@@ -145,9 +120,8 @@ public sealed class ResetPasswordHandler :
                 OccurredAt: now),
             cancellationToken: cancellationToken);
 
-
         return new ResetPasswordResponse(
-            UserAccountData: userAccountData,
-            Token: token);
+            userAccountData,
+            token);
     }
 }

@@ -6,34 +6,31 @@ namespace HelpDesk.src.Features.Auth.ChangePassword;
 public sealed class ChangePasswordHandler
     : ICommandHandler<ChangePasswordCommand, ChangePasswordResponse>
 {
-    private readonly IDateTimeService _dateTimeService;
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
     private readonly IChangePasswordService _changePasswordService;
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
     private readonly IUserReader _userReader;
+    private readonly IDateTimeService _dateTimeService;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<ChangePasswordHandler> _logger;
 
     public ChangePasswordHandler(
-        IDateTimeService dateTimeService,
         IUserContext userContext,
-        IUserProvider userProvider,
         IChangePasswordService changePasswordService,
         ITokenService tokenService,
         IUserRepository userRepository,
         IUserReader userReader,
+        IDateTimeService dateTimeService,
         IDomainEventDispatcher dispatcher,
         ILogger<ChangePasswordHandler> logger)
     {
-        _dateTimeService = dateTimeService;
         _userContext = userContext;
-        _userProvider = userProvider;
         _changePasswordService = changePasswordService;
         _tokenService = tokenService;
         _userRepository = userRepository;
         _userReader = userReader;
+        _dateTimeService = dateTimeService;
         _dispatcher = dispatcher;
         _logger = logger;
     }
@@ -42,48 +39,15 @@ public sealed class ChangePasswordHandler
         ChangePasswordCommand command,
         CancellationToken cancellationToken)
     {
-        // Self-service
         var userId = _userContext.GuidUserId;
 
-        // Resolve currentUser with ID
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
-
-        var currentPassword = command.CurrentPassword;
-        var newPassword = command.NewPassword;
-        var confirmedPassword = command.ConfirmNewPassword;
-
-        if (string.IsNullOrWhiteSpace(currentPassword))
-        {
-            throw new ValidationException(
-                errors: new()
-                {
-                    ["currentPassword"] = ["currentPassword is invalid or missing."]
-                });
-        }
-
-        if (string.IsNullOrWhiteSpace(newPassword))
-        {
-            throw new ValidationException(
-                errors: new()
-                {
-                    ["newPassword"] = ["newPassword is invalid or missing."]
-                });
-        }
-
-        if (string.IsNullOrWhiteSpace(confirmedPassword))
-        {
-            throw new ValidationException(
-                errors: new()
-                {
-                    ["confirmedPassword"] = ["confirmedPassword is invalid or missing."]
-                });
-        }
 
         var changePasswordResult = await _changePasswordService.ChangePasswordAsync(
             user,
-            currentPassword,
-            newPassword);
+            command.CurrentPassword,
+            command.NewPassword);
 
         // Check if the password change succeeded
         if (!changePasswordResult.Succeeded)

@@ -6,6 +6,22 @@ namespace HelpDesk.src.Shared.DataAccess.Readers;
 
 public sealed class PermissionsReader(AppDbContext dbContext) : IPermissionsReader
 {
+    public async Task<IReadOnlyCollection<string>> GetUserPermissionsAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await (
+            from ur in dbContext.UserRoles
+            join rpm in dbContext.RolePermissionModules
+                on ur.RoleId equals rpm.RoleId
+            join p in dbContext.Permissions
+                on rpm.PermissionId equals p.Id
+            where ur.UserId == userId
+            select p.Name)
+        .Distinct()
+        .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<string>> GetPermissionsByRolesAsync(
         IReadOnlyCollection<string> roles,
         CancellationToken cancellationToken)

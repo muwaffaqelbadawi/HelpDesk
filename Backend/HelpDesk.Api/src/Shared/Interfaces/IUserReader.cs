@@ -1,4 +1,5 @@
-﻿using HelpDesk.src.Shared.Pagination;
+﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 
@@ -6,6 +7,10 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IUserReader
 {
+    Task<ApplicationUser?> GetUserAsync(string userId);
+
+    Task<ApplicationUser?> GetUserByEmailAsync(string email);
+
     Task<PagedResult<UserAccountData>> GetAllAsync(
         GetUsersParameters query,
         CancellationToken cancellationToken = default);

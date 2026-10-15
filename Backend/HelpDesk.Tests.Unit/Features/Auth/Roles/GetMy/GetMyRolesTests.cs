@@ -13,13 +13,13 @@ public sealed class GetMyRolesTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var roleReader = new Mock<IRolesReader>();
+        var rolesReader = new Mock<IRolesReader>();
         var logger = new Mock<ILogger<GetMyRolesHandler>>();
 
         // SUT (System Under Test)
         var handler = new GetMyRolesHandler(
             userContext.Object,
-            roleReader.Object,
+            rolesReader.Object,
             logger.Object);
 
         // provide a concrete user id and configure the substitute
@@ -29,12 +29,17 @@ public sealed class GetMyRolesTests
             .Setup(x => x.GuidUserId)
             .Returns(userId);
 
+        // roles
         IReadOnlyCollection<string> roles = [];
+
+        // response
         var response = new GetMyRolesResponse(roles);
+
+        // expectedRoles
         var expectedRoles = response.Roles;
 
         // Mock ticket reader to return the expected ticket data
-        roleReader
+        rolesReader
             .Setup(x => x.GetUserRolesAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<CancellationToken>()))
@@ -49,7 +54,7 @@ public sealed class GetMyRolesTests
         Assert.NotNull(result);
         Assert.Equal(response, result);
 
-        roleReader.Verify(
+        rolesReader.Verify(
             x => x.GetUserRolesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<CancellationToken>()),

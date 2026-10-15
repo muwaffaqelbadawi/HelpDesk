@@ -3,7 +3,7 @@
 namespace HelpDesk.src.Features.Auth.ResetPassword.User;
 
 public sealed record ResetPasswordCommand(
-    string UserId,
+    Guid UserId,
     string ResetToken,
     string NewPassword,
     string ConfirmNewPassword) : ISystemCommand;

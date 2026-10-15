@@ -7,7 +7,7 @@ public sealed class DeleteTicketHandler :
     ICommandHandler<DeleteTicketCommand>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
+    private readonly IUserReader _userReader;
     private readonly ITicketRepository _ticketRepository;
     private readonly IDateTimeService _dateTimeService;
     private readonly IDomainEventDispatcher _dispatcher;
@@ -15,14 +15,14 @@ public sealed class DeleteTicketHandler :
 
     public DeleteTicketHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
+        IUserReader userReader,
         ITicketRepository ticketRepositor,
         IDateTimeService dateTimeService,
         IDomainEventDispatcher dispatcher,
         ILogger<DeleteTicketHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
+        _userReader = userReader;
         _ticketRepository = ticketRepositor;
         _dateTimeService = dateTimeService;
         _dispatcher = dispatcher;
@@ -57,7 +57,7 @@ public sealed class DeleteTicketHandler :
             command.TicketId);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new AuthenticationRequiredException();
 
         // Domain event

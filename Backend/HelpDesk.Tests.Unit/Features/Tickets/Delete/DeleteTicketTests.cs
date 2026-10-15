@@ -14,7 +14,7 @@ public sealed class DeleteTicketTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
+        var userReader = new Mock<IUserReader>();
         var ticketRepository = new Mock<ITicketRepository>();
         var dateTimeService = new Mock<IDateTimeService>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
@@ -23,7 +23,7 @@ public sealed class DeleteTicketTests
         // SUT (System Under Test)
         var handler = new DeleteTicketHandler(
             userContext.Object,
-            userProvider.Object,
+            userReader.Object,
             ticketRepository.Object,
             dateTimeService.Object,
             dispatcher.Object,
@@ -68,7 +68,7 @@ public sealed class DeleteTicketTests
         var user = new ApplicationUser { Id = userId };
 
         // Mock user provider to return a valid user with the same userId
-        userProvider
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 

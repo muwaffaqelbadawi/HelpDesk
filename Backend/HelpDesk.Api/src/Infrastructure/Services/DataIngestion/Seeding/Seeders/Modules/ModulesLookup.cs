@@ -4,8 +4,6 @@ namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Mod
 
 public static class ModulesLookup
 {
-    // 6 Modules
-
     public static IReadOnlyCollection<LookupSeed> Modules { get; } =
     [
         new(
@@ -37,11 +35,5 @@ public static class ModulesLookup
             Name: "Tickets",
             Code: "TICKETS",
             SortOrder: 5),
-
-        new(
-            Id: ModuleIds.Employees,
-            Name: "Employees",
-            Code: "EMPLOYEES",
-            SortOrder: 6),
     ];
 }

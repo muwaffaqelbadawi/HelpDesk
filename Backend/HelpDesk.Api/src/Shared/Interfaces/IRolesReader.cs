@@ -4,6 +4,10 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface IRolesReader
 {
+    Task<string?> GetByIdRoleAsync(
+        Guid roleId,
+        CancellationToken cancellationToken);
+
     Task<IReadOnlyCollection<string>> GetUserRolesAsync(
         Guid userId,
         CancellationToken cancellationToken);

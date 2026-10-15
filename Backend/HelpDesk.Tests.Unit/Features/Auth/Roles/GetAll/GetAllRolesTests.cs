@@ -12,36 +12,42 @@ public sealed class GetAllRolesTests
     public async Task Should_get_all_user_roles()
     {
         // Arrange
-        var roleReader = new Mock<IRolesReader>();
+        var rolesReader = new Mock<IRolesReader>();
         var logger = new Mock<ILogger<GetAllUserRolesHandler>>();
 
         // SUT (System Under Test)
         var handler = new GetAllUserRolesHandler(
-            roleReader.Object,
+            rolesReader.Object,
             logger.Object);
 
         IReadOnlyCollection<string> roles = [];
         var response = new GetAllUserRolesResponse(roles);
         var expectedRoles = response.Roles;
 
-        // Mock ticket reader to return the expected ticket data
-        roleReader
+        // Mock roles reader to return the expected roles data
+        rolesReader
             .Setup(x => x.GetUserRolesAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedRoles);
 
+        // user ID
+        var userId = Guid.NewGuid();
+
+        // query
+        var query = new GetAllUserRolesQuery(userId);
+
         // Act
         // One specific action
         var result = await handler.HandleAsync(
-            new GetAllUserRolesQuery(Guid.NewGuid()),
+            query,
             CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(response, result);
 
-        roleReader.Verify(
+        rolesReader.Verify(
             x => x.GetUserRolesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<CancellationToken>()),

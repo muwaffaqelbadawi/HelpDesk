@@ -10,7 +10,7 @@ public sealed class CreateTicketHandler :
     ICommandHandler<CreateTicketCommand, CreateTicketResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
+    private readonly IUserReader _userReader;
     private readonly ITicketRepository _ticketRepository;
     private readonly ITicketReader _ticketReader;
     private readonly INumberingService _numberingService;
@@ -20,7 +20,7 @@ public sealed class CreateTicketHandler :
 
     public CreateTicketHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
+        IUserReader userReader,
         ITicketRepository ticketRepository,
         ITicketReader ticketReader,
         INumberingService numberingService,
@@ -29,7 +29,7 @@ public sealed class CreateTicketHandler :
         ILogger<CreateTicketHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
+        _userReader = userReader;
         _ticketRepository = ticketRepository;
         _ticketReader = ticketReader;
         _numberingService = numberingService;
@@ -82,7 +82,7 @@ public sealed class CreateTicketHandler :
             userId);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new AuthenticationRequiredException();
 
         // Domain event

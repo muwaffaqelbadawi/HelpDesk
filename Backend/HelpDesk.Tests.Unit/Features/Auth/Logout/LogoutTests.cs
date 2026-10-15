@@ -14,7 +14,7 @@ public sealed class LogoutTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
+        var userReader = new Mock<IUserReader>();
         var dateTimeService = new Mock<IDateTimeService>();
         var refreshTokenRepository = new Mock<IRefreshTokenRepository>();
         var sessionRepository = new Mock<IUserSessionRepository>();
@@ -24,7 +24,7 @@ public sealed class LogoutTests
         // SUT (System Under Test)
         var handler = new LogoutHandler(
             userContext.Object,
-            userProvider.Object,
+            userReader.Object,
             dateTimeService.Object,
             refreshTokenRepository.Object,
             sessionRepository.Object,
@@ -74,14 +74,16 @@ public sealed class LogoutTests
         // create new user account data
         var user = new ApplicationUser();
 
-        userProvider
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 
         var command = new LogoutCommand();
 
         // Act
-        var result = await handler.HandleAsync(command, CancellationToken.None);
+        var result = await handler.HandleAsync(
+            command,
+            CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);

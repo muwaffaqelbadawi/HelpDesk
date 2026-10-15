@@ -1,7 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.Modules.GetCurrent;
-using HelpDesk.src.Features.Auth.Permissions.GetCurrent;
-using HelpDesk.src.Features.Auth.Roles.GetMy;
-using HelpDesk.src.Features.Users.GetMy;
+﻿using HelpDesk.src.Features.Users.GetMy;
 using HelpDesk.src.Features.Users.UpdateMy;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
@@ -15,11 +12,9 @@ namespace HelpDesk.src.Presentation.Controllers.User;
 [Authorize]
 public sealed class UserController(IDateTimeService dateTimeService) : ControllerBase
 {
-    // Self-Service
-
-    // GetCurrent
+    // Get
     [HttpGet("me")]
-    public async Task<IActionResult> GetCurrentUserAccount(
+    public async Task<IActionResult> GetMytUserAccount(
         [FromServices] IQueryHandler<GetMyUserAccountResponse> handler,
         CancellationToken cancellationToken)
     {
@@ -31,9 +26,9 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
             data: result));
     }
 
-    // UpdateCurrent
+    // Update
     [HttpPut("me")]
-    public async Task<IActionResult> UpdateCurrentUserAccount(
+    public async Task<IActionResult> UpdateMyUserAccount(
         [FromServices] ICommandHandler<UpdateMyUserAccountCommand, UpdateMyUserAccountResponse> handler,
         [FromBody] UpdateMyUserAccountBody body,
         CancellationToken cancellationToken)
@@ -50,53 +45,5 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
 
         // Return 204 No Content
         return NoContent();
-    }
-
-    // Roles
-
-    // GetCurrent
-    [HttpGet("me/roles")]
-    public async Task<IActionResult> GetCurrentRoles(
-        [FromServices] IQueryHandler<GetMyRolesResponse> handler,
-        CancellationToken cancellationToken)
-    {
-        var result = await handler.HandleAsync(cancellationToken);
-
-        return Ok(new ApiResponse<GetMyRolesResponse>(
-            message: ApiMessages.RolesRetrieved,
-            time: dateTimeService,
-            data: result));
-    }
-
-    // Permissions
-
-    // GetAll
-    [HttpGet("me/permissions")]
-    public async Task<IActionResult> GetCurrentPermissions(
-        [FromServices] IQueryHandler<CurrentPermissionsResponse> handler,
-        CancellationToken cancellationToken)
-    {
-        var result = await handler.HandleAsync(cancellationToken);
-
-        return Ok(new ApiResponse<CurrentPermissionsResponse>(
-            message: ApiMessages.PermissionsRetrieved,
-            time: dateTimeService,
-            data: result));
-    }
-
-    // Modules
-
-    // GetAll
-    [HttpGet("me/modules")]
-    public async Task<IActionResult> GetCurrentModules(
-        [FromServices] IQueryHandler<CurrentModulesResponse> handler,
-        CancellationToken cancellationToken)
-    {
-        var result = await handler.HandleAsync(cancellationToken);
-
-        return Ok(new ApiResponse<CurrentModulesResponse>(
-            message: ApiMessages.ModulesRetrieved,
-            time: dateTimeService,
-            data: result));
     }
 }

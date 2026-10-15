@@ -7,7 +7,7 @@ public sealed class DeleteUserAccountHandler :
     ICommandHandler<DeleteUserAccountCommand>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
+    private readonly IUserReader _userReader;
     private readonly IUserRepository _userRepository;
     private readonly IDateTimeService _dateTimeService;
     private readonly IDomainEventDispatcher _dispatcher;
@@ -15,14 +15,14 @@ public sealed class DeleteUserAccountHandler :
 
     public DeleteUserAccountHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
+        IUserReader userReader,
         IUserRepository userRepository,
         IDateTimeService dateTimeService,
         IDomainEventDispatcher dispatcher,
         ILogger<DeleteUserAccountHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
+        _userReader = userReader;
         _userRepository = userRepository;
         _dateTimeService = dateTimeService;
         _dispatcher = dispatcher;
@@ -37,7 +37,7 @@ public sealed class DeleteUserAccountHandler :
 
         var userId = command.UserId;
 
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new AuthenticationRequiredException();
 
         var now = _dateTimeService.UtcNow;

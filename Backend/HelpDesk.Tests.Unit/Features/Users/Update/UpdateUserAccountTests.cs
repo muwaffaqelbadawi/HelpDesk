@@ -15,7 +15,6 @@ public sealed class UpdateUserAccountTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
         var userRepository = new Mock<IUserRepository>();
         var userReader = new Mock<IUserReader>();
         var dateTimeService = new Mock<IDateTimeService>();
@@ -25,7 +24,6 @@ public sealed class UpdateUserAccountTests
         // SUT (System Under Test)
         var handler = new UpdateUserAccountHandler(
             userContext.Object,
-            userProvider.Object,
             userRepository.Object,
             userReader.Object,
             dateTimeService.Object,
@@ -100,8 +98,8 @@ public sealed class UpdateUserAccountTests
         // Mock a real user with the same userId
         var user = new ApplicationUser { Id = userId };
 
-        // Mock user provider to return a valid user with the same userId
-        userProvider
+        // Mock user reader to return a valid user with the same userId
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 

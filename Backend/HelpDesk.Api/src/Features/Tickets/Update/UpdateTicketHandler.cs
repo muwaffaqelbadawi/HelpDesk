@@ -7,7 +7,7 @@ public sealed class UpdateTicketHandler :
     ICommandHandler<UpdateTicketCommand, UpdateTicketResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
+    private readonly IUserReader _userReader;
     private readonly ITicketRepository _ticketRepository;
     private readonly ITicketReader _ticketReader;
     private readonly ITicketLookupService _ticketLookup;
@@ -17,7 +17,7 @@ public sealed class UpdateTicketHandler :
 
     public UpdateTicketHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
+        IUserReader userReader,
         ITicketRepository ticketRepository,
         ITicketReader ticketReader,
         ITicketLookupService ticketLookup,
@@ -26,7 +26,7 @@ public sealed class UpdateTicketHandler :
         ILogger<UpdateTicketHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
+        _userReader = userReader;
         _ticketRepository = ticketRepository;
         _ticketReader = ticketReader;
         _ticketLookup = ticketLookup;
@@ -78,7 +78,7 @@ public sealed class UpdateTicketHandler :
             command.TicketId);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new AuthenticationRequiredException();
 
         // Domain event

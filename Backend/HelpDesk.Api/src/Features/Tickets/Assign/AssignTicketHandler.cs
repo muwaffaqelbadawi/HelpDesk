@@ -7,7 +7,6 @@ public sealed class AssignTicketHandler
     : ICommandHandler<AssignTicketCommand, AssignTicketResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
     private readonly ITicketRepository _ticketRepository;
     private readonly ITicketReader _ticketReader;
     private readonly IUserReader _userReader;
@@ -17,7 +16,6 @@ public sealed class AssignTicketHandler
 
     public AssignTicketHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
         ITicketRepository ticketRepository,
         ITicketReader ticketReader,
         IUserReader userReader,
@@ -26,7 +24,6 @@ public sealed class AssignTicketHandler
         ILogger<AssignTicketHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
         _ticketRepository = ticketRepository;
         _ticketReader = ticketReader;
         _userReader = userReader;
@@ -98,7 +95,7 @@ public sealed class AssignTicketHandler
             cancellationToken: cancellationToken);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new AuthenticationRequiredException();
 
         // Domain event

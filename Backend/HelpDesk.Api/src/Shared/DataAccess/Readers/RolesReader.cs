@@ -7,6 +7,17 @@ namespace HelpDesk.src.Shared.DataAccess.Readers;
 
 public sealed class RolesReader(AppDbContext dbContext) : IRolesReader
 {
+    public async Task<string?> GetByIdRoleAsync(
+        Guid roleId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Roles
+            .AsNoTracking()
+            .Where(r => r.Id == roleId)
+            .Select(r => r.Name)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(
         Guid userId,
         CancellationToken cancellationToken)

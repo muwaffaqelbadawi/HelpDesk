@@ -15,7 +15,7 @@ public sealed class DeleteRoleTests
     {
         // Arrange
         var userContext = new Mock<IUserContext>();
-        var userProvider = new Mock<IUserProvider>();
+        var userReader = new Mock<IUserReader>();
         var rolesRepository = new Mock<IRolesRepository>();
         var dateTimeService = new Mock<IDateTimeService>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
@@ -24,7 +24,7 @@ public sealed class DeleteRoleTests
         // SUT (System Under Test)
         var handler = new DeleteRoleHandler(
             userContext.Object,
-            userProvider.Object,
+            userReader.Object,
             rolesRepository.Object,
             dateTimeService.Object,
             dispatcher.Object,
@@ -70,7 +70,7 @@ public sealed class DeleteRoleTests
         var user = new ApplicationUser();
 
         // Mock user provider to return the expected user
-        userProvider
+        userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
 

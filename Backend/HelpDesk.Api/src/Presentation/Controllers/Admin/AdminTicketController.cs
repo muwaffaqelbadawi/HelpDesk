@@ -15,15 +15,13 @@ namespace HelpDesk.src.Presentation.Controllers.Admin;
 public sealed class AdminTicketController(IDateTimeService dateTimeService)
     : ControllerBase
 {
-    // Admin-level permission
-
     // GetAll
     [Authorize(Policy = "Permission:Tickets.View")]
     [HttpGet]
     public async Task<IActionResult> GetTickets(
         [FromQuery] PagedQuery query,
         [FromServices] IQueryHandler<PagedQuery, PagedResult<TicketData>> handler,
-       CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(query, cancellationToken);
 
@@ -43,7 +41,9 @@ public sealed class AdminTicketController(IDateTimeService dateTimeService)
     {
         var query = new GetByIdTicketQuery(ticketId);
 
-        var result = await handler.HandleAsync(query, cancellationToken);
+        var result = await handler.HandleAsync(
+            query,
+            cancellationToken);
 
         return Ok(new ApiResponse<GetByIdTicketResponse>(
             message: ApiMessages.TicketRetrieved,

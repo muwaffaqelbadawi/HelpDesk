@@ -7,7 +7,7 @@ public sealed class LogoutHandler :
     ICommandHandler<LogoutCommand, LogoutResponse>
 {
     private readonly IUserContext _userContext;
-    private readonly IUserProvider _userProvider;
+    private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IUserSessionRepository _userSessionRepository;
@@ -16,7 +16,7 @@ public sealed class LogoutHandler :
 
     public LogoutHandler(
         IUserContext userContext,
-        IUserProvider userProvider,
+        IUserReader userReader,
         IDateTimeService dateTimeService,
         IRefreshTokenRepository refreshTokenRepository,
         IUserSessionRepository userSessionRepository,
@@ -24,7 +24,7 @@ public sealed class LogoutHandler :
         ILogger<LogoutHandler> logger)
     {
         _userContext = userContext;
-        _userProvider = userProvider;
+        _userReader = userReader;
         _dateTimeService = dateTimeService;
         _refreshTokenRepository = refreshTokenRepository;
         _userSessionRepository = userSessionRepository;
@@ -75,7 +75,7 @@ public sealed class LogoutHandler :
             refreshTokenRows);
 
         // Retrieve current user for domain event
-        var user = await _userProvider.GetUserAsync(userId.ToString())
+        var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
         // Domain event

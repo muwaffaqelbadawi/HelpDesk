@@ -10,4 +10,9 @@ public sealed class UserProvider(UserManager<ApplicationUser> userManager) : IUs
     {
         return userManager.FindByIdAsync(userId);
     }
+
+    public Task<ApplicationUser?> GetUserByEmailAsync(string email)
+    {
+        return userManager.FindByEmailAsync(email);
+    }
 }

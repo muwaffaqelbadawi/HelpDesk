@@ -1,24 +1,22 @@
-﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
+﻿using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Auth.ForgotPassword;
 
-public sealed class ForgotPasswordHandler :
-    ICommandHandler<ForgotPasswordCommand, ForgotPasswordResponse>
+public sealed class ForgotPasswordHandler
+    : ICommandHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<ForgotPasswordHandler> _logger;
 
     public ForgotPasswordHandler(
-        UserManager<ApplicationUser> userManager,
+        IUserReader userReader,
         IDateTimeService dateTimeService,
         IDomainEventDispatcher dispatcher,
         ILogger<ForgotPasswordHandler> logger)
     {
-        _userManager = userManager;
+        _userReader = userReader;
         _dateTimeService = dateTimeService;
         _dispatcher = dispatcher;
         _logger = logger;
@@ -28,10 +26,12 @@ public sealed class ForgotPasswordHandler :
         ForgotPasswordCommand command,
         CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByEmailAsync(command.Email);
+        // user
+        var user = await _userReader.GetUserByEmailAsync(command.Email);
 
         if (user is null)
         {
+            // Prevent enumeration
             _logger.LogInformation(
                 "Password reset requested for non-existent email: {Email}", command.Email);
 
@@ -50,18 +50,25 @@ public sealed class ForgotPasswordHandler :
                 Message: "If the email is associated with an account, a password reset email has been sent.");
         }
 
-        // Domain event
-        await _dispatcher.DispatchAsync(
-            @event: new PasswordForgottenEvent(
-                User: user,
-                OccurredAt: _dateTimeService.UtcNow),
-            cancellationToken: cancellationToken);
-
         // Successful log
         _logger.LogInformation("Password for user: {user} has been reset successfully",
             user.Id);
 
+        // now
+        var now = _dateTimeService.UtcNow;
+
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new PasswordForgottenEvent(
+                ResetToken: command.Token,
+                NewPassword: command.NewPassword,
+                ConfirmNewPassword: command.ConfirmNewPassword,
+                User: user,
+                OccurredAt: now),
+            cancellationToken: cancellationToken);
+
         return new ForgotPasswordResponse(
-            Message: "If the email is associated with an account, a password reset email has been sent.");
+            Message: "If the email is associated with an account, " +
+            "a password reset email has been sent.");
     }
 }
