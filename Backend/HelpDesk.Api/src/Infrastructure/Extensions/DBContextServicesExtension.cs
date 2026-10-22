@@ -7,7 +7,7 @@ namespace HelpDesk.src.Infrastructure.Extensions;
 
 public static class DBContextServicesExtension
 {
-    public static WebApplicationBuilder AddDatabase(
+    public static WebApplicationBuilder AddDBConfigs(
         this WebApplicationBuilder builder)
     {
         // It will be read from the environment variables
@@ -18,8 +18,24 @@ public static class DBContextServicesExtension
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("AppDBConnection")));
 
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddDBServices(
+        this WebApplicationBuilder builder)
+    {
         // SQL Server sequence
         builder.Services.AddScoped<INumberingService, NumberingService>();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddDatabase(
+        this WebApplicationBuilder builder)
+    {
+        builder
+            .AddDBConfigs()
+            .AddDBServices();
 
         return builder;
     }

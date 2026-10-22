@@ -25,13 +25,17 @@ RUN dotnet test Backend/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj \
     --no-build \
     --no-restore
 
-# Run this target as a container with ConnectionStrings__IntegrationTestConnection
-# set and SQL Server reachable. It executes both API test projects.
+# Run unit tests on demand in a container.
 FROM build AS tests
 
-ENTRYPOINT ["dotnet", "test", "Backend/HelpDesk.slnx", "--configuration", "Release", "--no-build", "--no-restore"]
+ENTRYPOINT ["dotnet", "test", "Backend/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj", "--configuration", "Release", "--no-build", "--no-restore"]
 
-# Keep the runtime image free of the SDK and test artifacts.
+# Run integration tests against a reachable SQL Server.
+FROM build AS integration-tests
+
+ENTRYPOINT ["dotnet", "test", "Backend/HelpDesk.Tests.Integration/HelpDesk.Tests.Integration.csproj", "--configuration", "Release", "--no-build", "--no-restore"]
+
+# Publish only after the unit-test gate succeeds.
 FROM unit-tests AS publish
 
 RUN dotnet publish Backend/HelpDesk.Api/HelpDesk.Api.csproj \
@@ -40,6 +44,7 @@ RUN dotnet publish Backend/HelpDesk.Api/HelpDesk.Api.csproj \
     --no-build \
     --no-restore
 
+# Keep the runtime image free of the SDK and test artifacts.
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 
 WORKDIR /app

@@ -1,5 +1,4 @@
 ﻿using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 
 namespace HelpDesk.src.Shared.Interfaces;
@@ -7,7 +6,7 @@ namespace HelpDesk.src.Shared.Interfaces;
 public interface ITicketReader
 {
     Task<PagedResult<TicketData>> GetAllAsync(
-        GetTicketsParameters query,
+        QueryParameters query,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<TicketData>> GetAssignedAsync(

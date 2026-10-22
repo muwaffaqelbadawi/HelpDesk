@@ -39,6 +39,7 @@ public sealed class ResetPasswordHandler
         ResetPasswordCommand command,
         CancellationToken cancellationToken)
     {
+        // user ID
         var userId = command.UserId;
 
         // user
@@ -85,7 +86,7 @@ public sealed class ResetPasswordHandler
         if (rows == 0)
         {
             throw new ConcurrencyException(
-                $"Password for user {userId} was modified or deleted by another user.");
+                $"Password for user {userId} was reset by another user.");
         }
 
         // User repo
@@ -108,7 +109,7 @@ public sealed class ResetPasswordHandler
             "User: {user} password was reset successfully.",
             userId);
 
-        // Get user
+        // user account data
         var userAccountData = await _userReader.GetByIdAsync(
             userId: userId,
             cancellationToken: cancellationToken);

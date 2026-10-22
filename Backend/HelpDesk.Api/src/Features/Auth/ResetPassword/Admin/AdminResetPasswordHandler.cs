@@ -3,8 +3,8 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Auth.ResetPassword.Admin;
 
-public sealed class AdminResetPasswordHandler :
-    ICommandHandler<AdminResetPasswordCommand, AdminResetPasswordResponse>
+public sealed class AdminResetPasswordHandler
+    : ICommandHandler<AdminResetPasswordCommand, AdminResetPasswordResponse>
 {
     private readonly IUserContext _userContext;
     private readonly IResetPasswordService _resetPasswordService;
@@ -39,15 +39,17 @@ public sealed class AdminResetPasswordHandler :
         AdminResetPasswordCommand command,
         CancellationToken cancellationToken)
     {
-        // admin
+        // admin ID
         var currentUserId = _userContext.GuidUserId;
 
-        // user
+        // user ID
         var userId = command.UserId;
 
+        // user
         var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
+        // reset token
         var resetToken = await _resetPasswordService.GeneratePasswordAsync(user);
 
         // new password
@@ -83,16 +85,26 @@ public sealed class AdminResetPasswordHandler :
                 });
         }
 
+        // now
         var now = _dateTimeService.UtcNow;
 
-        user.LastPasswordChangedAt = now;
-        user.LastPasswordChangedById = currentUserId;
-        user.MustResetPassword = true;
+        // rows
+        var rows = await _userRepository.ResetPasswordAsync(
+            userId,
+            now,
+            cancellationToken);
+
+        if (rows == 0)
+        {
+            throw new ConcurrencyException(
+                $"Password for user {userId} was reset by another user.");
+        }
 
         await _userRepository.UpdateAsync(
             user,
             cancellationToken);
 
+        // session ID
         var sessionId = _userContext.SessionId;
 
         // Issue new token
@@ -102,7 +114,7 @@ public sealed class AdminResetPasswordHandler :
             now,
             cancellationToken);
 
-        // Get user
+        // user account data
         var userAccountData = await _userReader.GetByIdAsync(
             userId,
             cancellationToken);

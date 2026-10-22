@@ -216,4 +216,18 @@ public sealed class UserRepository(
                 .SetProperty(u => u.MustResetPassword, false),
                 cancellationToken);
     }
+
+    public async Task<int> ResetPasswordAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.LastPasswordChangedAt, now)
+                .SetProperty(u => u.LastPasswordChangedById, userId)
+                .SetProperty(u => u.MustResetPassword, true),
+                cancellationToken);
+    }
 }

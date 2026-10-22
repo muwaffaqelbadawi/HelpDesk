@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Behaviors;
@@ -57,11 +58,36 @@ public sealed class ValidationBehavior<TCommand, TResponse>(
             .Where(failure => failure is not null)
             .ToList();
 
-        if (failures.Count > 0)
+        return failures.Count > 0
+            ? throw new ValidationException(failures)
+            : await next();
+    }
+}
+
+public sealed class QueryValidationBehavior<TQuery, TResult>(
+    IEnumerable<IValidator<TQuery>> validators)
+    : IQueryHandlerBehavior<TQuery, TResult>
+{
+    public async Task<TResult> HandleAsync(
+        TQuery query,
+        Func<Task<TResult>> next,
+        CancellationToken cancellationToken)
+    {
+        var context = new ValidationContext<TQuery>(query);
+
+        var failures = new List<ValidationFailure>();
+
+        foreach (var validator in validators)
         {
-            throw new ValidationException(failures);
+            var result = await validator.ValidateAsync(
+                context,
+                cancellationToken);
+
+            failures.AddRange(result.Errors);
         }
 
-        return await next();
+        return failures.Count > 0
+            ? throw new ValidationException(failures)
+            : await next();
     }
 }

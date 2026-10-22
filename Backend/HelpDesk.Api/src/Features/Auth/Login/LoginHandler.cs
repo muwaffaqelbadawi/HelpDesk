@@ -70,7 +70,7 @@ public sealed class LoginHandler
             cancellationToken: cancellationToken);
 
         return new LoginResponse(
-            UserAccountData: userAccountData,
-            Token: token);
+            userAccountData,
+            token);
     }
 }

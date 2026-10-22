@@ -1,9 +1,11 @@
-﻿namespace HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Shared.Responses;
+
+namespace HelpDesk.src.Shared.Exceptions;
 
 public sealed class AuthenticationRequiredException : Exception
 {
     public AuthenticationRequiredException()
-            : base(message: "Authentication is required.")
+            : base(message: ApiMessages.AuthenticationRequired)
     {
     }
 

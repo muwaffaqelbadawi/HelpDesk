@@ -83,7 +83,7 @@ public sealed class AssignRoleTests
         // Create user returned by the provider
         var user = new ApplicationUser();
 
-        // Mock user provider to return the expected user
+        // Mock user reader to return the expected user
         userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);
@@ -184,7 +184,7 @@ public sealed class AssignRoleTests
         // Create user returned by the provider
         var user = new ApplicationUser();
 
-        // Mock user provider to return the expected user
+        // Mock user reader to return the expected user
         userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);

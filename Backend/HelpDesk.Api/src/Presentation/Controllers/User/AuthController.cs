@@ -144,19 +144,19 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
     }
 
     [HttpPost("revoke-token")]
-    [AllowAnonymous]
     public async Task<IActionResult> RevokeTokens(
-        [FromServices] ICommandHandler<RevokeTokenCommand, RevokeTokenResponse> handler,
+        [FromServices] ICommandHandler<RevokeTokenCommand> handler,
         CancellationToken cancellationToken)
     {
         var command = new RevokeTokenCommand();
 
-        var result = await handler.HandleAsync(command, cancellationToken);
+        await handler.HandleAsync(
+            command,
+            cancellationToken);
 
-        return Ok(new ApiResponse<RevokeTokenResponse>(
+        return Ok(new ApiResponse(
             message: ApiMessages.RevokedTokens,
-            time: dateTimeService,
-            data: result));
+            time: dateTimeService));
     }
 
     // Reset Password

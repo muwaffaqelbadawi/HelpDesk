@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.src.Infrastructure.Services.Api;
+﻿namespace HelpDesk.src.Presentation.Api;
 
 public sealed record ApiHealth
 {

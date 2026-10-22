@@ -2,7 +2,7 @@
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HelpDesk.src.Infrastructure.Services.Api;
+namespace HelpDesk.src.Presentation.Api;
 
 [ApiController]
 [Route("/")]

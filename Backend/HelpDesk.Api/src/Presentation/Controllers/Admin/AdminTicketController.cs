@@ -19,8 +19,8 @@ public sealed class AdminTicketController(IDateTimeService dateTimeService)
     [Authorize(Policy = "Permission:Tickets.View")]
     [HttpGet]
     public async Task<IActionResult> GetTickets(
-        [FromQuery] PagedQuery query,
-        [FromServices] IQueryHandler<PagedQuery, PagedResult<TicketData>> handler,
+        [FromQuery] QueryParameters query,
+        [FromServices] IQueryHandler<QueryParameters, PagedResult<TicketData>> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(query, cancellationToken);

@@ -20,8 +20,7 @@ public static class ApiMessages
     public const string TokenRefreshed = "Token refreshed successfully.";
     public const string PasswordReset = "Password reset successfully.";
     public const string TokenRevoked = "Token revoked successfully.";
-    public const string RevokedTokens = "All tokens revoked successfully.";
-
+    public const string RevokedTokens = "Access token revoked successfully.";
 
     // Role messages
     public const string RolesRetrieved = "Roles retrieved successfully.";
@@ -60,4 +59,8 @@ public static class ApiMessages
 
     // Data import messages
     public const string DataImported = "Data imported successfully.";
+
+    // Exceptions
+    public const string AuthenticationRequired = "Authentication is required.";
+    public const string ValidationException = "One or more validation errors occurred.";
 }

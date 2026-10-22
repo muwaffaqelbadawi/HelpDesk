@@ -45,13 +45,13 @@ public sealed class LogoutHandler :
         // now
         var now = _dateTimeService.UtcNow;
 
-        // refresh token repository
+        // STEP (1): refresh token repository
         var refreshTokenRows = await _refreshTokenRepository.RevokeAllAsync(
             userId,
             now,
             cancellationToken);
 
-        // session repository
+        // STEP (2): session repository
         var userSessionRows = await _userSessionRepository.RevokeAsync(
             sessionId,
             now,
@@ -70,7 +70,9 @@ public sealed class LogoutHandler :
 
         // Success log
         _logger.LogInformation(
-            "User {UserId} logged out. Revoked {TokenCount} active refresh tokens",
+            "User {UserId} logged out. " +
+            "Current session revoked. " +
+            "Revoked {TokenCount} active refresh tokens",
             userId,
             refreshTokenRows);
 

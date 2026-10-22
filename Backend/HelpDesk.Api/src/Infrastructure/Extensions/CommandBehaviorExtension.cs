@@ -5,11 +5,12 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
-public static class CommandPipelineExtension
+public static class CommandBehaviorExtension
 {
-    public static WebApplicationBuilder AddCommandHandlerPipeline(
+    public static WebApplicationBuilder AddCommandHandlerBehavior(
         this WebApplicationBuilder builder)
     {
+        // Validation behavior
         builder.Services.AddScoped(
             typeof(ICommandHandlerBehavior<>),
             typeof(ValidationBehavior<>));
@@ -18,6 +19,7 @@ public static class CommandPipelineExtension
             typeof(ICommandHandlerBehavior<,>),
             typeof(ValidationBehavior<,>));
 
+        // Password reset behavior
         builder.Services.AddScoped(
             typeof(ICommandHandlerBehavior<>),
             typeof(PasswordResetBehavior<>));

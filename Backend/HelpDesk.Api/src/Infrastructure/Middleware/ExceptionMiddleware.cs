@@ -1,6 +1,8 @@
 ﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
+using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidationException = FluentValidation.ValidationException;
 
 namespace HelpDesk.src.Infrastructure.Middleware;
 
@@ -20,6 +22,7 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
             context.Response.StatusCode = ex switch
             {
                 ValidationException => StatusCodes.Status400BadRequest,
+                FluentValidationException => StatusCodes.Status400BadRequest,
                 AuthenticationRequiredException => StatusCodes.Status401Unauthorized,
                 PasswordResetRequiredException => StatusCodes.Status403Forbidden,
                 AuthenticationFailedException => StatusCodes.Status401Unauthorized,
@@ -45,14 +48,14 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
 
     private static ProblemDetails CreateErrorResponse(
         Exception ex,
-        HttpContext httpContext,
+        HttpContext context,
         IApiContext apiContext,
         string traceId,
         string correlationId)
     {
-        var status = httpContext.Response.StatusCode;
+        var status = context.Response.StatusCode;
         var details = ex.Message;
-        var path = httpContext.Request.Path;
+        var path = context.Request.Path;
         var baseUrl = apiContext.BaseUrl;
 
         return ex switch
@@ -66,6 +69,27 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 Instance = path,
                 Extensions =
                 {
+                    ["traceId"] = traceId,
+                    ["correlationId"] = correlationId
+                }
+            },
+
+            FluentValidationException exception => new ProblemDetails
+            {
+                Type = $"{baseUrl}/errors/validation",
+                Title = nameof(FluentValidationException),
+                Status = status,
+                Detail = ApiMessages.ValidationException,
+                Instance = path,
+                Extensions =
+                {
+                    ["errors"] = exception.Errors
+                        .GroupBy(
+                            error => error.PropertyName,
+                            error => error.ErrorMessage)
+                        .ToDictionary(
+                            group => group.Key,
+                            group => group.ToArray()),
                     ["traceId"] = traceId,
                     ["correlationId"] = correlationId
                 }

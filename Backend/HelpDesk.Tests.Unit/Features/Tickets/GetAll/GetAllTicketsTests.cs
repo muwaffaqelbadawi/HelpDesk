@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Features.Tickets.GetAll;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using Moq;
 using Xunit;
@@ -30,14 +29,14 @@ public sealed class GetAllTicketsTests
         // Mock ticket reader to return the expected ticket data
         ticketReader
             .Setup(x => x.GetAllAsync(
-                It.IsAny<GetTicketsParameters>(),
+                It.IsAny<QueryParameters>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedTicketData);
 
         // Act
         // One specific action
         var result = await handler.HandleAsync(
-            new GetTicketsParameters(),
+            new QueryParameters(),
             CancellationToken.None);
 
         // Assert
@@ -46,7 +45,7 @@ public sealed class GetAllTicketsTests
 
         ticketReader.Verify(
             x => x.GetAllAsync(
-            It.IsAny<GetTicketsParameters>(),
+            It.IsAny<QueryParameters>(),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }

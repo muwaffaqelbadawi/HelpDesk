@@ -42,7 +42,6 @@ public sealed class RefreshTokenHandler :
         RefreshTokenCommand command,
         CancellationToken cancellationToken)
     {
-        // Read the refresh token
         var existingToken = await _refreshTokenReader.GetRefreshTokenAsync(
             command.RefreshToken,
             cancellationToken);
@@ -126,7 +125,7 @@ public sealed class RefreshTokenHandler :
             cancellationToken);
 
         return new RefreshTokenResponse(
-            UserAccountData: userAccountData,
-            Token: token);
+            userAccountData,
+            token);
     }
 }

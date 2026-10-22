@@ -1,7 +1,6 @@
 ﻿using HelpDesk.src.Features.Users.GetAll;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using Moq;
 using Xunit;
@@ -31,13 +30,13 @@ public sealed class GetUsersTests
         // Mock user reader to return the expected user data
         userReader
             .Setup(x => x.GetAllAsync(
-                It.IsAny<GetUsersParameters>(),
+                It.IsAny<QueryParameters>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedUserData);
 
         // Act
         var result = await handler.HandleAsync(
-            new GetUsersParameters(),
+            new QueryParameters(),
             CancellationToken.None);
 
         // Assert
@@ -47,7 +46,7 @@ public sealed class GetUsersTests
 
         userReader.Verify(
             x => x.GetAllAsync(
-                It.IsAny<GetUsersParameters>(),
+                It.IsAny<QueryParameters>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

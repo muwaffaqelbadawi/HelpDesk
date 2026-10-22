@@ -3,7 +3,6 @@ using HelpDesk.src.Shared.DataAccess.Projections;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +11,7 @@ namespace HelpDesk.src.Shared.DataAccess.Readers;
 public sealed class TicketReader(AppDbContext dbContext) : ITicketReader
 {
     public async Task<PagedResult<TicketData>> GetAllAsync(
-        GetTicketsParameters query,
+        QueryParameters query,
         CancellationToken cancellationToken = default)
     {
         var queryable = dbContext.Tickets.AsQueryable();

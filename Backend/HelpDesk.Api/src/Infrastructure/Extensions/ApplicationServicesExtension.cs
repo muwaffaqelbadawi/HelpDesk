@@ -9,8 +9,10 @@ public static class ApplicationServicesExtension
             .AddApplicationLogging()
             .AddCustomKestrelServices()
             .AddServiceProviderValidation()
+            .AddEndpoints()
             .AddSwagger()
             .AddDatabase()
+            .AddRedis()
             .AddControllers()
             .AddBackgroundServices()
             .AddJwt()
@@ -28,7 +30,8 @@ public static class ApplicationServicesExtension
             .AddCorsOptions()
             .AddDataImporters()
             .AddScrutor()
-            .AddCommandHandlerPipeline()
+            .AddCommandHandlerBehavior()
+            .AddQueryHandlerBehavior()
             .AddOptions();
 
         return builder;

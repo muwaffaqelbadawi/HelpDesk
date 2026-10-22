@@ -96,7 +96,7 @@ public sealed class CreateTicketTests
         // Create a real user with the same userId
         var user = new ApplicationUser { Id = userId };
 
-        // Mock user provider to return the expected user
+        // Mock user reader to return the expected user
         userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
             .ReturnsAsync(user);

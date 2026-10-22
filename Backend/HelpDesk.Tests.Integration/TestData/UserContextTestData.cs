@@ -12,6 +12,10 @@ public sealed class UserContextTestData : IUserContext
 
     public Guid SessionId { get; }
 
+    public Guid JwtId { get; }
+
+    public DateTimeOffset? JwtExpiresAt { get; }
+
     public string UserName => "integration-test";
 
     public string? UserAgent => "IntegrationTest";

@@ -1,10 +1,13 @@
-﻿using System.Text;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using HelpDesk.src.Infrastructure.Extensions;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.DataAccess.Readers;
 using HelpDesk.src.Shared.DataAccess.Repositories;
 using HelpDesk.src.Shared.Interfaces;
+using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
@@ -39,14 +42,17 @@ public static class JwtExtension
         // Register the JwtProvider as a scoped service
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
-        // Register the TokenService as a scoped service
+        // Register the TokenIssuer as a scoped service
         builder.Services.AddScoped<ITokenIssuer, TokenIssuer>();
 
         // Register the RefreshTokenProvider as a scoped service
         builder.Services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
 
-        // Register the RefreshTokenService as a scoped service
+        // Register the TokenService as a scoped service
         builder.Services.AddScoped<ITokenService, TokenService>();
+
+        // Register the JwtRevocationStore as a scoped service
+        builder.Services.AddScoped<IJwtRevocationStore, JwtRevocationStore>();
 
         return builder;
     }
@@ -89,9 +95,77 @@ public static class JwtExtension
 
                         return Task.CompletedTask;
                     },
+
+                    OnTokenValidated = async context =>
+                    {
+                        var userContext = context.HttpContext
+                            .RequestServices
+                            .GetRequiredService<IUserContext>();
+
+                        var jti = context.Principal?
+                            .FindFirst(JwtRegisteredClaimNames.Jti)?
+                            .Value;
+
+                        if (!Guid.TryParse(jti, out var jwtId))
+                        {
+                            context.Fail("JWT is missing a valid jti claim.");
+                            return;
+                        }
+
+                        var revocationStore = context.HttpContext
+                            .RequestServices
+                            .GetRequiredService<IJwtRevocationStore>();
+
+                        if (await revocationStore.IsRevokedAsync(
+                            jwtId,
+                            context.HttpContext.RequestAborted))
+                        {
+                            context.Fail("JWT has been revoked.");
+                        }
+                    },
+
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+
+                        context.Response.StatusCode =
+                            StatusCodes.Status401Unauthorized;
+
+                        context.Response.Headers.WWWAuthenticate = "Bearer";
+
+                        var apiContext = context.HttpContext
+                            .RequestServices
+                            .GetRequiredService<IApiContext>();
+
+                        var userContext = context.HttpContext
+                            .RequestServices
+                            .GetRequiredService<IUserContext>();
+
+                        await context.Response.WriteAsJsonAsync(
+                            new ProblemDetails
+                            {
+                                Type = $"{apiContext.BaseUrl}/errors/authentication",
+                                Title = nameof(context.AuthenticateFailure),
+                                Status = context.Response.StatusCode,
+                                Detail = ApiMessages.AuthenticationRequired,
+                                Instance = context.Request.Path,
+                                Extensions =
+                                {
+                                    ["traceId"] = userContext.TraceId,
+                                    ["correlationId"] = userContext.CorrelationId
+                                }
+                            }
+                        );
+                    }
                 };
             });
 
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddAuthorizationServices(
+        this WebApplicationBuilder builder)
+    {
         builder.Services.AddAuthorization();
 
         return builder;
@@ -103,7 +177,8 @@ public static class JwtExtension
         builder
             .AddJwtConfigs()
             .AddJwtServices()
-            .AddJwtOptions();
+            .AddJwtOptions()
+            .AddAuthorizationServices();
 
         return builder;
     }

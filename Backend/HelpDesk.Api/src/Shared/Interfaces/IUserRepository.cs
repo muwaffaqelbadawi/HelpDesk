@@ -58,4 +58,9 @@ public interface IUserRepository
         Guid userId,
         DateTimeOffset now,
         CancellationToken cancellationToken);
+
+    Task<int> ResetPasswordAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
 }

@@ -9,14 +9,12 @@ public static class ScrutorExtension
     public static WebApplicationBuilder AddCommandHandler(
         this WebApplicationBuilder builder)
     {
-        // Register ICommandHandler<in TCommand>
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
             .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-        // Register ICommandHandler<in TCommand, TResponse>
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
             .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)))
@@ -29,14 +27,12 @@ public static class ScrutorExtension
     public static WebApplicationBuilder AddQueryHandler(
         this WebApplicationBuilder builder)
     {
-        // Register IQueryHandler<TResult>
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
             .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-        // Register IQueryHandler<in TQuery, TResult>
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
             .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))
@@ -57,13 +53,20 @@ public static class ScrutorExtension
             typeof(ICommandHandler<,>),
             typeof(CommandHandlerPipeline<,>));
 
+        builder.Services.Decorate(
+            typeof(IQueryHandler<>),
+            typeof(QueryHandlerPipeline<>));
+
+        builder.Services.Decorate(
+            typeof(IQueryHandler<,>),
+            typeof(QueryHandlerPipeline<,>));
+
         return builder;
     }
 
     public static WebApplicationBuilder AddDomainEventHandler(
         this WebApplicationBuilder builder)
     {
-        // Register IDomainEventHandler<TEvent>
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
             .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)))
@@ -76,7 +79,6 @@ public static class ScrutorExtension
     public static WebApplicationBuilder AddDataSeeder(
         this WebApplicationBuilder builder)
     {
-        // Register IDataSeeder
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<ApplicationAssemblyMarker>()
             .AddClasses(classes => classes.AssignableTo<ISeederService>())

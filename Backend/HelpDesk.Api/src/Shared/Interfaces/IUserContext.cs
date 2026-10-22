@@ -10,6 +10,10 @@ public interface IUserContext
 
     Guid SessionId { get; }
 
+    Guid JwtId { get; }
+
+    DateTimeOffset? JwtExpiresAt { get; }
+
     string UserName { get; }
 
     string? UserAgent { get; }

@@ -3,7 +3,6 @@ using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.DataAccess.Projections;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.QueryParameters;
 using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +24,7 @@ public sealed class UserReader(
     }
 
     public async Task<PagedResult<UserAccountData>> GetAllAsync(
-        GetUsersParameters query,
+        QueryParameters query,
         CancellationToken cancellationToken = default)
     {
         var queryable = dbContext.Users

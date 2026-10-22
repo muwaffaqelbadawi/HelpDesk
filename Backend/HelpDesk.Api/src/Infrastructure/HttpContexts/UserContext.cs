@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using HelpDesk.src.Shared.Exceptions;
@@ -50,6 +51,38 @@ public sealed class UserContext(IHttpContextAccessor context) : IUserContext
             return !Guid.TryParse(sessionId, out var guid)
                 ? throw new AuthenticationRequiredException()
                 : guid;
+        }
+    }
+
+    public Guid JwtId
+    {
+        get
+        {
+            var jwtId = context.HttpContext?
+                .User
+                .FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+            return !Guid.TryParse(jwtId, out var guid)
+                ? throw new AuthenticationRequiredException()
+                : guid;
+        }
+    }
+
+    public DateTimeOffset? JwtExpiresAt
+    {
+        get
+        {
+            var exp = context.HttpContext?
+                .User
+                .FindFirstValue(JwtRegisteredClaimNames.Exp);
+
+            return long.TryParse(
+                exp,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out var unixSeconds)
+                    ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds)
+                    : null;
         }
     }
 
