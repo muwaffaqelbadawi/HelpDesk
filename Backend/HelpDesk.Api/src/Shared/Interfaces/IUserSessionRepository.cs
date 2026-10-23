@@ -10,6 +10,8 @@ public interface IUserSessionRepository
 
     Task UpdateAsync(
         ApplicationUserSession userSession,
+        DateTimeOffset now,
+        TimeSpan lifetime,
         CancellationToken cancellationToken);
 
     Task<int> RevokeAsync(

@@ -39,6 +39,8 @@ public sealed class UserSessionActivityHandler
             sessionId,
             cancellationToken);
 
+        // MAKE SURE TO COVER THIS IN TEST
+
         if (session is null || session.ExpiresAt <= now)
         {
             throw new AuthenticationFailedException("User session has expired.");
@@ -53,14 +55,10 @@ public sealed class UserSessionActivityHandler
             ? _userSessionOptions.Value.PersistentSessionLifetime
             : _userSessionOptions.Value.DefaultSessionLifetime;
 
-        // Update the last activity timestamp
-        session.LastActivityAt = now;
-
-        // Extend the session expiration time based on the session lifetime
-        session.ExpiresAt = now.Add(lifetime);
-
         await _userSessionRepository.UpdateAsync(
             session,
+            now,
+            lifetime,
             cancellationToken);
     }
 }

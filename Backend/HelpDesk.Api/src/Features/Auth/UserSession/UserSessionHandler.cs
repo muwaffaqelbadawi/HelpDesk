@@ -5,7 +5,8 @@ using Microsoft.Extensions.Options;
 
 namespace HelpDesk.src.Features.Auth.UserSession;
 
-public sealed class UserSessionHandler : ICommandHandler<UserSessionCommand>
+public sealed class UserSessionHandler
+    : ICommandHandler<UserSessionCommand>
 {
     private readonly IUserSessionRepository _userSessionRepository;
     private readonly IUserContext _userContext;
@@ -61,8 +62,8 @@ public sealed class UserSessionHandler : ICommandHandler<UserSessionCommand>
 
         // User session repo
         await _userSessionRepository.AddAsync(
-            userSession: userSession,
-            cancellationToken: cancellationToken);
+            userSession,
+            cancellationToken);
 
         // Successful log
         _logger.LogInformation("User {UserId} session was recorded successfully",

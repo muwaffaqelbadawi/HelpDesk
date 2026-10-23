@@ -17,10 +17,16 @@ public sealed class UserSessionRepository(AppDbContext dbContext) : IUserSession
     }
 
     public async Task UpdateAsync(
-        ApplicationUserSession userSession,
+        ApplicationUserSession session,
+        DateTimeOffset now,
+        TimeSpan lifetime,
         CancellationToken cancellationToken)
     {
-        dbContext.UserSessions.Update(userSession);
+        session.LastActivityAt = now;
+
+        session.ExpiresAt = now.Add(lifetime);
+
+        dbContext.UserSessions.Update(session);
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }

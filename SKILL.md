@@ -11,7 +11,7 @@ Repository guidance for changes to the HelpDesk API, Angular client, tests, and 
 - `Backend/HelpDesk.Api/src/Shared/`: reusable API response and shared types.
 - `Backend/HelpDesk.Api/Migrations/`: Entity Framework Core migrations. Treat these as schema history; create/update migrations through EF tooling rather than hand-editing generated migration artifacts.
 - `Backend/HelpDesk.Tests.Unit/`: unit tests, organized under `Features/`.
-- `Backend/HelpDesk.Tests.Integration/`: API/integration tests, with `Features/`, `Configurations/`, `Fixtures/`, and `TestDoubles/`.
+- `Backend/HelpDesk.Tests.Integration/`: API/integration tests, with `Features/`, `Configurations/`, `Fixtures/`, and `TestData/`.
 - These are the primary test projects for the HelpDesk API. Put isolated logic tests in `HelpDesk.Tests.Unit` and tests that exercise API behavior or require infrastructure in `HelpDesk.Tests.Integration`; do not assume tests belong in the API project or create another test project without a clear need.
 - `Frontend/HelpDesk.Client/src/app/core/`: cross-cutting client concerns such as auth, HTTP, localization, and backend availability.
 - `Frontend/HelpDesk.Client/src/app/features/`: route-level application features, including auth, dashboard, tickets, and users.
@@ -71,6 +71,20 @@ The GitHub Actions workflows are the validation source of truth:
 - `.github/workflows/codeql.yml` performs CodeQL analysis.
 
 When changing build, test, dependency, or deployment behavior, update relevant workflow/configuration and documentation where needed. Do not claim a check passed unless it was run; distinguish local validation from CI-only checks when their prerequisites are unavailable.
+
+## Integration-testing architecture
+
+The integration-test project separates shared application infrastructure from reusable test data. Inspect these directories and the nearest working integration tests before adding any fixture, fake service, helper, builder, or other abstraction.
+
+- `Backend/HelpDesk.Tests.Integration/Fixtures/` holds reusable test infrastructure. `HelpDeskApplicationFactory` is the standard entry point for tests that exercise the real API application: it extends `WebApplicationFactory<ApplicationAssemblyMarker>`, sets the host environment to `Testing`, obtains `ConnectionStrings:IntegrationTestConnection` through `IntegrationTestConfiguration`, and supplies that value as the application's `AppDBConnection`. It registers `UserContextTestData` as scoped and exposes that same scoped instance as `IUserContext`. Reuse the factory through the existing xUnit class-fixture pattern (`IClassFixture<HelpDeskApplicationFactory>`); create a service scope from `factory.Services` when resolving scoped application services or the database.
+- `FixedDateTimeService` is a reusable implementation of `IDateTimeService` whose time is supplied at construction. It is not registered by `HelpDeskApplicationFactory`; register it only in the test host that needs deterministic time. The focused JWT revocation tests demonstrate this in their Redis-backed minimal-host setup.
+- `Backend/HelpDesk.Tests.Integration/TestData/` holds reusable fake contexts and scenario data, not application-host infrastructure. `UserContextTestData` implements `IUserContext` and allows tests to set `GuidUserId`; `ApiContextTestData` implements `IApiContext`; `UserTestData.CreateUserCommand` produces a user-creation command with unique test values. Prefer these existing types and their established registrations/usages over copies or feature-specific equivalents.
+
+For a new test, first search `Fixtures/`, `TestData/`, and existing integration tests. Use `HelpDeskApplicationFactory` for real-application behavior rather than creating another application factory or reconstructing the API service pipeline. Reuse registered test services and existing data; add distinct values only when the scenario needs them. Keep small, one-off arrangements local. Promote new shared infrastructure only for a demonstrated cross-test need that existing patterns cannot meet; avoid fixture hierarchies, generic builders, base classes, duplicate factories, or another shared infrastructure layer without that need.
+
+Follow the test project's observed setup and assertions: integration database configuration comes from the `IntegrationTestConnection` environment-backed configuration; the shared factory supplies the application host and scoped user context; tests create scopes for scoped services. The current real-application test resolves services directly from a factory scope; focused JWT tests construct a minimal TestServer to isolate bearer middleware and obtain its client with `GetTestClient()`. Match the host and client pattern to the test's purpose rather than using the minimal host as another real-application factory. Use the existing xUnit conventions. Do not assume a database initialization or cleanup hook that is not present in the fixture; keep test data isolated (for example, use unique generated user values) and avoid cross-test mutable state or ordering dependencies.
+
+Do not change production code, rewrite working tests, or redesign the test architecture as part of adding tests or guidance. Before documenting or extending any convention, verify it against the implementation and neighboring tests.
 
 ## Change guidance
 

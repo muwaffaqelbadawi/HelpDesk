@@ -122,5 +122,12 @@ volumes:
   sqlserver_data:
     external: true
     name: docker_sqlserver_data
-
   redis_data:
+    external: true
+    name: helpdesk_redis_data
+
+networks:
+  default:
+    name: helpdesk_default
+    driver: bridge
+    attachable: true

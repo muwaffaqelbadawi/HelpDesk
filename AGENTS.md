@@ -16,3 +16,5 @@ This is the repository-level starting point for coding agents working in HelpDes
 2. Before changing a subdirectory, check for a more specific `AGENTS.md` there and inspect the relevant implementation and neighboring tests.
 3. Make the smallest change that addresses the task and keep unrelated work untouched.
 4. Run the relevant verification described in `SKILL.md`; report checks that could not be run and why.
+
+For API integration tests, inspect and reuse the established `Fixtures/` and `TestData/` patterns before adding helpers or test infrastructure. The canonical guidance, including the current factory and test-data responsibilities, is in the integration-testing section of [SKILL.md](SKILL.md).
