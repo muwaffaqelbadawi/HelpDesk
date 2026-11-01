@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Presentation.Docs;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace HelpDesk.src.Infrastructure.Extensions;
 
@@ -23,18 +23,11 @@ public static class SwaggerServicesExtension
                 });
 
             options.AddSecurityRequirement(
-                new OpenApiSecurityRequirement
+                document => new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
+                        new OpenApiSecuritySchemeReference("Bearer", document),
+                        []
                     }
                 });
 

@@ -17,7 +17,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 9.0.320
+          dotnet-version: 10.0.403
 
       - name: Restore dependencies
         working-directory: Backend
@@ -73,4 +73,4 @@ jobs:
             User Id=sa;
             Password=${{ secrets.SQLSERVER_SA_PASSWORD }};
             TrustServerCertificate=True;
-        run: dotnet test HelpDesk.slnx --no-build --configuration Release --verbosity normal
+        run: dotnet test --solution HelpDesk.slnx --no-build --configuration Release --verbosity normal

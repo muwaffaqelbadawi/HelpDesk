@@ -1,8 +1,8 @@
-﻿using HelpDesk.src.Shared.Responses;
+﻿using System.Text.Json.Nodes;
+using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HelpDesk.src.Presentation.Docs;
@@ -38,6 +38,7 @@ public sealed class AuthenticationResponsesOperationFilter : IOperationFilter
             return;
         }
 
+        operation.Responses ??= [];
         operation.Responses.TryAdd(
             StatusCodes.Status401Unauthorized.ToString(),
             new OpenApiResponse
@@ -51,22 +52,22 @@ public sealed class AuthenticationResponsesOperationFilter : IOperationFilter
                         typeof(ProblemDetails),
                         context.SchemaRepository),
 
-                        Example = new OpenApiObject
+                        Example = new JsonObject
                         {
-                            ["type"] = new OpenApiString(
+                            ["type"] = JsonValue.Create(
                             "https://example.com/errors/authentication"),
 
-                            ["title"] = new OpenApiString("AuthenticateFailure"),
+                            ["title"] = JsonValue.Create("AuthenticateFailure"),
 
-                            ["status"] = new OpenApiInteger(401),
+                            ["status"] = JsonValue.Create(401),
 
-                            ["detail"] = new OpenApiString(ApiMessages.AuthenticationRequired),
+                            ["detail"] = JsonValue.Create(ApiMessages.AuthenticationRequired),
 
-                            ["instance"] = new OpenApiString("/me/example"),
+                            ["instance"] = JsonValue.Create("/me/example"),
 
-                            ["traceId"] = new OpenApiString("example-trace-id"),
+                            ["traceId"] = JsonValue.Create("example-trace-id"),
 
-                            ["correlationId"] = new OpenApiString("example-correlation-id")
+                            ["correlationId"] = JsonValue.Create("example-correlation-id")
                         }
                     }
                 }
