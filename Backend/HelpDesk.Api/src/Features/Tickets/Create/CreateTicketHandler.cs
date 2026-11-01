@@ -6,8 +6,8 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Tickets.Create;
 
-public sealed class CreateTicketHandler :
-    ICommandHandler<CreateTicketCommand, CreateTicketResponse>
+public sealed class CreateTicketHandler
+    : ICommandHandler<CreateTicketCommand, CreateTicketResponse>
 {
     private readonly IUserContext _userContext;
     private readonly IUserReader _userReader;

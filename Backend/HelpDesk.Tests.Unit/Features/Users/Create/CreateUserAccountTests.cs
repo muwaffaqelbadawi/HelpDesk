@@ -2,9 +2,9 @@
 using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
 using HelpDesk.Tests.Unit.TestData;
 using Microsoft.Extensions.Logging;
 using Moq;

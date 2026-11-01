@@ -1,9 +1,10 @@
 ﻿using HelpDesk.src.Features.Tickets.Assign;
 using HelpDesk.src.Features.Tickets.GetById;
+using HelpDesk.src.Features.Tickets.Summary;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Responses;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +13,28 @@ namespace HelpDesk.src.Presentation.Controllers.Admin;
 [ApiController]
 [Route("api/admin/tickets")]
 [Authorize]
-public sealed class AdminTicketController(IDateTimeService dateTimeService)
-    : ControllerBase
+public sealed class AdminTicketController(IDateTimeService dateTimeService) : ControllerBase
 {
+    // GetAll
+    [Authorize(Policy = "Permission:Tickets.View")]
+    [HttpGet]
+    public Task<IActionResult> TicketSummary(
+        [FromServices] IQueryHandler<TicketSummaryQuery, TicketSummaryResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        //var result = await handler.HandleAsync(query, cancellationToken);
+
+        //return Ok(new ApiResponse<PagedResult<TicketData>>(
+        //    message: ApiMessages.TicketsRetrieved,
+        //    time: dateTimeService,
+        //    data: result));
+
+        throw new NotImplementedException();
+    }
+
+
+
+
     // GetAll
     [Authorize(Policy = "Permission:Tickets.View")]
     [HttpGet]

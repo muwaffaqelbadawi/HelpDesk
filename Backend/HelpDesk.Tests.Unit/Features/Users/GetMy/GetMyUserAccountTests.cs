@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Features.Users.GetMy;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;

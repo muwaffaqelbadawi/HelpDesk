@@ -8,7 +8,7 @@ public interface IUserSessionRepository
         ApplicationUserSession userSession,
         CancellationToken cancellationToken);
 
-    Task UpdateAsync(
+    Task<int> UpdateAsync(
         ApplicationUserSession userSession,
         DateTimeOffset now,
         TimeSpan lifetime,

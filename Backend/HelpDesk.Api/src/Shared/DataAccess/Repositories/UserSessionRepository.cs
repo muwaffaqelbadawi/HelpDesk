@@ -16,19 +16,22 @@ public sealed class UserSessionRepository(AppDbContext dbContext) : IUserSession
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(
+    public async Task<int> UpdateAsync(
         ApplicationUserSession session,
         DateTimeOffset now,
         TimeSpan lifetime,
         CancellationToken cancellationToken)
     {
-        session.LastActivityAt = now;
-
-        session.ExpiresAt = now.Add(lifetime);
-
-        dbContext.UserSessions.Update(session);
-
-        await dbContext.SaveChangesAsync(cancellationToken);
+        return await dbContext.UserSessions
+            .Where(
+                x => x.Id == session.Id
+                    && x.RevokedAt == null
+                    && x.ExpiresAt != null
+                    && x.ExpiresAt > now)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.LastActivityAt, (DateTimeOffset?)now)
+                .SetProperty(x => x.ExpiresAt, (DateTimeOffset?)now.Add(lifetime)),
+                cancellationToken);
     }
 
     public async Task<int> RevokeAsync(

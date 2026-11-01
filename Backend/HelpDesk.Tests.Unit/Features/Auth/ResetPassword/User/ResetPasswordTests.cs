@@ -1,8 +1,8 @@
 ﻿using HelpDesk.src.Features.Auth.ResetPassword.User;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.Jwt;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;

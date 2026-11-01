@@ -5,9 +5,9 @@ using HelpDesk.src.Features.Auth.Roles.Assign;
 using HelpDesk.src.Features.Auth.Roles.Delete;
 using HelpDesk.src.Features.Auth.Roles.GetAll;
 using HelpDesk.src.Features.Auth.Roles.Update;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

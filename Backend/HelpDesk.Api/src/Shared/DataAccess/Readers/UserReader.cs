@@ -1,9 +1,9 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.DataAccess.Projections;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Responses.Data;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 
 namespace HelpDesk.src.Shared.DataAccess.Projections;
 

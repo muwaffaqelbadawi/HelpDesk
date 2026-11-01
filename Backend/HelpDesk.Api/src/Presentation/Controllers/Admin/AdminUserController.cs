@@ -2,10 +2,10 @@
 using HelpDesk.src.Features.Users.Delete;
 using HelpDesk.src.Features.Users.GetById;
 using HelpDesk.src.Features.Users.Update;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
 using HelpDesk.src.Shared.Responses;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

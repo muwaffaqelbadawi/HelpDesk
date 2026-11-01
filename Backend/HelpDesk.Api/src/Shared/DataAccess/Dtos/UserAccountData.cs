@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.src.Shared.Responses.Data;
+﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
 public sealed record UserAccountData
 {

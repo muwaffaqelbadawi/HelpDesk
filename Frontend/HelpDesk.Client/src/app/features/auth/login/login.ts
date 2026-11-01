@@ -29,7 +29,7 @@ export class LoginComponent {
   private readonly redirectService = inject(PostLoginRedirectService);
 
   loginForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required]],
+    username: ['', [Validators.required]],
     password: ['', Validators.required],
   });
 
@@ -39,11 +39,11 @@ export class LoginComponent {
       return;
     }
 
-    const { email, password } = this.loginForm.getRawValue();
+    const { username, password } = this.loginForm.getRawValue();
 
     this.authService
       .login({
-        identity: email,
+        username,
         password,
       })
       .subscribe({
@@ -55,20 +55,20 @@ export class LoginComponent {
       });
   }
 
-  get email() {
-    return this.loginForm.controls.email;
+  get username() {
+    return this.loginForm.controls.username;
   }
 
-  get showEmailError(): boolean {
-    return this.email.invalid && (this.email.dirty || this.email.touched);
+  get showUsernameError(): boolean {
+    return this.username.invalid && (this.username.dirty || this.username.touched);
   }
 
-  get requiredEmailError(): boolean {
-    return this.email.hasError('required');
+  get requiredUsernameError(): boolean {
+    return this.username.hasError('required');
   }
 
-  get emailError(): boolean {
-    return this.email.hasError('email');
+  get usernameError(): boolean {
+    return this.username.hasError('username');
   }
 
   get password() {

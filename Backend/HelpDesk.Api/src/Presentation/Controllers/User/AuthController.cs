@@ -9,9 +9,9 @@ using HelpDesk.src.Features.Auth.ResetPassword.User;
 using HelpDesk.src.Features.Auth.RevokeToken;
 using HelpDesk.src.Features.Auth.Roles.GetMy;
 using HelpDesk.src.Infrastructure.Services.Jwt;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

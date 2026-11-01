@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Responses.Data;
 
 namespace HelpDesk.src.Shared.Interfaces;
 

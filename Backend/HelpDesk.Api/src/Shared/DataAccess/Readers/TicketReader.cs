@@ -1,9 +1,9 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.DataAccess.Projections;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.DataAccess.Readers;
@@ -59,9 +59,8 @@ public sealed class TicketReader(AppDbContext dbContext) : ITicketReader
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(t =>
-                (t.Title != null
-                && t.Title.Contains(search)));
+            query = query.Where(
+                t => (t.Title != null && t.Title.Contains(search)));
         }
 
         return await query
@@ -121,5 +120,13 @@ public sealed class TicketReader(AppDbContext dbContext) : ITicketReader
                 ?? throw new TicketNotFoundException(ticketId);
 
         return (state.AssignedAt, state.RowVersion);
+    }
+
+    public async Task<TicketSummaryData> GetTicketSummaryAsync(
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .SelectTicketSummaryData(cancellationToken);
     }
 }

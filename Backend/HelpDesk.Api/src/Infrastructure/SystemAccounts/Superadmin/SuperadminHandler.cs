@@ -1,8 +1,8 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.UserStatuses;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
 
 namespace HelpDesk.src.Infrastructure.SystemAccounts.Superadmin;
 

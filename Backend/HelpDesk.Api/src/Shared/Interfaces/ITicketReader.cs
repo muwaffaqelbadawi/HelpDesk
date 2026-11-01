@@ -1,5 +1,5 @@
-﻿using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Responses.Data;
+﻿using HelpDesk.src.Shared.DataAccess.Dtos;
+using HelpDesk.src.Shared.Pagination;
 
 namespace HelpDesk.src.Shared.Interfaces;
 
@@ -34,4 +34,7 @@ public interface ITicketReader
     Task<(DateTimeOffset? AssignedAt, byte[] RowVersion)> GetStateAsync(
         Guid ticketId,
         CancellationToken cancellationToken = default);
+
+    Task<TicketSummaryData> GetTicketSummaryAsync(
+        CancellationToken cancellationToken);
 }

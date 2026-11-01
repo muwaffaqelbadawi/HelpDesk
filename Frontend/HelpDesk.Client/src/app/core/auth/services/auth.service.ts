@@ -30,7 +30,6 @@ export class AuthService {
           if (!response.data) {
             throw new Error('Current user response did not contain user account data.');
           }
-
           return response.data;
         }),
       );
@@ -51,7 +50,11 @@ export class AuthService {
   }
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http
-      .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/auth/login`, request)
+      .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/auth/login`, {
+        username: request.username,
+        password: request.password,
+        staySignedIn: false,
+      })
       .pipe(
         map((response) => {
           if (!response.data) {
@@ -79,7 +82,6 @@ export class AuthService {
           if (!response.data) {
             throw new Error('reset password response did not contain user account data.');
           }
-
           return response.data;
         }),
       );
@@ -95,7 +97,6 @@ export class AuthService {
           if (!response.data) {
             throw new Error('change password response did not contain user account data.');
           }
-
           return response.data;
         }),
       );

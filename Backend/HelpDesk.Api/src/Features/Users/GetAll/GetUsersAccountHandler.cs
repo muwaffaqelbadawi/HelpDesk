@@ -1,6 +1,6 @@
-﻿using HelpDesk.src.Shared.Interfaces;
+﻿using HelpDesk.src.Shared.DataAccess.Dtos;
+using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Responses.Data;
 
 namespace HelpDesk.src.Features.Users.GetAll;
 

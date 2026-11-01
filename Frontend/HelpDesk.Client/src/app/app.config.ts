@@ -10,13 +10,29 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import { definePreset } from '@primeuix/themes';
+import AuraBase from '@primeuix/themes/aura/base';
+import AuraButton from '@primeuix/themes/aura/button';
+import AuraCard from '@primeuix/themes/aura/card';
+import AuraInputText from '@primeuix/themes/aura/inputtext';
+import AuraRipple from '@primeuix/themes/aura/ripple';
+import AuraSelect from '@primeuix/themes/aura/select';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
 import { AuthService } from './core/auth/services/auth.service';
 import { AuthStateService } from './core/auth/services/auth-state.service';
 import { catchError, EMPTY, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+
+const HelpDeskAura = definePreset(AuraBase, {
+  components: {
+    button: AuraButton,
+    card: AuraCard,
+    inputtext: AuraInputText,
+    ripple: AuraRipple,
+    select: AuraSelect,
+  },
+});
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -63,7 +79,7 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       ripple: true,
       theme: {
-        preset: Aura,
+        preset: HelpDeskAura,
         options: {
           darkModeSelector: '.dark-mode',
           cssLayer: {

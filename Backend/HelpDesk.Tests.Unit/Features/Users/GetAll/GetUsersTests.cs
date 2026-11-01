@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Features.Users.GetAll;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
-using HelpDesk.src.Shared.Responses.Data;
 using Moq;
 using Xunit;
 

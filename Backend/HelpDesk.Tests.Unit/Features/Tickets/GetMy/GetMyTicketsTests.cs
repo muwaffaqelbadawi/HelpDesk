@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Features.Tickets.GetMy;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
 using Moq;
 using Xunit;
 

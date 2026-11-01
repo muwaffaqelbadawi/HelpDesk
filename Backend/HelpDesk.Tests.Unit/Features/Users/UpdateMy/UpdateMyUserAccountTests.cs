@@ -1,7 +1,7 @@
 ﻿using HelpDesk.src.Features.Users.UpdateMy;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;

@@ -41,12 +41,14 @@ public sealed class UserSessionActivityHandler
 
         // MAKE SURE TO COVER THIS IN TEST
 
-        if (session is null || session.ExpiresAt <= now)
+        if (session is null
+            || session.ExpiresAt is not { } expiresAt
+            || expiresAt <= now)
         {
             throw new AuthenticationFailedException("User session has expired.");
         }
 
-        if (session.RevokedAt is not null && session.RevokedAt <= now)
+        if (session.RevokedAt is not null)
         {
             throw new AuthenticationRequiredException("User session has been revoked.");
         }
@@ -55,10 +57,16 @@ public sealed class UserSessionActivityHandler
             ? _userSessionOptions.Value.PersistentSessionLifetime
             : _userSessionOptions.Value.DefaultSessionLifetime;
 
-        await _userSessionRepository.UpdateAsync(
+        var updatedRows = await _userSessionRepository.UpdateAsync(
             session,
             now,
             lifetime,
             cancellationToken);
+
+        if (updatedRows == 0)
+        {
+            throw new AuthenticationRequiredException(
+                "User session is no longer active.");
+        }
     }
 }

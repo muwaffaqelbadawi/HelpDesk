@@ -5,14 +5,14 @@
         {{ 'AUTH.LOGIN.EMAIL' | translate }}
       </label>
 
-      <input id="email" type="email" pInputText formControlName="email" class="w-full" name="email"
+      <input id="email" type="email" pInputText formControlName="username" class="w-full" name="email"
         [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate" autocomplete="email" />
 
-      @if (showEmailError) {
-      @if (requiredEmailError) {
-      <small class="block login-error"> Email is required. </small>
-      } @else if (emailError) {
-      <small class="block login-error"> Email should be valid. </small>
+      @if (showUsernameError) {
+      @if (requiredUsernameError) {
+      <small class="block login-error"> Email or username is required. </small>
+      } @else if (username) {
+      <small class="block login-error"> Email or username should be valid. </small>
       }
       }
     </div>

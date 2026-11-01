@@ -1,6 +1,7 @@
 ﻿using HelpDesk.src.Features.Tickets.GetById;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
-using HelpDesk.src.Shared.Responses.Data;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -13,9 +14,12 @@ public sealed class GetByIdTicketTests
     {
         // Arrange
         var ticketReader = new Mock<ITicketReader>();
+        var logger = new Mock<ILogger<GetByIdTicketHandler>>();
 
         // SUT (System Under Test)
-        var handler = new GetByIdTicketHandler(ticketReader.Object);
+        var handler = new GetByIdTicketHandler(
+            ticketReader.Object,
+            logger.Object);
 
         // ticketData
         var ticketData = new TicketData();
