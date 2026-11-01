@@ -25,12 +25,19 @@ jobs:
           cache: npm
           cache-dependency-path: Frontend/HelpDesk.Client/package-lock.json
 
+      - name: Setup Chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
 
-      # configure later
       - name: Test
         run: npm test -- --watch=false
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
