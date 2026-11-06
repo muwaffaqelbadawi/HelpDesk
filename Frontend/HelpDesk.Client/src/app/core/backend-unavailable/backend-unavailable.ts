@@ -6,4 +6,8 @@ import { Button } from 'primeng/button';
   templateUrl: './backend-unavailable.html',
   styleUrl: './backend-unavailable.css',
 })
-export class BackendUnavailableComponent { }
+export class BackendUnavailableComponent {
+  reloadPage(): void {
+    window.location.reload();
+  }
+}

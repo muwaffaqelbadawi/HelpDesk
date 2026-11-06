@@ -1,3 +1,5 @@
-﻿namespace HelpDesk.src.Features.Auth.UserSession.SessionActivity;
+﻿using HelpDesk.src.Shared.Interfaces;
 
-public sealed record UserSessionActivityCommand(Guid SessionId);
+namespace HelpDesk.src.Features.Auth.UserSession.SessionActivity;
+
+public sealed record UserSessionActivityCommand(Guid SessionId) : ISystemCommand;

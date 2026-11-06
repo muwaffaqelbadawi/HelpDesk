@@ -32,6 +32,7 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 ConcurrencyException => StatusCodes.Status409Conflict,
                 BusinessRuleViolationException => StatusCodes.Status422UnprocessableEntity,
                 IdentityOperationException => StatusCodes.Status400BadRequest,
+                NotImplementedException => StatusCodes.Status501NotImplemented,
                 _ => StatusCodes.Status500InternalServerError
             };
 
@@ -70,7 +71,8 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 Extensions =
                 {
                     ["traceId"] = traceId,
-                    ["correlationId"] = correlationId
+                    ["correlationId"] = correlationId,
+                    ["errors"] = ((ValidationException)ex).Errors
                 }
             },
 
@@ -83,6 +85,8 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 Instance = path,
                 Extensions =
                 {
+                    ["traceId"] = traceId,
+                    ["correlationId"] = correlationId,
                     ["errors"] = exception.Errors
                         .GroupBy(
                             error => error.PropertyName,
@@ -90,8 +94,6 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                         .ToDictionary(
                             group => group.Key,
                             group => group.ToArray()),
-                    ["traceId"] = traceId,
-                    ["correlationId"] = correlationId
                 }
             },
 
@@ -207,10 +209,24 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 }
             },
 
+            NotImplementedException => new ProblemDetails
+            {
+                Type = $"{baseUrl}/errors/not-implemented",
+                Title = nameof(NotImplementedException),
+                Status = status,
+                Detail = details,
+                Instance = path,
+                Extensions =
+                {
+                    ["traceId"] = traceId,
+                    ["correlationId"] = correlationId
+                }
+            },
+
             _ => new ProblemDetails
             {
                 Type = $"{baseUrl}/errors/internal-server-error",
-                Title = "UnknownException",
+                Title = "InternalServerError",
                 Status = status,
                 Detail = details,
                 Instance = path,

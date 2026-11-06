@@ -45,15 +45,14 @@ public sealed class LogoutHandler :
         // now
         var now = _dateTimeService.UtcNow;
 
-        // STEP (1): refresh token repository
-        var refreshTokenRows = await _refreshTokenRepository.RevokeAllAsync(
-            userId,
+        // Revoke the session before its refresh tokens to keep persistence lock order consistent.
+        var userSessionRows = await _userSessionRepository.RevokeAsync(
+            sessionId,
             now,
             cancellationToken);
 
-        // STEP (2): session repository
-        var userSessionRows = await _userSessionRepository.RevokeAsync(
-            sessionId,
+        var revokedRefreshTokens = await _refreshTokenRepository.RevokeAllAsync(
+            userId,
             now,
             cancellationToken);
 
@@ -74,7 +73,7 @@ public sealed class LogoutHandler :
             "Current session revoked. " +
             "Revoked {TokenCount} active refresh tokens",
             userId,
-            refreshTokenRows);
+            revokedRefreshTokens);
 
         // Retrieve current user for domain event
         var user = await _userReader.GetUserAsync(userId.ToString())
@@ -88,6 +87,6 @@ public sealed class LogoutHandler :
                 SessionId: sessionId),
             cancellationToken: cancellationToken);
 
-        return new LogoutResponse(refreshTokenRows);
+        return new LogoutResponse(revokedRefreshTokens);
     }
 }

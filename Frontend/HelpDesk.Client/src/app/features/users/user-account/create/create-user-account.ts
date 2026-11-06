@@ -42,9 +42,9 @@ export class CreateUserAccountComponent {
     countryId: ['', Validators.required],
   });
 
-  departments = ([] = []);
-  sectors = ([] = []);
-  countries = ([] = []);
+  departments = [];
+  sectors = [];
+  countries = [];
 
   onSubmit(): void {
     if (this.createUserAccountForm.invalid) {

@@ -21,8 +21,11 @@ public sealed class ExceptionMiddlewareTests
                 "PageSize",
                 "'Page Size' must be between 1 and 100. You entered 101.")
         ]);
+
         var middleware = new ExceptionMiddleware(_ => throw exception);
+
         var context = new DefaultHttpContext();
+
         context.Request.Scheme = "https";
         context.Request.Host = new HostString("localhost:7082");
         context.Request.Path = "/api/admin/tickets";
@@ -30,6 +33,7 @@ public sealed class ExceptionMiddlewareTests
 
         var apiContext = Mock.Of<IApiContext>(
             value => value.BaseUrl == "https://localhost:7082/api");
+
         var userContext = Mock.Of<IUserContext>(
             value => value.TraceId == "trace-123"
                      && value.CorrelationId == "correlation-123");

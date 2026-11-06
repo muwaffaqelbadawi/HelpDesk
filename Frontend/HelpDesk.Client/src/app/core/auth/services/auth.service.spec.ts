@@ -29,7 +29,11 @@ describe('AuthService', () => {
 
   it('sends identity as the backend login username', () => {
     authService
-      .login({ username: 'person@example.com', password: 'password' })
+      .login({
+        username: 'person@example.com',
+        password: 'password',
+        staySignedIn: false,
+      })
       .subscribe();
 
     const request = httpTestingController.expectOne(

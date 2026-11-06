@@ -6,15 +6,19 @@ public sealed class ApplicationRefreshToken
     public Guid Id { get; set; }
 
 
-    // User
-    public Guid UserId { get; set; }
-    public ApplicationUser User { get; set; } = null!;
-    public string? UserAgent { get; set; }
-
-
     // Token
     public string Token { get; set; } = null!;
 
+    // User
+    public Guid UserId { get; set; }
+    public ApplicationUser User { get; set; } = null!;
+
+    // UserSession
+    public Guid UserSessionId { get; set; }
+    public ApplicationUserSession UserSession { get; set; } = null!;
+
+    // Connection context
+    public string? UserAgent { get; set; }
 
     // Creation
     public string? CreatedByIp { get; set; }

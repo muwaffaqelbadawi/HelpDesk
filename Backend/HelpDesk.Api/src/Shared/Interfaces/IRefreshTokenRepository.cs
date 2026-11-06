@@ -12,4 +12,11 @@ public interface IRefreshTokenRepository
         Guid userId,
         DateTimeOffset now,
         CancellationToken cancellationToken);
+
+    Task<DateTimeOffset?> RotateAsync(
+        Guid currentRefreshTokenId,
+        ApplicationRefreshToken replacement,
+        DateTimeOffset now,
+        TimeSpan sessionLifetime,
+        CancellationToken cancellationToken);
 }

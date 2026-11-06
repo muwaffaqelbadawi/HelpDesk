@@ -12,7 +12,11 @@ public sealed class ChangePasswordValidator : AbstractValidator<ChangePasswordCo
         RuleFor(x => x.NewPassword)
             .NotEmpty();
 
-        RuleFor(x => x.ConfirmNewPassword)
+        RuleFor(x => x.NewPassword)
+            .NotEqual(x => x.CurrentPassword)
+            .WithMessage("New password must be different from your current password.");
+
+        RuleFor(x => x.ConfirmPassword)
             .Equal(x => x.NewPassword)
             .WithMessage("The new password and confirmation password do not match.");
     }

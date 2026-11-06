@@ -17,7 +17,7 @@ namespace HelpDesk.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.20")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -717,12 +717,17 @@ namespace HelpDesk.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("UserSessionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Token")
                         .IsUnique();
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserSessionId");
 
                     b.ToTable("RefreshTokens", "Auth");
                 });
@@ -1360,7 +1365,15 @@ namespace HelpDesk.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUserSession", "UserSession")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("User");
+
+                    b.Navigation("UserSession");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationRoleClaim", b =>
@@ -1625,6 +1638,11 @@ namespace HelpDesk.Migrations
                     b.Navigation("UpdatedTickets");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUserSession", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUserStatus", b =>

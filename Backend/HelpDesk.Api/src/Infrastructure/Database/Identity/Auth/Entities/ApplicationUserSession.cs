@@ -36,4 +36,7 @@ public sealed class ApplicationUserSession
 
     // Check if the session is persistent
     public bool IsPersistent { get; set; }
+
+    // RefreshTokens
+    public ICollection<ApplicationRefreshToken> RefreshTokens { get; set; } = [];
 }

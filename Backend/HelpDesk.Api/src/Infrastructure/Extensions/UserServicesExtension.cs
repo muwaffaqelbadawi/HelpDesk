@@ -13,6 +13,9 @@ public static class UserServicesExtension
         // Register UserRepository as scoped service
         services.AddScoped<IUserRepository, UserRepository>();
 
+        // Register UserLoginRepository as scoped service
+        services.AddScoped<IUserLoginRepository, UserLoginRepository>();
+
         // Register UserReader as scoped service
         services.AddScoped<IUserReader, UserReader>();
 

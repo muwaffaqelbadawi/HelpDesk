@@ -5,4 +5,4 @@ public sealed record ForgotPasswordCommand(
     string Email,
     string Token,
     string NewPassword,
-    string ConfirmNewPassword);
+    string ConfirmPassword);

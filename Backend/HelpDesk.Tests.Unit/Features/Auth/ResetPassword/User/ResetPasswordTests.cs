@@ -54,7 +54,7 @@ public sealed class ResetPasswordTests
             UserId: Guid.NewGuid(),
             ResetToken: "reset_token",
             NewPassword: "new_password",
-            ConfirmNewPassword: "new_password");
+            ConfirmPassword: "new_password");
 
         // user ID
         var userId = command.UserId;

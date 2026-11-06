@@ -3,4 +3,4 @@
 public sealed record ChangePasswordBody(
     string CurrentPassword,
     string NewPassword,
-    string ConfirmNewPassword);
+    string ConfirmPassword);

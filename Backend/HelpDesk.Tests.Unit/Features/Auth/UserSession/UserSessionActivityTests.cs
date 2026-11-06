@@ -3,6 +3,7 @@ using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.UserSession;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -25,13 +26,15 @@ public sealed class UserSessionActivityTests
 
         var userSessionReader = new Mock<IUserSessionReader>();
         var userSessionRepository = new Mock<IUserSessionRepository>();
+        var logger = new Mock<ILogger<UserSessionActivityHandler>>();
 
         // SUT (System Under Test)
         var handler = new UserSessionActivityHandler(
             dateTimeService.Object,
             sessionOptions,
             userSessionReader.Object,
-            userSessionRepository.Object);
+            userSessionRepository.Object,
+            logger.Object);
 
         // now
         var now = DateTimeOffset.UtcNow;
@@ -98,10 +101,13 @@ public sealed class UserSessionActivityTests
             Id = sessionId,
             ExpiresAt = now.AddHours(1)
         };
+
         var dateTimeService = new Mock<IDateTimeService>();
+
         dateTimeService.Setup(x => x.UtcNow).Returns(now);
 
         var userSessionReader = new Mock<IUserSessionReader>();
+
         userSessionReader
             .Setup(x => x.GetCurrentAsync(
                 sessionId,
@@ -109,6 +115,7 @@ public sealed class UserSessionActivityTests
             .ReturnsAsync(session);
 
         var userSessionRepository = new Mock<IUserSessionRepository>();
+
         userSessionRepository
             .Setup(x => x.UpdateAsync(
                 session,
@@ -117,11 +124,14 @@ public sealed class UserSessionActivityTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
 
+        var logger = new Mock<ILogger<UserSessionActivityHandler>>();
+
         var handler = new UserSessionActivityHandler(
             dateTimeService.Object,
             Options.Create(new UserSessionOptions()),
             userSessionReader.Object,
-            userSessionRepository.Object);
+            userSessionRepository.Object,
+            logger.Object);
 
         await Assert.ThrowsAsync<AuthenticationRequiredException>(() =>
             handler.HandleAsync(

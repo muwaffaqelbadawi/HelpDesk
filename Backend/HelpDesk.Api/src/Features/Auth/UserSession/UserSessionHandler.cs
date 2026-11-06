@@ -60,12 +60,12 @@ public sealed class UserSessionHandler
             IsPersistent = command.StaySignedIn,
         };
 
-        // User session repo
+        // persist the session
         await _userSessionRepository.AddAsync(
             userSession,
             cancellationToken);
 
-        // Successful log
+        // Consider changing the log structure
         _logger.LogInformation("User {UserId} session was recorded successfully",
             userId);
 

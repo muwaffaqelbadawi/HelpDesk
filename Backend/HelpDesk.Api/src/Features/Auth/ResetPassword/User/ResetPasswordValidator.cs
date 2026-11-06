@@ -15,7 +15,7 @@ public sealed class ResetPasswordValidator : AbstractValidator<ResetPasswordComm
         RuleFor(x => x.NewPassword)
             .NotEmpty();
 
-        RuleFor(x => x.ConfirmNewPassword)
+        RuleFor(x => x.ConfirmPassword)
             .Equal(x => x.NewPassword)
             .WithMessage("The new password and confirmation password do not match.");
     }

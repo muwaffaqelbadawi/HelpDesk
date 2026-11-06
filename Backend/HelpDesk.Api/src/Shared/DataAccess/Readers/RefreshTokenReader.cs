@@ -17,4 +17,22 @@ public sealed class RefreshTokenReader(AppDbContext dbContext) : IRefreshTokenRe
             .OrderByDescending(x => x.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<ApplicationRefreshToken?> GetActiveRefreshTokenAsync(
+        Guid userId,
+        Guid userSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.RefreshTokens
+            .AsNoTracking()
+            .Where(x =>
+                x.UserId == userId &&
+                x.UserSessionId == userSessionId &&
+                x.RevokedAt == null &&
+                x.ExpiresAt > now)
+            .OrderByDescending(x => x.CreatedAt)
+            .ThenByDescending(x => x.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

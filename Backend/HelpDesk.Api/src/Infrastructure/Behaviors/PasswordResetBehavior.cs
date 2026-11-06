@@ -25,7 +25,7 @@ public sealed class PasswordResetBehavior<TCommand>(IResetPasswordPolicy policy)
 
 public sealed class PasswordResetBehavior<TCommand, TResult>(
     IResetPasswordPolicy policy)
-    : ICommandHandlerBehavior<TCommand, TResult>
+        : ICommandHandlerBehavior<TCommand, TResult>
 {
     public async Task<TResult> HandleAsync(
         TCommand command,
@@ -34,6 +34,9 @@ public sealed class PasswordResetBehavior<TCommand, TResult>(
     {
         if (command is ISystemCommand)
         {
+            Console.WriteLine(
+                $"[PasswordResetBehavior] SKIPPED: {typeof(TCommand).Name}");
+
             return await next();
         }
 

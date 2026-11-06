@@ -1,13 +1,10 @@
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
   <p-card [header]="'AUTH.LOGIN.TITLE' | translate" [style]="{ width: '360px' }">
     <div class="field">
-      <label for="email">
-        {{ 'AUTH.LOGIN.EMAIL' | translate }}
+      <label for="username">
+        {{ 'AUTH.LOGIN.EMAIL' | translate }} / {{ 'AUTH.LOGIN.USERNAME' | translate }}
       </label>
-
-      <input id="email" type="email" pInputText formControlName="username" class="w-full" name="email"
-        [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate" autocomplete="email" />
-
+      <input id="email" type="email" pInputText formControlName="username" class="w-full" name="email" />
       @if (showUsernameError) {
       @if (requiredUsernameError) {
       <small class="block login-error"> Email or username is required. </small>
@@ -21,8 +18,7 @@
       <label for="password">
         {{ 'AUTH.LOGIN.PASSWORD' | translate }}
       </label>
-      <input id="password" type="password" pInputText formControlName="password" class="w-full" name="password"
-        [placeholder]="'AUTH.LOGIN.PASSWORD' | translate" />
+      <input id="password" type="password" pInputText formControlName="password" class="w-full" name="password" />
       @if (showPasswordError) {
       @if (requiredPasswordError) {
       <small class="block login-error"> Password is required. </small>
@@ -31,6 +27,19 @@
       }
       }
     </div>
+
+    <div class="field flex align-items-center gap-2">
+      <input id="staySignedIn" type="checkbox" formControlName="staySignedIn" />
+      <label for="staySignedIn">
+        {{ 'AUTH.LOGIN.StaySignedIn' | translate }}
+      </label>
+    </div>
+
+    @if (loginError()) {
+    <p-message severity="error" icon="pi pi-exclamation-circle" [closable]="true">
+      {{ loginError() }}
+    </p-message>
+    }
 
     <div class="login-button">
       <p-button type="submit" [label]="'AUTH.LOGIN.SUBMIT' | translate" styleClass="w-full"

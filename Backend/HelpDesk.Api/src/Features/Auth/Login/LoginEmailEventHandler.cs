@@ -20,6 +20,9 @@ public sealed class LoginEmailEventHandler(
         LoginEvent @event,
         CancellationToken cancellationToken = default)
     {
+        // post-operation handler
+
+        // Consider changing the log
         logger.LogInformation("{handler}: Handling login event for user {UserId}",
             nameof(LoginEmailEventHandler),
             @event.User.Id);
@@ -89,6 +92,8 @@ public sealed class LoginEmailEventHandler(
             correlationId: userContext.CorrelationId,
             cancellationToken: cancellationToken);
 
+
+        // Consider changing the log
         logger.LogInformation("Login email for user {user} queued successfully.",
             @event.User.Id);
     }

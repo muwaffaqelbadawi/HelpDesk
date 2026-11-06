@@ -4,4 +4,4 @@ public sealed record ResetPasswordBody(
     Guid UserId,
     string ResetToken,
     string NewPassword,
-    string ConfirmNewPassword);
+    string ConfirmPassword);

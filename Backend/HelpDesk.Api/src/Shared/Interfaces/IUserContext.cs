@@ -2,11 +2,10 @@
 
 public interface IUserContext
 {
+    // User context
     string UserId { get; }
 
     Guid GuidUserId { get; }
-
-    Guid ToGuidId(string id);
 
     Guid SessionId { get; }
 
@@ -16,6 +15,11 @@ public interface IUserContext
 
     string UserName { get; }
 
+    bool IsAuthenticated { get; }
+
+    bool HasClaims { get; }
+
+    // Request/Connection/TraceIdentifier contexts
     string? UserAgent { get; }
 
     string? Browser { get; }
@@ -26,7 +30,6 @@ public interface IUserContext
 
     string CorrelationId { get; }
 
-    bool IsAuthenticated { get; }
-
-    bool HasClaims { get; }
+    // Method
+    Guid ToGuidId(string id);
 }

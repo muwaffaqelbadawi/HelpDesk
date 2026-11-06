@@ -1,21 +1,24 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
+import { Card } from 'primeng/card';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Message } from 'primeng/message';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/localization/language.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
 import { PostLoginRedirectService } from '../../../core/auth/services/post-login-redirect.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   imports: [
-    CardModule,
-    InputTextModule,
+    Card,
+    InputText,
     ReactiveFormsModule,
-    ButtonModule,
+    Button,
+    Message,
     TranslatePipe,
   ],
   templateUrl: './login.html',
@@ -31,6 +34,7 @@ export class LoginComponent {
   loginForm = this.fb.nonNullable.group({
     username: ['', [Validators.required]],
     password: ['', Validators.required],
+    staySignedIn: [false]
   });
 
   onSubmit(): void {
@@ -39,12 +43,13 @@ export class LoginComponent {
       return;
     }
 
-    const { username, password } = this.loginForm.getRawValue();
+    const { username, password, staySignedIn } = this.loginForm.getRawValue();
 
     this.authService
       .login({
         username,
         password,
+        staySignedIn
       })
       .subscribe({
         next: (response) => {
@@ -91,7 +96,14 @@ export class LoginComponent {
     return this.languageService.currentLanguage;
   }
 
+  loginError = signal<string | null>(null);
+
   private handleLoginError(error: unknown): void {
-    console.error('Login failed', error);
+    if (error instanceof HttpErrorResponse && error.status === 401) {
+      this.loginError.set('Invalid username or password.');
+      return;
+    }
+
+    this.loginError.set('An unexpected error occurred.');
   }
 }

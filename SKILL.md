@@ -23,7 +23,7 @@ Follow these existing ownership boundaries. The client uses Angular standalone r
 
 ## Technology and conventions
 
-- Backend: C# 13 / .NET 9 (`net9.0`), ASP.NET Core, EF Core with SQL Server, JWT authentication, FluentValidation, Serilog, and Swagger.
+- Backend: C# 14 / .NET 10 (`net10.0`), ASP.NET Core, EF Core with SQL Server, JWT authentication, FluentValidation, Serilog, and Swagger.
 - Frontend: Angular 20, TypeScript 5.9, npm, RxJS, PrimeNG, ngx-translate, and NgRx packages.
 - The Angular CLI is configured to use npm. Preserve `package-lock.json` when changing frontend dependencies.
 - The tracked root `.vscode/settings.json` provides shared editor defaults and Explorer/search exclusions; respect it as workspace configuration. Language-specific formatting follows `.editorconfig` and the Angular client's Prettier configuration.
@@ -42,7 +42,7 @@ dotnet build HelpDesk.slnx --no-restore
 dotnet test HelpDesk.slnx
 ```
 
-Run the API locally from the repository root with `dotnet run --project Backend/HelpDesk.Api/HelpDesk.Api.csproj`. The SDK is pinned to `9.0.318` in `global.json` (with latest-feature roll-forward).
+Run the API locally from the repository root with `dotnet run --project Backend/HelpDesk.Api/HelpDesk.Api.csproj`. The SDK is always targeting the latest .NET `10` available in `global.json` (with latest-feature roll-forward).
 
 Frontend, from `Frontend/HelpDesk.Client/`:
 
@@ -57,7 +57,7 @@ npm start
 
 ## Local services and configuration
 
-- The API expects a SQL Server connection string (`ConnectionStrings:AppDBConnection` in development configuration). `docker-compose.yml` runs the API behind Nginx on host port 80, alongside SQL Server and Mailpit; the API listens on container port 8080 and is not directly published. SQL Server requires `MSSQL_SA_PASSWORD`, the API requires `Jwt__Key`, and the compose SQL Server data volume is external and must already exist.
+- The API expects a SQL Server connection string (`ConnectionStrings:AppDBConnection` in development configuration). `docker-compose.yml` runs the API behind Nginx on host port 80 alongside the Angular frontend, SQL Server, Redis, and Mailpit; the API listens on container port 8080 and is not directly published. The frontend image runs Angular unit tests before its production build. SQL Server requires `MSSQL_SA_PASSWORD`, the API requires `Jwt__Key`, and the SQL Server and Redis data volumes are external and must already exist.
 - Mailpit is the local SMTP service (ports 1025 and 8025 in Compose). The Compose API uses `mailpit:1025`; a locally launched API defaults to `localhost:1025`.
 - Integration tests use `ConnectionStrings:IntegrationTestConnection`; they require a reachable SQL Server database. The .NET CI workflow starts SQL Server and supplies this connection string before running the solution tests.
 - Supply machine-specific values through environment variables, user secrets, or local configuration. Never copy credentials, signing keys, or other secrets into committed files. Do not expose values from appsettings files in documentation or logs.
@@ -67,7 +67,7 @@ npm start
 The GitHub Actions workflows are the validation source of truth:
 
 - `.github/workflows/dotnet.yml` restores and builds `Backend/HelpDesk.slnx` in Release, starts SQL Server, then runs the solution tests.
-- `.github/workflows/angular.yml` runs `npm ci` and `npm run build` from `Frontend/HelpDesk.Client/`. Frontend tests are not currently enabled in this workflow.
+- `.github/workflows/angular.yml` runs `npm ci`, `npm run build`, and headless Chrome unit tests from `Frontend/HelpDesk.Client/`.
 - `.github/workflows/codeql.yml` performs CodeQL analysis.
 
 When changing build, test, dependency, or deployment behavior, update relevant workflow/configuration and documentation where needed. Do not claim a check passed unless it was run; distinguish local validation from CI-only checks when their prerequisites are unavailable.
@@ -93,3 +93,32 @@ Do not change production code, rewrite working tests, or redesign the test archi
 - Treat migrations, authentication/authorization, and user/ticket data handling as security-sensitive.
 - Avoid unrelated refactors and generated output (`bin/`, `obj/`, `node_modules/`, `dist/`) unless explicitly required.
 - Never commit secrets. Keep changes reviewable and prefer explicit, readable code.
+
+### Anonymous endpoints and UserContext
+
+An endpoint marked `[AllowAnonymous]` must not depend on `UserContext`, regardless of whether a particular property seems harmless or is expected to be available without authentication. Every component on that endpoint's execution path—including handlers, validators, application services, and their dependencies—must remain independent of `UserContext`. This prohibition covers direct and indirect dependencies and every property it exposes, including `UserId`, `GuidUserId`, `SessionId`, `JwtId`, `JwtExpiresAt`, `UserName`, `IsAuthenticated`, `HasClaims`, and any other current-authenticated user property.
+
+When implementing or reviewing an anonymous endpoint, inspect its complete execution path:
+
+1. Controller or endpoint.
+2. Request handler.
+3. Request validator.
+4. Application services.
+5. Dependencies invoked by those components.
+
+Identify any direct or indirect `UserContext` dependency in those components and in custom middleware or other application code that executes for the request. The following examples are prohibited anywhere in an anonymous endpoint's execution path:
+
+```csharp
+var userId = _userContext.UserId;
+var guidUserId = _userContext.GuidUserId;
+var sessionId = _userContext.SessionId;
+var jwtId = _userContext.JwtId;
+var expiresAt = _userContext.JwtExpiresAt;
+var userName = _userContext.UserName;
+var isAuthenticated = _userContext.IsAuthenticated;
+var hasClaims = _userContext.HasClaims;
+```
+
+`[AllowAnonymous]` does not automatically prevent custom middleware or application components from executing. When an anonymous endpoint unexpectedly returns 401, first inspect the complete execution path for direct or indirect `UserContext` access before assuming the cause is authentication middleware, token validation, or the endpoint handler itself.
+
+Anonymous endpoints must perform their function without requiring an authenticated user or session context. If an operation needs information to perform its business function, obtain it from an explicitly supplied request value, an independently validated credential, or another appropriate mechanism—not implicitly from `UserContext`.

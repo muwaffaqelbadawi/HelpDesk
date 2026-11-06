@@ -10,8 +10,6 @@ public sealed class PermissionsRepository : IPermissionsRepository
         DateTimeOffset now,
         CancellationToken cancellationToken)
     {
-
-
         throw new NotImplementedException();
     }
 }

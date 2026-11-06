@@ -1,18 +1,21 @@
-﻿using HelpDesk.src.Shared.Exceptions;
+﻿using HelpDesk.src.Infrastructure.Logging;
+using HelpDesk.src.Infrastructure.Services.UserSession;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace HelpDesk.src.Features.Auth.RefreshToken;
 
-public sealed class RefreshTokenHandler :
-    ICommandHandler<RefreshTokenCommand, RefreshTokenResponse>
+public sealed class RefreshTokenHandler
+    : ICommandHandler<RefreshTokenCommand, RefreshTokenResponse>
 {
     private readonly IRefreshTokenReader _refreshTokenReader;
     private readonly IDateTimeService _dateTimeService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
-    private readonly ITokenService _tokenService;
-    private readonly IUserContext _userContext;
+    private readonly ITokenIssuer _tokenIssuer;
     private readonly IUserReader _userReader;
     private readonly IUserSessionReader _userSessionReader;
+    private readonly IOptions<UserSessionOptions> _userSessionOptions;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<RefreshTokenHandler> _logger;
 
@@ -20,20 +23,20 @@ public sealed class RefreshTokenHandler :
         IRefreshTokenReader refreshTokenReader,
         IDateTimeService dateTimeService,
         IRefreshTokenRepository refreshTokenRepository,
-        ITokenService tokenService,
-        IUserContext userContext,
+        ITokenIssuer tokenIssuer,
         IUserReader userReader,
         IUserSessionReader userSessionReader,
+        IOptions<UserSessionOptions> userSessionOptions,
         IDomainEventDispatcher dispatcher,
         ILogger<RefreshTokenHandler> logger)
     {
         _refreshTokenReader = refreshTokenReader;
         _dateTimeService = dateTimeService;
         _refreshTokenRepository = refreshTokenRepository;
-        _tokenService = tokenService;
-        _userContext = userContext;
+        _tokenIssuer = tokenIssuer;
         _userReader = userReader;
         _userSessionReader = userSessionReader;
+        _userSessionOptions = userSessionOptions;
         _dispatcher = dispatcher;
         _logger = logger;
     }
@@ -42,19 +45,19 @@ public sealed class RefreshTokenHandler :
         RefreshTokenCommand command,
         CancellationToken cancellationToken)
     {
-        var existingToken = await _refreshTokenReader.GetRefreshTokenAsync(
+        var existingRefreshToken = await _refreshTokenReader.GetRefreshTokenAsync(
             command.RefreshToken,
             cancellationToken);
 
-        if (existingToken is null)
+        if (existingRefreshToken is null)
         {
             _logger.LogWarning("Invalid refresh token.");
 
             throw new AuthenticationFailedException("Invalid refresh token.");
         }
 
-        var userId = existingToken.UserId;
-        var revokedAt = existingToken.RevokedAt;
+        var userId = existingRefreshToken.UserId;
+        var revokedAt = existingRefreshToken.RevokedAt;
 
         // now
         var now = _dateTimeService.UtcNow;
@@ -77,40 +80,86 @@ public sealed class RefreshTokenHandler :
             throw new AuthenticationFailedException("Invalid refresh token.");
         }
 
-        var userSessionExpiresAt = await _userSessionReader.GetExpiresAtAsync(
-            userId,
+        var userSession = await _userSessionReader.GetCurrentAsync(
+            existingRefreshToken.UserSessionId,
             cancellationToken);
 
-        if (userSessionExpiresAt is null || userSessionExpiresAt <= now)
+        if (userSession is null
+            || userSession.UserId != userId
+            || userSession.ExpiresAt is null
+            || userSession.ExpiresAt <= now
+            || userSession.RevokedAt is not null)
         {
             _logger.LogWarning("User session expired for user {userId}.", userId);
 
             throw new AuthenticationFailedException("User session has expired.");
         }
 
-        var expiresAt = existingToken.ExpiresAt;
+        var expiresAt = existingRefreshToken.ExpiresAt;
+        var isExpired = expiresAt <= now;
 
-        // Check expiry
-        if (expiresAt <= now)
+        if (isExpired)
         {
-            _logger.LogWarning("Expired refresh token used for user {user}",
-                userId);
+            _logger.LogWarning("Expired refresh token used for user {userId}.", userId);
 
             throw new AuthenticationFailedException("Refresh token has expired.");
         }
+
+        var isRevoked = revokedAt <= now;
 
         // lookup user
         var user = await _userReader.GetUserAsync(userId.ToString())
             ?? throw new UserNotFoundException(userId);
 
-        var sessionId = _userContext.SessionId;
+        var userSessionId = existingRefreshToken.UserSessionId;
 
-        // Issue new token
-        var token = await _tokenService.IssueAfterRefreshAsync(
+        var sessionLifetime = userSession.IsPersistent
+            ? _userSessionOptions.Value.PersistentSessionLifetime
+            : _userSessionOptions.Value.DefaultSessionLifetime;
+
+        var candidateSessionExpiresAt = now.Add(sessionLifetime);
+
+        var refreshTokenExpiresAt = userSession.ExpiresAt.Value > candidateSessionExpiresAt
+            ? userSession.ExpiresAt.Value
+            : candidateSessionExpiresAt;
+
+        // Issue new Jwt
+        var jwt = _tokenIssuer.IssueTokenObject(
             user,
-            sessionId,
-            existingToken,
+            userSessionId,
+            refreshTokenExpiresAt);
+
+        var replacementRefreshToken = _tokenIssuer.CreateRefreshTokenObject(
+            user,
+            userSessionId,
+            jwt);
+
+        var persistedSessionExpiresAt = await _refreshTokenRepository.RotateAsync(
+            existingRefreshToken.Id,
+            replacementRefreshToken,
+            now,
+            sessionLifetime,
             cancellationToken);
+
+        if (persistedSessionExpiresAt is null)
+        {
+            throw new AuthenticationFailedException("Invalid refresh token.");
+        }
+
+        jwt = jwt with
+        {
+            RefreshTokenExpiresAt = persistedSessionExpiresAt.Value
+        };
+
+        // Successful log
+        _logger.RefreshTokenLog(
+            userSessionId,
+            userId,
+            expiresAt,
+            revokedAt,
+            now,
+            isExpired,
+            isRevoked);
 
         // Get user
         var userAccountData = await _userReader.GetByIdAsync(
@@ -126,6 +175,6 @@ public sealed class RefreshTokenHandler :
 
         return new RefreshTokenResponse(
             userAccountData,
-            token);
+            jwt);
     }
 }

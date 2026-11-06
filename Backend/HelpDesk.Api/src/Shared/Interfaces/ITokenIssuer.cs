@@ -5,7 +5,20 @@ namespace HelpDesk.src.Shared.Interfaces;
 
 public interface ITokenIssuer
 {
-    TokenResult Issue(
+    (string token, DateTimeOffset expiration) IssueAccessToken(
         ApplicationUser user,
         Guid sessionId);
+
+    (string token, DateTimeOffset expiration) IssueRefreshToken(
+        DateTimeOffset sessionExpiresAt);
+
+    TokenResult IssueTokenObject(
+        ApplicationUser user,
+        Guid userSessionId,
+        DateTimeOffset refreshTokenExpiresAt);
+
+    ApplicationRefreshToken CreateRefreshTokenObject(
+        ApplicationUser user,
+        Guid userSessionId,
+        TokenResult tokenResult);
 }

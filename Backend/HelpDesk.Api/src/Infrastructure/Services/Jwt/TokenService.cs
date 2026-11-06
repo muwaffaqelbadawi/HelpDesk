@@ -1,87 +1,28 @@
 ﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.Services.Jwt;
 
 public sealed class TokenService : ITokenService
 {
-    private readonly IDateTimeService _dateTimeService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenIssuer _tokenIssuer;
-    private readonly IUserContext _userContext;
+    private readonly IUserSessionReader _userSessionReader;
 
     public TokenService(
-        IDateTimeService dateTimeService,
         IRefreshTokenRepository refreshTokenRepository,
         ITokenIssuer tokenIssuer,
-        IUserContext userContext)
+        IUserSessionReader userSessionReader)
     {
-        _dateTimeService = dateTimeService;
         _refreshTokenRepository = refreshTokenRepository;
         _tokenIssuer = tokenIssuer;
-        _userContext = userContext;
-    }
-
-    public async Task<TokenResult> IssueAsync(
-        ApplicationUser user,
-        Guid sessionId,
-        CancellationToken cancellationToken)
-    {
-        var now = _dateTimeService.UtcNow;
-
-        // Issue new tokens
-        var token = _tokenIssuer.Issue(
-            user,
-            sessionId);
-
-        var newRefreshTokenEntity = new ApplicationRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            Token = token.RefreshToken,
-            CreatedByIp = _userContext.IpAddress,
-            CreatedAt = now,
-            ExpiresAt = token.RefreshTokenExpiresAt,
-            RevokedAt = null,
-            UserId = user.Id,
-            User = user,
-            UserAgent = _userContext.UserAgent,
-        };
-
-        await _refreshTokenRepository.AddAsync(
-            newRefreshTokenEntity,
-            cancellationToken);
-
-        return token;
-    }
-
-    public async Task<TokenResult> IssueAfterLoginAsync(
-        ApplicationUser user,
-        Guid sessionId,
-        CancellationToken cancellationToken)
-    {
-        return await IssueAsync(
-            user,
-            sessionId,
-            cancellationToken);
-    }
-
-    public async Task<TokenResult> IssueAfterRefreshAsync(
-        ApplicationUser user,
-        Guid sessionId,
-        ApplicationRefreshToken existingToken,
-        CancellationToken cancellationToken)
-    {
-        existingToken.RevokedAt = _dateTimeService.UtcNow;
-
-        return await IssueAsync(
-            user,
-            sessionId,
-            cancellationToken);
+        _userSessionReader = userSessionReader;
     }
 
     public async Task<TokenResult> IssueAfterPasswordChangeAsync(
         ApplicationUser user,
-        Guid sessionId,
+        Guid userSessionId,
         DateTimeOffset now,
         CancellationToken cancellationToken)
     {
@@ -93,13 +34,14 @@ public sealed class TokenService : ITokenService
 
         return await IssueAsync(
             user,
-            sessionId,
+            userSessionId,
+            now,
             cancellationToken);
     }
 
     public async Task<TokenResult> IssueAfterResetPasswordAsync(
         ApplicationUser user,
-        Guid sessionId,
+        Guid userSessionId,
         DateTimeOffset now,
         CancellationToken cancellationToken)
     {
@@ -110,25 +52,39 @@ public sealed class TokenService : ITokenService
 
         return await IssueAsync(
             user,
-            sessionId,
+            userSessionId,
+            now,
             cancellationToken);
     }
 
-    public async Task<TokenResult> IssueAfterResetForgottenPasswordAsync(
+    private async Task<TokenResult> IssueAsync(
         ApplicationUser user,
-        Guid sessionId,
+        Guid userSessionId,
         DateTimeOffset now,
         CancellationToken cancellationToken)
     {
-        // Revoke all refresh tokens
-        await _refreshTokenRepository.RevokeAllAsync(
-            user.Id,
-            now,
+        var session = await _userSessionReader.GetCurrentAsync(
+            userSessionId,
             cancellationToken);
 
-        return await IssueAsync(
+        if (session?.ExpiresAt is null
+            || session.ExpiresAt <= now
+            || session.RevokedAt is not null)
+        {
+            throw new AuthenticationFailedException("User session is no longer active.");
+        }
+
+        var token = _tokenIssuer.IssueTokenObject(
             user,
-            sessionId,
-            cancellationToken);
+            userSessionId,
+            session.ExpiresAt.Value);
+        var refreshToken = _tokenIssuer.CreateRefreshTokenObject(
+            user,
+            userSessionId,
+            token);
+
+        await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
+
+        return token;
     }
 }

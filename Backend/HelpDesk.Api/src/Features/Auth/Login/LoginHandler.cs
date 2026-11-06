@@ -6,7 +6,9 @@ public sealed class LoginHandler
     : ICommandHandler<LoginCommand, LoginResponse>
 {
     private readonly IIdentityResolver _identityResolver;
-    private readonly ITokenService _tokenService;
+    private readonly IUserSessionService _userSessionService;
+    private readonly ITokenIssuer _tokenIssuer;
+    private readonly IUserLoginRepository _userLoginRepository;
     private readonly IUserReader _userReader;
     private readonly IDateTimeService _dateTimeService;
     private readonly IDomainEventDispatcher _dispatcher;
@@ -14,14 +16,18 @@ public sealed class LoginHandler
 
     public LoginHandler(
         IIdentityResolver identityResolver,
-        ITokenService tokenService,
+        IUserSessionService userSessionService,
+        ITokenIssuer tokenIssuer,
+        IUserLoginRepository userLoginRepository,
         IUserReader userReader,
         IDateTimeService dateTimeService,
         IDomainEventDispatcher dispatcher,
         ILogger<LoginHandler> logger)
     {
         _identityResolver = identityResolver;
-        _tokenService = tokenService;
+        _userSessionService = userSessionService;
+        _tokenIssuer = tokenIssuer;
+        _userLoginRepository = userLoginRepository;
         _userReader = userReader;
         _dateTimeService = dateTimeService;
         _dispatcher = dispatcher;
@@ -32,25 +38,49 @@ public sealed class LoginHandler
         LoginCommand command,
         CancellationToken cancellationToken)
     {
-        // Resolve identity
+        // 1- Validate credentials
         var user = await _identityResolver.ResolveIdentity(
             command,
             cancellationToken);
 
-        // Resolve password
         await _identityResolver.ResolvePassword(
             user,
             command);
 
-        var sessionId = Guid.NewGuid();
+        // 2- Generate userSessionId
+        var userSessionId = Guid.NewGuid();
 
-        // Issue new token
-        var token = await _tokenService.IssueAfterLoginAsync(
+        // now
+        var now = _dateTimeService.UtcNow;
+
+        // 3- Create the UserSession object.
+        var userSession = _userSessionService.CreateUserSession(
+            userId: user.Id,
+            userSessionId: userSessionId,
+            staySignedIn: command.StaySignedIn,
+            now: now);
+
+        // 4- Create the JWT using the same session ID
+        var jwt = _tokenIssuer.IssueTokenObject(
             user,
-            sessionId,
+            userSessionId,
+            userSession.ExpiresAt
+                ?? throw new InvalidOperationException(
+                    "A user session must have an expiration."));
+
+        // 5- Persist the refresh token returned to the client
+        var refreshToken = _tokenIssuer.CreateRefreshTokenObject(
+            user,
+            userSessionId,
+            jwt);
+
+        // 6- persist the session + refresh token (atomic)
+        await _userLoginRepository.AddAsync(
+            userSession,
+            refreshToken,
             cancellationToken);
 
-        // Successful log
+        // Consider changing the log structure
         _logger.LogInformation(
             "User {userId} logged in successfully",
             user.Id);
@@ -64,13 +94,11 @@ public sealed class LoginHandler
         await _dispatcher.DispatchAsync(
             @event: new LoginEvent(
                 User: user,
-                OccurredAt: _dateTimeService.UtcNow,
-                StaySignedIn: command.StaySignedIn,
-                SessionId: sessionId),
+                OccurredAt: now),
             cancellationToken: cancellationToken);
 
         return new LoginResponse(
             userAccountData,
-            token);
+            jwt);
     }
 }

@@ -1,2 +1,2 @@
 // We don't need this anymore
-export interface RefreshTokenRequest {}
+export type RefreshTokenRequest = NonNullable<unknown>;

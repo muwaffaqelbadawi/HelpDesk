@@ -5,7 +5,7 @@ namespace HelpDesk.src.Shared.Interfaces;
 public interface IUserSessionReader
 {
     Task<ApplicationUserSession?> GetCurrentAsync(
-        Guid userId,
+        Guid sessionId,
         CancellationToken cancellationToken = default);
 
     Task<DateTimeOffset?> GetExpiresAtAsync(

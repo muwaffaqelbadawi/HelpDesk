@@ -19,7 +19,7 @@ export class PostLoginRedirectService {
     }
 
     if (user.mustResetPassword) {
-      this.router.navigate(['/reset-password']);
+      this.router.navigate(['/auth/change-password']);
       return;
     }
 

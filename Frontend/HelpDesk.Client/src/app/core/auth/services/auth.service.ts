@@ -4,7 +4,7 @@ import { map, Observable } from 'rxjs';
 import { ApiResponse } from '../../http/models/api-response';
 import { LoginRequest } from '../../../features/auth/login/login-request';
 import { LoginResponse } from '../../../features/auth/login/login-response';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { changePasswordRequest } from '../../../features/auth/change-password/change-password-request';
 import { changePasswordResponse } from '../../../features/auth/change-password/change-password-response';
 import { RefreshTokenResponse } from '../../../features/auth/refresh-token/refresh-token-response';
@@ -53,7 +53,7 @@ export class AuthService {
       .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/auth/login`, {
         username: request.username,
         password: request.password,
-        staySignedIn: false,
+        staySignedIn: request.staySignedIn,
       })
       .pipe(
         map((response) => {

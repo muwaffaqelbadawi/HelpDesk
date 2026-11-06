@@ -6,6 +6,6 @@ namespace HelpDesk.src.Features.Auth.ForgotPassword;
 public sealed record PasswordForgottenEvent(
     string ResetToken,
     string NewPassword,
-    string ConfirmNewPassword,
+    string ConfirmPassword,
     ApplicationUser User,
     DateTimeOffset OccurredAt) : IDomainEvent;

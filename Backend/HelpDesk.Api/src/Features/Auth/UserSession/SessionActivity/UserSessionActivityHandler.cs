@@ -1,4 +1,5 @@
-﻿using HelpDesk.src.Infrastructure.Services.UserSession;
+﻿using HelpDesk.src.Infrastructure.Logging;
+using HelpDesk.src.Infrastructure.Services.UserSession;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Options;
@@ -12,17 +13,20 @@ public sealed class UserSessionActivityHandler
     private readonly IOptions<UserSessionOptions> _userSessionOptions;
     private readonly IUserSessionReader _userSessionReader;
     private readonly IUserSessionRepository _userSessionRepository;
+    private readonly ILogger<UserSessionActivityHandler> _logger;
 
     public UserSessionActivityHandler(
         IDateTimeService dateTimeService,
         IOptions<UserSessionOptions> userSessionOptions,
         IUserSessionReader userSessionReader,
-        IUserSessionRepository userSessionRepository)
+        IUserSessionRepository userSessionRepository,
+        ILogger<UserSessionActivityHandler> logger)
     {
         _dateTimeService = dateTimeService;
         _userSessionOptions = userSessionOptions;
         _userSessionReader = userSessionReader;
         _userSessionRepository = userSessionRepository;
+        _logger = logger;
     }
 
     public async Task HandleAsync(
@@ -39,11 +43,9 @@ public sealed class UserSessionActivityHandler
             sessionId,
             cancellationToken);
 
-        // MAKE SURE TO COVER THIS IN TEST
-
         if (session is null
-            || session.ExpiresAt is not { } expiresAt
-            || expiresAt <= now)
+            || session.ExpiresAt is null
+            || session.ExpiresAt <= now)
         {
             throw new AuthenticationFailedException("User session has expired.");
         }
@@ -68,5 +70,31 @@ public sealed class UserSessionActivityHandler
             throw new AuthenticationRequiredException(
                 "User session is no longer active.");
         }
+
+        var updatedSession = await _userSessionReader.GetCurrentAsync(
+            sessionId,
+            cancellationToken);
+
+        if (updatedSession?.ExpiresAt is null)
+        {
+            throw new AuthenticationRequiredException(
+                "User session is no longer active.");
+        }
+
+        var userId = session.UserId;
+        var expiresAt = updatedSession.ExpiresAt;
+        var revokedAt = session.RevokedAt;
+        var isExpired = expiresAt <= now;
+        var isRevoked = revokedAt <= now;
+
+        // Successful log
+        _logger.UserSessionActivityLog(
+            sessionId,
+            userId,
+            expiresAt,
+            revokedAt,
+            now,
+            isExpired,
+            isRevoked);
     }
 }

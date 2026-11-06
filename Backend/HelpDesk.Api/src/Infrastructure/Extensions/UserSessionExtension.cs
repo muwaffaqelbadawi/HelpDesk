@@ -29,6 +29,9 @@ public static class UserSessionExtension
         // Register UserSessionRepository as scoped service
         builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
 
+        // Register UserSessionService as scoped service
+        builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+
         return builder;
     }
 

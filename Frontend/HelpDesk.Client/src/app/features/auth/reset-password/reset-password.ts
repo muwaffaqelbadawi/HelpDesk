@@ -3,7 +3,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/localization/language.service';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
@@ -41,7 +41,6 @@ export class ResetPasswordComponent {
     const resetToken = this.route.snapshot.queryParamMap.get('token');
 
     if (!userId || !resetToken) {
-      (error: unknown) => this.handleResetPasswordError(error);
       return;
     }
 

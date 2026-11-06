@@ -108,7 +108,7 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
         var command = new ChangePasswordCommand(
             body.CurrentPassword,
             body.NewPassword,
-            body.ConfirmNewPassword);
+            body.ConfirmPassword);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 
@@ -134,7 +134,7 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
             Email: body.Email,
             Token: body.Token,
             NewPassword: body.NewPassword,
-            ConfirmNewPassword: body.ConfirmNewPassword);
+            ConfirmPassword: body.ConfirmPassword);
 
         await handler.HandleAsync(command, cancellationToken);
 
@@ -161,7 +161,6 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
 
     // Reset Password
     [HttpPost("reset-password")]
-    [AllowAnonymous]
     public async Task<IActionResult> ResetPassword(
         [FromServices] ICommandHandler<ResetPasswordCommand, ResetPasswordResponse> handler,
         [FromServices] IDateTimeService dateTimeService,
@@ -172,7 +171,7 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
             UserId: body.UserId,
             ResetToken: body.ResetToken,
             NewPassword: body.NewPassword,
-            ConfirmNewPassword: body.ConfirmNewPassword);
+            ConfirmPassword: body.ConfirmPassword);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 

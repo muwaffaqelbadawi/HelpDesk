@@ -1,2 +1,1 @@
-export interface Auth {
-}
+export type Auth = NonNullable<unknown>;

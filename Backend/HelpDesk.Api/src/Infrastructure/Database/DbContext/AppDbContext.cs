@@ -385,6 +385,12 @@ public partial class AppDbContext
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // UserSession (Relation)
+            entity.HasOne(e => e.UserSession)
+                .WithMany(e => e.RefreshTokens)
+                .HasForeignKey(e => e.UserSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // UserAgent (Property)
             entity.Property(e => e.UserAgent)
                 .HasMaxLength(500);

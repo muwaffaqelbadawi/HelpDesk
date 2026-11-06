@@ -62,7 +62,7 @@ public sealed class ForgotPasswordHandler
             @event: new PasswordForgottenEvent(
                 ResetToken: command.Token,
                 NewPassword: command.NewPassword,
-                ConfirmNewPassword: command.ConfirmNewPassword,
+                ConfirmPassword: command.ConfirmPassword,
                 User: user,
                 OccurredAt: now),
             cancellationToken: cancellationToken);

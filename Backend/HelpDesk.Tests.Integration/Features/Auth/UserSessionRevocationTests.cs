@@ -34,20 +34,27 @@ public sealed class UserSessionRevocationTests
     public async Task Should_reject_the_same_access_token_after_logout_revokes_its_session()
     {
         var now = DateTimeOffset.UtcNow;
+
         var userId = Guid.NewGuid();
+
         var sessionId = Guid.NewGuid();
+
         var sessionStore = new InMemoryUserSessionStore(
             userId,
             sessionId,
             now,
             SessionState.Active);
+
         var executions = new TicketEndpointExecutions();
+
         await using var app = await CreateAppAsync(
             sessionStore,
             executions,
             userId,
             now);
+
         using var client = app.GetTestClient();
+
         var token = CreateAccessToken(userId, sessionId);
 
         using var firstResponse = await SendAsync(
@@ -82,8 +89,11 @@ public sealed class UserSessionRevocationTests
     public async Task Should_not_restore_a_session_when_activity_update_races_with_logout()
     {
         var now = DateTimeOffset.UtcNow;
+
         var userId = Guid.NewGuid();
+
         var sessionId = Guid.NewGuid();
+
         var sessionStore = new InMemoryUserSessionStore(
             userId,
             sessionId,
@@ -91,12 +101,14 @@ public sealed class UserSessionRevocationTests
             SessionState.Active,
             pauseFirstActivityUpdate: true);
         var executions = new TicketEndpointExecutions();
+
         await using var app = await CreateAppAsync(
             sessionStore,
             executions,
             userId,
             now);
         using var client = app.GetTestClient();
+
         var token = CreateAccessToken(userId, sessionId);
 
         var inFlightRequest = SendAsync(
@@ -213,6 +225,7 @@ public sealed class UserSessionRevocationTests
         builder.Services.AddScoped<
             ICommandHandler<UserSessionActivityCommand>,
             UserSessionActivityHandler>();
+        builder.Services.AddSingleton<IRefreshTokenReader, NoOpRefreshTokenReader>();
         builder.Services.AddScoped<
             ICommandHandler<LogoutCommand, LogoutResponse>,
             LogoutHandler>();
@@ -426,8 +439,18 @@ public sealed class UserSessionRevocationTests
                     return 0;
                 }
 
-                _session.LastActivityAt = now;
-                _session.ExpiresAt = now.Add(lifetime);
+                var candidateExpiration = now.Add(lifetime);
+
+                if (_session.LastActivityAt is null || _session.LastActivityAt < now)
+                {
+                    _session.LastActivityAt = now;
+                }
+
+                if (_session.ExpiresAt < candidateExpiration)
+                {
+                    _session.ExpiresAt = candidateExpiration;
+                }
+
                 return 1;
             }
         }
@@ -504,6 +527,29 @@ public sealed class UserSessionRevocationTests
             DateTimeOffset now,
             CancellationToken cancellationToken) =>
             Task.FromResult(0);
+
+        public Task<DateTimeOffset?> RotateAsync(
+            Guid currentRefreshTokenId,
+            ApplicationRefreshToken replacement,
+            DateTimeOffset now,
+            TimeSpan sessionLifetime,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class NoOpRefreshTokenReader : IRefreshTokenReader
+    {
+        public Task<ApplicationRefreshToken?> GetRefreshTokenAsync(
+            string refreshToken,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<ApplicationRefreshToken?>(null);
+
+        public Task<ApplicationRefreshToken?> GetActiveRefreshTokenAsync(
+            Guid userId,
+            Guid userSessionId,
+            DateTimeOffset now,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<ApplicationRefreshToken?>(null);
     }
 
     private sealed class TestUserReader(ApplicationUser user) : IUserReader

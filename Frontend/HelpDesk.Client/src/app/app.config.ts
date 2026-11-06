@@ -15,6 +15,7 @@ import AuraBase from '@primeuix/themes/aura/base';
 import AuraButton from '@primeuix/themes/aura/button';
 import AuraCard from '@primeuix/themes/aura/card';
 import AuraInputText from '@primeuix/themes/aura/inputtext';
+import AuraMessage from '@primeuix/themes/aura/message';
 import AuraRipple from '@primeuix/themes/aura/ripple';
 import AuraSelect from '@primeuix/themes/aura/select';
 import { routes } from './app.routes';
@@ -23,12 +24,14 @@ import { AuthService } from './core/auth/services/auth.service';
 import { AuthStateService } from './core/auth/services/auth-state.service';
 import { catchError, EMPTY, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const HelpDeskAura = definePreset(AuraBase, {
   components: {
     button: AuraButton,
     card: AuraCard,
     inputtext: AuraInputText,
+    message: AuraMessage,
     ripple: AuraRipple,
     select: AuraSelect,
   },
@@ -36,6 +39,8 @@ const HelpDeskAura = definePreset(AuraBase, {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideAnimationsAsync(),
+
     provideZoneChangeDetection({ eventCoalescing: true }),
 
     provideRouter(routes),

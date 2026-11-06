@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { TokenRefreshService } from '../services/refresh-token.service';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { catchError, switchMap, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -9,9 +9,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     withCredentials: true,
   });
 
-  const refreshTokenUrl = `${environment.apiUrl}/auth/refresh-token`;
+  const excludedUrls = [
+    `${environment.apiUrl}/auth/login`,
+    `${environment.apiUrl}/auth/refresh-token`,
+  ];
 
-  if (req.url === refreshTokenUrl) {
+  if (excludedUrls.includes(req.url)) {
     return next(request);
   }
 

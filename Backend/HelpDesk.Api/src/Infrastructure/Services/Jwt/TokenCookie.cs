@@ -18,16 +18,25 @@ public static class TokenCookie
                 Expires = tokenResult.AccessTokenExpiresAt
             });
 
-        // Refresh token cookie
+        response.SetRefreshTokenCookie(
+            tokenResult.RefreshToken,
+            tokenResult.RefreshTokenExpiresAt);
+    }
+
+    public static void SetRefreshTokenCookie(
+        this HttpResponse response,
+        string refreshToken,
+        DateTimeOffset expiresAt)
+    {
         response.Cookies.Append(
             "refresh_token",
-            tokenResult.RefreshToken,
+            refreshToken,
             new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = tokenResult.RefreshTokenExpiresAt,
+                Expires = expiresAt,
                 Path = "/api/auth/refresh-token"
             });
     }

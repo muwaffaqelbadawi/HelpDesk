@@ -14,6 +14,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'auth/change-password',
+    loadComponent: () =>
+      import('./features/auth/change-password/change-password').then(
+        (m) => m.ChangePasswordComponent,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     children: [
@@ -37,13 +44,7 @@ export const routes: Routes = [
         path: 'auth/logout',
         loadComponent: () => import('./features/auth/logout/logout').then((m) => m.LogoutComponent),
       },
-      {
-        path: 'auth/change-password',
-        loadComponent: () =>
-          import('./features/auth/change-password/change-password').then(
-            (m) => m.ChangePasswordComponent,
-          ),
-      },
+
       {
         path: 'auth/reset-password',
         loadComponent: () =>

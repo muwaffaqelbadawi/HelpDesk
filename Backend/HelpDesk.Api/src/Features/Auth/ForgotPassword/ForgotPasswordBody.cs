@@ -5,4 +5,4 @@ public sealed record class ForgotPasswordBody(
     string Email,
     string Token,
     string NewPassword,
-    string ConfirmNewPassword);
+    string ConfirmPassword);

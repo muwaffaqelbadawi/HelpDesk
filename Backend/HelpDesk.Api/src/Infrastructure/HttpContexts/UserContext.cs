@@ -9,6 +9,7 @@ namespace HelpDesk.src.Infrastructure.HttpContexts;
 
 public sealed class UserContext(IHttpContextAccessor context) : IUserContext
 {
+    // User context
     public string UserId
     {
         get
@@ -31,13 +32,6 @@ public sealed class UserContext(IHttpContextAccessor context) : IUserContext
                 ? throw new AuthenticationRequiredException()
                 : guid;
         }
-    }
-
-    public Guid ToGuidId(string id)
-    {
-        return !Guid.TryParse(id, out var guid)
-            ? throw new AuthenticationRequiredException()
-            : guid;
     }
 
     public Guid SessionId
@@ -102,6 +96,20 @@ public sealed class UserContext(IHttpContextAccessor context) : IUserContext
         }
     }
 
+    public bool IsAuthenticated =>
+        context.HttpContext?
+            .User
+            .Identity?
+            .IsAuthenticated
+        ?? false;
+
+    public bool HasClaims =>
+        context
+            .HttpContext?
+            .User
+            .Claims is null;
+
+    // Request/Connection/TraceIdentifier contexts
     public string? UserAgent =>
         context.HttpContext?
             .Request
@@ -132,16 +140,11 @@ public sealed class UserContext(IHttpContextAccessor context) : IUserContext
         context.HttpContext?.TraceIdentifier
         ?? Guid.NewGuid().ToString();
 
-    public bool IsAuthenticated =>
-        context.HttpContext?
-            .User
-            .Identity?
-            .IsAuthenticated
-        ?? false;
-
-    public bool HasClaims =>
-        context
-            .HttpContext?
-            .User
-            .Claims is null;
+    // Method
+    public Guid ToGuidId(string id)
+    {
+        return !Guid.TryParse(id, out var guid)
+            ? throw new AuthenticationRequiredException()
+            : guid;
+    }
 }

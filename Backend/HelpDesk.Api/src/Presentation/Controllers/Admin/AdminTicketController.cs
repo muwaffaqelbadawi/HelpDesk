@@ -17,23 +17,20 @@ public sealed class AdminTicketController(IDateTimeService dateTimeService) : Co
 {
     // GetAll
     [Authorize(Policy = "Permission:Tickets.View")]
-    [HttpGet]
-    public Task<IActionResult> TicketSummary(
+    [HttpGet("summary")]
+    public async Task<IActionResult> TicketSummary(
         [FromServices] IQueryHandler<TicketSummaryQuery, TicketSummaryResponse> handler,
         CancellationToken cancellationToken)
     {
-        //var result = await handler.HandleAsync(query, cancellationToken);
+        var query = new TicketSummaryQuery();
 
-        //return Ok(new ApiResponse<PagedResult<TicketData>>(
-        //    message: ApiMessages.TicketsRetrieved,
-        //    time: dateTimeService,
-        //    data: result));
+        var result = await handler.HandleAsync(query, cancellationToken);
 
-        throw new NotImplementedException();
+        return Ok(new ApiResponse<TicketSummaryResponse>(
+            message: ApiMessages.TicketSummary,
+            time: dateTimeService,
+            data: result));
     }
-
-
-
 
     // GetAll
     [Authorize(Policy = "Permission:Tickets.View")]

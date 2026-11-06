@@ -61,7 +61,7 @@ public sealed class ChangePasswordTests
         var command = new ChangePasswordCommand(
             CurrentPassword: "OldPassword123!",
             NewPassword: "NewPassword123!",
-            ConfirmNewPassword: "NewPassword123!");
+            ConfirmPassword: "NewPassword123!");
 
         userContext
             .Setup(x => x.GuidUserId)
@@ -172,7 +172,7 @@ public sealed class ChangePasswordTests
         var command = new ChangePasswordCommand(
             CurrentPassword: "OldPassword123!",
             NewPassword: "NewPassword123!",
-            ConfirmNewPassword: "NewPassword123!");
+            ConfirmPassword: "NewPassword123!");
 
         userContext
             .Setup(x => x.GuidUserId)
@@ -251,7 +251,7 @@ public sealed class ChangePasswordTests
         var command = new ChangePasswordCommand(
             CurrentPassword: "OldPassword123!",
             NewPassword: "NewPassword123!",
-            ConfirmNewPassword: "NewPassword123!");
+            ConfirmPassword: "NewPassword123!");
 
         userContext
             .Setup(x => x.GuidUserId)
@@ -300,7 +300,7 @@ public sealed class ChangePasswordTests
         var command = new ChangePasswordCommand(
             CurrentPassword: "OldPassword123!",
             NewPassword: "NewPassword123!",
-            ConfirmNewPassword: "NewPassword123!");
+            ConfirmPassword: "NewPassword123!");
 
         userContext
             .Setup(x => x.GuidUserId)

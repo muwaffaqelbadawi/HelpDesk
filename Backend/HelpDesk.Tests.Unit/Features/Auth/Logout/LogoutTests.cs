@@ -87,7 +87,7 @@ public sealed class LogoutTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(1, result.RevokedTokenCount);
+        Assert.Equal(1, result.RevokedRefreshTokensCount);
 
         dispatcher.Verify(
            x => x.DispatchAsync(

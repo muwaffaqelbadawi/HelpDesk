@@ -38,6 +38,7 @@ public static class ApiMessages
     // Ticket messages
     public const string TicketRetrieved = "Ticket retrieved successfully.";
     public const string TicketsRetrieved = "Tickets retrieved successfully.";
+    public const string TicketSummary = "Ticket summary retrieved successfully.";
     public const string TicketAssigned = "Ticket assigned successfully.";
     public const string TicketCreated = "Ticket created successfully.";
     public const string TicketUpdated = "Ticket updated successfully.";

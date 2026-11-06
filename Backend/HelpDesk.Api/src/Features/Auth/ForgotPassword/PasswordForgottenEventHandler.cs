@@ -15,7 +15,7 @@ public sealed class PasswordForgottenEventHandler(
         var userId = @event.User.Id;
         var resetToken = @event.ResetToken;
         var newPassword = @event.NewPassword;
-        var confirmedPassword = @event.ConfirmNewPassword;
+        var confirmedPassword = @event.ConfirmPassword;
 
         if (userId == Guid.Empty)
         {

@@ -10,44 +10,75 @@ public sealed class TokenIssuer : ITokenIssuer
     private readonly IRefreshTokenProvider _refreshTokenProvider;
     private readonly JwtOptions _jwtOptions;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IUserContext _userContext;
 
     public TokenIssuer(
         IJwtProvider jwtProvider,
         IRefreshTokenProvider refreshTokenProvider,
         IOptions<JwtOptions> jwtOptions,
-        IDateTimeService dateTimeService)
+        IDateTimeService dateTimeService,
+        IUserContext userContext)
     {
         _jwtProvider = jwtProvider;
         _refreshTokenProvider = refreshTokenProvider;
         _jwtOptions = jwtOptions.Value;
         _dateTimeService = dateTimeService;
+        _userContext = userContext;
     }
 
-    public TokenResult Issue(
+    public (string token, DateTimeOffset expiration) IssueAccessToken(
         ApplicationUser user,
         Guid sessionId)
     {
-        // Generate access token
-        var accessToken = _jwtProvider.GenerateAccessToken(
+        var token = _jwtProvider.GenerateAccessToken(
             user,
             sessionId);
 
-        // Generate refresh token
-        var refreshToken = _refreshTokenProvider.GenerateRefreshToken();
+        var expiration = _dateTimeService.UtcNow
+            .Add(_jwtOptions.AccessTokenLifetime);
 
-        // now
-        var now = _dateTimeService.UtcNow;
+        return (token, expiration);
+    }
 
-        // access token expiration
-        var accessTokenExpiresAt = now.Add(_jwtOptions.AccessTokenLifetime);
+    public (string token, DateTimeOffset expiration) IssueRefreshToken(
+        DateTimeOffset sessionExpiresAt)
+    {
+        var token = _refreshTokenProvider.GenerateRefreshToken();
 
-        // refresh token expiration
-        var refreshTokenExpiresAt = now.Add(_jwtOptions.RefreshTokenLifetime);
+        return (token, sessionExpiresAt);
+    }
+
+    public TokenResult IssueTokenObject(
+        ApplicationUser user,
+        Guid userSessionId,
+        DateTimeOffset refreshTokenExpiresAt)
+    {
+        var (accessToken, accessTokenExpiresAt) = IssueAccessToken(user, userSessionId);
+        var (refreshToken, refreshTokenExpiration) =
+            IssueRefreshToken(refreshTokenExpiresAt);
 
         return new TokenResult(
-            AccessToken: accessToken,
-            RefreshToken: refreshToken,
-            AccessTokenExpiresAt: accessTokenExpiresAt,
-            RefreshTokenExpiresAt: refreshTokenExpiresAt);
+            accessToken,
+            refreshToken,
+            accessTokenExpiresAt,
+            refreshTokenExpiration);
+    }
+
+    public ApplicationRefreshToken CreateRefreshTokenObject(
+        ApplicationUser user,
+        Guid userSessionId,
+        TokenResult tokenResult)
+    {
+        return new ApplicationRefreshToken
+        {
+            Id = Guid.NewGuid(),
+            Token = tokenResult.RefreshToken,
+            UserId = user.Id,
+            UserSessionId = userSessionId,
+            UserAgent = _userContext.UserAgent,
+            CreatedByIp = _userContext.IpAddress,
+            CreatedAt = _dateTimeService.UtcNow,
+            ExpiresAt = tokenResult.RefreshTokenExpiresAt,
+        };
     }
 }

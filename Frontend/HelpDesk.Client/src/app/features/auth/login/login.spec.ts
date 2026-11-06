@@ -56,6 +56,7 @@ describe('LoginComponent', () => {
     component.loginForm.setValue({
       username: 'person@example.com',
       password: 'correct-password',
+      staySignedIn: false,
     });
 
     component.onSubmit();
@@ -63,8 +64,25 @@ describe('LoginComponent', () => {
     expect(login).toHaveBeenCalledOnceWith({
       username: 'person@example.com',
       password: 'correct-password',
+      staySignedIn: false,
     });
     expect(setSession).toHaveBeenCalledOnceWith(userAccountData);
     expect(redirect).toHaveBeenCalledOnceWith();
+  });
+
+  it('passes the persistent-login selection to the authentication service', () => {
+    component.loginForm.setValue({
+      username: 'person@example.com',
+      password: 'correct-password',
+      staySignedIn: true,
+    });
+
+    component.onSubmit();
+
+    expect(login).toHaveBeenCalledOnceWith({
+      username: 'person@example.com',
+      password: 'correct-password',
+      staySignedIn: true,
+    });
   });
 });
