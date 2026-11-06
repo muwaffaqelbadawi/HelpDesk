@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.UserSession.SessionActivity;
+﻿using HelpDesk.src.Features.Auth.UserSession;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.Interfaces;
 

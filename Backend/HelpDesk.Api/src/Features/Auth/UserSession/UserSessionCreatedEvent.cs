@@ -1,8 +1,0 @@
-﻿using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
-using HelpDesk.src.Shared.Interfaces;
-
-namespace HelpDesk.src.Features.Auth.UserSession;
-
-public sealed record UserSessionCreatedEvent(
-    ApplicationUser User,
-    DateTimeOffset OccurredAt) : IDomainEvent;

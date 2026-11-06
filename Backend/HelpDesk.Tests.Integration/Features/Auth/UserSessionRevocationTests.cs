@@ -3,7 +3,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using HelpDesk.src.Features.Auth.Logout;
-using HelpDesk.src.Features.Auth.UserSession.SessionActivity;
+using HelpDesk.src.Features.Auth.UserSession;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Extensions;
 using HelpDesk.src.Infrastructure.HttpContexts;

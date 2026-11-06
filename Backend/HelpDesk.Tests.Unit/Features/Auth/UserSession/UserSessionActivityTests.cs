@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.UserSession.SessionActivity;
+﻿using HelpDesk.src.Features.Auth.UserSession;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Services.UserSession;
 using HelpDesk.src.Shared.Exceptions;

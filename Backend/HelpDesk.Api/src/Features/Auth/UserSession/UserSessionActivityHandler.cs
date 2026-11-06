@@ -4,7 +4,7 @@ using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace HelpDesk.src.Features.Auth.UserSession.SessionActivity;
+namespace HelpDesk.src.Features.Auth.UserSession;
 
 public sealed class UserSessionActivityHandler
     : ICommandHandler<UserSessionActivityCommand>
