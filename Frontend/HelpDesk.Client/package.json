@@ -43,7 +43,7 @@
     "@angular/build": "^20.3.42",
     "@angular/cli": "^20.3.42",
     "@angular/compiler-cli": "^20.3.35",
-    "@eslint/js": "^9.39.5",
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.3.4",
     "@types/jasmine": "~5.1.0",
     "angular-eslint": "20.7.0",
