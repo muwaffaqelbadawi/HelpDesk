@@ -16,7 +16,6 @@ import { differentPasswordValidator } from '@/shared/validators/different-passwo
 
 
 @Component({
-  selector: 'app-change-password',
   imports: [Card, InputText, ReactiveFormsModule, Button, TranslatePipe, Message],
 
   templateUrl: './change-password.html',

@@ -12,7 +12,6 @@ import { PostLoginRedirectService } from '../../../core/auth/services/post-login
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-login',
   imports: [
     Card,
     InputText,

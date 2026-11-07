@@ -44,3 +44,5 @@ updates:
         versions: [">=6.0.0"]
       - dependency-name: "typescript"
         versions: [">=6.0.0"]
+      - dependency-name: "zone.js"
+        versions: [">=0.15.1"]

@@ -3,7 +3,10 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": "f0bac825-7a30-4ce2-9542-19fcdb603c0a"
+    "analytics": "f0bac825-7a30-4ce2-9542-19fcdb603c0a",
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "schematics": {
@@ -24,14 +27,18 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"],
+            "styles": [
+              "src/styles.css"
+            ],
             "aot": true
           },
           "configurations": {
@@ -87,7 +94,9 @@
             "tsConfig": "tsconfig.spec.json",
             "buildTarget": "HelpDesk.Client:build:development",
             "runner": "karma",
-            "browsers": ["ChromeHeadlessNoSandbox"]
+            "browsers": [
+              "ChromeHeadlessNoSandbox"
+            ]
           },
           "configurations": {
             "production": {
@@ -96,6 +105,15 @@
             "development": {
               "buildTarget": "HelpDesk.Client:build:development"
             }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }

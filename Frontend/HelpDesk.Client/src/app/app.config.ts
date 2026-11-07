@@ -5,6 +5,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
+import { Location } from '@angular/common';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
@@ -22,8 +23,6 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
 import { AuthService } from './core/auth/services/auth.service';
 import { AuthStateService } from './core/auth/services/auth-state.service';
-import { catchError, EMPTY, tap } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const HelpDeskAura = definePreset(AuraBase, {
@@ -48,26 +47,14 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
 
     provideAppInitializer(() => {
-      const authService = inject(AuthService);
+      const initialPath = inject(Location).path().split(/[?#]/, 1)[0].replace(/\/+$/, '') || '/';
       const authState = inject(AuthStateService);
 
-      return authService.getCurrentUser().pipe(
-        tap((userAccountData) => {
-          authState.setSession(userAccountData);
-        }),
-        catchError((error: HttpErrorResponse) => {
-          if (error.status === 0) {
-            authState.setBackendUnavailable();
-          } else {
-            authState.clearSession();
-          }
-          return EMPTY;
-        }),
-        catchError(() => {
-          authState.clearSession();
-          return EMPTY;
-        }),
-      );
+      if (initialPath === '/auth/login') {
+        return;
+      }
+
+      return authState.initialize(inject(AuthService));
     }),
 
     provideTranslateService({

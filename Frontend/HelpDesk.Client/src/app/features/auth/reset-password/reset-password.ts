@@ -11,7 +11,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { passwordValidators } from '../../../shared/validators/password.validators';
 
 @Component({
-  selector: 'app-reset-password',
   imports: [CardModule, InputTextModule, ReactiveFormsModule, ButtonModule, TranslatePipe],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css',

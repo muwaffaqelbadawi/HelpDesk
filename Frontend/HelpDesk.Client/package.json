@@ -37,7 +37,7 @@
     "primeng": "^20.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.9.1",
-    "zone.js": "~0.16.3"
+    "zone.js": "~0.15.1"
   },
   "devDependencies": {
     "@angular/build": "^20.3.42",
@@ -46,8 +46,8 @@
     "@eslint/js": "^9.39.5",
     "@tailwindcss/postcss": "^4.3.4",
     "@types/jasmine": "~5.1.0",
-    "angular-eslint": "^20.7.0",
-    "eslint": "^9.39.5",
+    "angular-eslint": "20.7.0",
+    "eslint": "^9.39.1",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -57,7 +57,7 @@
     "postcss": "^8.5.32",
     "tailwindcss": "^4.3.4",
     "typescript": "~5.9.2",
-    "typescript-eslint": "^8.72.1"
+    "typescript-eslint": "8.46.4"
   },
   "allowScripts": {
     "esbuild@0.28.1": true,

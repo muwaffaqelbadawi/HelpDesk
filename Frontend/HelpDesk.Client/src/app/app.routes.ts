@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guards/auth-guard';
+import { guestGuard } from './core/auth/guards/guest.guard';
 
 export const routes: Routes = [
   {
     path: 'auth/login',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent),
   },
   {
@@ -60,35 +62,35 @@ export const routes: Routes = [
       {
         path: 'admin/users',
         loadComponent: () =>
-          import('./features/users/user-account/get-all/get-all-users').then(
+          import('./features/users/get-all/get-all-users').then(
             (m) => m.GetAllUsersComponent,
           ),
       },
       {
         path: 'admin/users/:id',
         loadComponent: () =>
-          import('./features/users/user-account/get-by-id/get-by-id-user').then(
+          import('./features/users/get-by-id/get-by-id-user').then(
             (m) => m.GetByIdUserComponent,
           ),
       },
       {
         path: 'admin/users/create',
         loadComponent: () =>
-          import('./features/users/user-account/create/create-user-account').then(
+          import('./features/users/create/create-user-account').then(
             (m) => m.CreateUserAccountComponent,
           ),
       },
       {
         path: 'admin/users/Update',
         loadComponent: () =>
-          import('./features/users/user-account/update/update-user-account').then(
+          import('./features/users/update/update-user-account').then(
             (m) => m.UpdateUserAccountComponent,
           ),
       },
       {
         path: 'admin/users/delete',
         loadComponent: () =>
-          import('./features/users/user-account/delete/delete-user-account').then(
+          import('./features/users/delete/delete-user-account').then(
             (m) => m.DeleteUserAccountComponent,
           ),
       },

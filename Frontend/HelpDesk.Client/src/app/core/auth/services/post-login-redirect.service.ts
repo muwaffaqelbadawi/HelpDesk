@@ -24,15 +24,19 @@ export class PostLoginRedirectService {
     }
 
     if (user.roles.includes('SuperAdmin')) {
+      console.log(user.roles);
       this.router.navigate(['/dashboard']);
       return;
     }
 
     if (user.roles.includes('Admin')) {
+      console.log(user.roles);
       this.router.navigate(['/dashboard']);
       return;
     }
 
-    // Future roles...
+    if (user.roles.includes('User')) {
+      this.router.navigate(['/home']);
+    }
   }
 }

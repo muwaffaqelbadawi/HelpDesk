@@ -6,12 +6,11 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AuthStateService } from '../../../../core/auth/services/auth-state.service';
-import { AuthService } from '../../../../core/auth/services/auth.service';
-import { LanguageService } from '../../../../core/localization/language.service';
+import { AuthStateService } from '../../../core/auth/services/auth-state.service';
+import { AuthService } from '../../../core/auth/services/auth.service';
+import { LanguageService } from '../../../core/localization/language.service';
 
 @Component({
-  selector: 'app-create-user-account',
   imports: [
     CardModule,
     InputTextModule,

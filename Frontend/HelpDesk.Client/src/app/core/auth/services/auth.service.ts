@@ -8,10 +8,10 @@ import { environment } from '../../../../environments/environment';
 import { changePasswordRequest } from '../../../features/auth/change-password/change-password-request';
 import { changePasswordResponse } from '../../../features/auth/change-password/change-password-response';
 import { RefreshTokenResponse } from '../../../features/auth/refresh-token/refresh-token-response';
-import { resetPasswordRequest } from '../../../features/auth/reset-password/reset-password-request';
 import { resetPasswordResponse } from '../../../features/auth/reset-password/reset-password-response';
-import { CreateUserAccountRequest } from '../../../features/users/user-account/create/create-user-account-request';
-import { CreateUserAccountResponse } from '../../../features/users/user-account/create/create-user-account-response';
+import { resetPasswordRequest } from '../../../features/auth/reset-password/reset-password-request';
+import { CreateUserAccountRequest } from '../../../features/users/create/create-user-account-request';
+import { CreateUserAccountResponse } from '../../../features/users/create/create-user-account-response';
 import { UserAccountData } from '../../../shared/responses/data/user-account-data';
 
 @Injectable({
@@ -22,15 +22,15 @@ export class AuthService {
 
   getCurrentUser(): Observable<UserAccountData> {
     return this.http
-      .get<ApiResponse<UserAccountData>>(
+      .get<ApiResponse<{ userAccountData: UserAccountData }>>(
         `${environment.apiUrl}/users/me`,
       )
       .pipe(
         map((response) => {
-          if (!response.data) {
+          if (!response.data?.userAccountData) {
             throw new Error('Current user response did not contain user account data.');
           }
-          return response.data;
+          return response.data?.userAccountData;
         }),
       );
   }

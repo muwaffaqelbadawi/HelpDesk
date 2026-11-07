@@ -4,7 +4,8 @@
       <label for="username">
         {{ 'AUTH.LOGIN.EMAIL' | translate }} / {{ 'AUTH.LOGIN.USERNAME' | translate }}
       </label>
-      <input id="email" type="email" pInputText formControlName="username" class="w-full" name="email" />
+      <input id="username" type="text" pInputText formControlName="username" class="w-full" name="username"
+        autocomplete="username" />
       @if (showUsernameError) {
       @if (requiredUsernameError) {
       <small class="block login-error"> Email or username is required. </small>
