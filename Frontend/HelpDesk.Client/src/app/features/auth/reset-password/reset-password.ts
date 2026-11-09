@@ -2,13 +2,13 @@ import { Component, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TranslatePipe } from '@ngx-translate/core';
-import { LanguageService } from '../../../core/localization/language.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { passwordValidators } from '../../../shared/validators/password.validators';
+import { RedirectService } from '@/core/auth/services/redirect.service';
 
 @Component({
   imports: [CardModule, InputTextModule, ReactiveFormsModule, ButtonModule, TranslatePipe],
@@ -17,11 +17,10 @@ import { passwordValidators } from '../../../shared/validators/password.validato
 })
 export class ResetPasswordComponent {
   private fb = inject(FormBuilder);
-  languageService = inject(LanguageService);
   private readonly authService = inject(AuthService);
   private readonly authState = inject(AuthStateService);
-  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly redirectService = inject(RedirectService);
 
   resetPasswordForm = this.fb.nonNullable.group({
     newPassword: ['', passwordValidators],
@@ -51,15 +50,20 @@ export class ResetPasswordComponent {
       })
       .subscribe({
         next: (response) => {
-          this.authState.setSession(response.userAccountData);
-          this.router.navigate(['/']);
+          console.log(response.time);
+          console.log(response.message);
+          console.log(response.data);
+
+          if (!response.data?.userAccountData) {
+            throw new Error('Reset password response did not contain user account data.');
+          }
+
+          this.authState.setSession(response.data.userAccountData);
+          this.redirectService.redirect();
         },
+
         error: (error) => this.handleResetPasswordError(error),
       });
-  }
-
-  get currentLanguage(): string | null {
-    return this.languageService.currentLanguage;
   }
 
   private handleResetPasswordError(error: unknown): void {

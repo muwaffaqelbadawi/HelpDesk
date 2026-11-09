@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.Logout;
+﻿using HelpDesk.src.Features.Auth.Logout.Current;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -53,23 +53,26 @@ public sealed class LogoutTests
             .Setup(x => x.UtcNow)
             .Returns(now);
 
-        // refresh token repository
-        refreshTokenRepository
-            .Setup(
-                x => x.RevokeAllAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<DateTimeOffset>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(1);
+        var sequence = new MockSequence();
 
         // session repository
         sessionRepository
-            .Setup(
-            x => x.RevokeAsync(
-                It.IsAny<Guid>(),
-                It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()))
+            .InSequence(sequence)
+            .Setup(x => x.RevokeAsync(
+                sessionId,
+                now,
+                CancellationToken.None))
             .ReturnsAsync(1);
+
+        // refresh token repository
+        refreshTokenRepository
+            .InSequence(sequence)
+            .Setup(x => x.RevokeAsync(
+                userId,
+                sessionId,
+                now,
+                CancellationToken.None))
+                .ReturnsAsync(1);
 
         // create new user account data
         var user = new ApplicationUser();
@@ -88,6 +91,23 @@ public sealed class LogoutTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(1, result.RevokedRefreshTokensCount);
+
+        sessionRepository.Verify(x => x.RevokeAsync(
+            sessionId,
+            now,
+            CancellationToken.None),
+            Times.Once);
+        refreshTokenRepository.Verify(x => x.RevokeAsync(
+            userId,
+            sessionId,
+            now,
+            CancellationToken.None),
+            Times.Once);
+        refreshTokenRepository.Verify(x => x.RevokeAllAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<DateTimeOffset>(),
+            It.IsAny<CancellationToken>()),
+            Times.Never);
 
         dispatcher.Verify(
            x => x.DispatchAsync(

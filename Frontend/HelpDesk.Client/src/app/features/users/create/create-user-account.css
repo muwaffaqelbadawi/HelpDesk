@@ -1,8 +1,59 @@
-.login-button {
+.create-user-account-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+  align-items: start;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.field label,
+.field>span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.create-user-account-button {
+  grid-column: 1 / -1;
+  justify-self: end;
+  width: 200px;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 900px) {
+  .create-user-account-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .create-user-account-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .create-user-account-button {
+    width: 100%;
+  }
+}
+
+:host ::ng-deep .p-card-body {
+  padding: 1rem;
+}
+
+:host ::ng-deep .p-card-content {
+  padding: 0;
+}
+
+.create-user-account-button {
   position: relative;
   top: 8px;
 }
 
-.login-error {
+.create-user-account-error {
   color: #dc2626;
 }

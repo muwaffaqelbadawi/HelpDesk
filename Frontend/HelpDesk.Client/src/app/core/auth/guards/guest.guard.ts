@@ -3,11 +3,11 @@ import { CanActivateFn } from '@angular/router';
 import { map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AuthStateService } from '../services/auth-state.service';
-import { PostLoginRedirectService } from '../services/post-login-redirect.service';
+import { RedirectService } from '../services/redirect.service';
 
 export const guestGuard: CanActivateFn = () => {
   const authState = inject(AuthStateService);
-  const postLoginRedirect = inject(PostLoginRedirectService);
+  const postLoginRedirect = inject(RedirectService);
 
   const allowGuest = () => {
     if (!authState.isAuthenticated()) {

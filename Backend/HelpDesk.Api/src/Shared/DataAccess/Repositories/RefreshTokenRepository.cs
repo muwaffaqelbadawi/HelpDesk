@@ -30,6 +30,36 @@ public sealed class RefreshTokenRepository(AppDbContext dbContext)
                     cancellationToken);
     }
 
+    public async Task<int> RevokeAllOtherAsync(
+        Guid userId,
+        Guid currentSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.RefreshTokens
+            .Where(x => x.UserId == userId
+                  && x.UserSessionId != currentSessionId
+                  && x.RevokedAt == null)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.RevokedAt, now),
+                    cancellationToken);
+    }
+
+    public async Task<int> RevokeAsync(
+        Guid userId,
+        Guid userSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.RefreshTokens
+            .Where(x => x.UserId == userId
+                && x.UserSessionId == userSessionId
+                && x.RevokedAt == null)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.RevokedAt, now),
+                    cancellationToken);
+    }
+
     public async Task<DateTimeOffset?> RotateAsync(
         Guid currentRefreshTokenId,
         ApplicationRefreshToken replacement,

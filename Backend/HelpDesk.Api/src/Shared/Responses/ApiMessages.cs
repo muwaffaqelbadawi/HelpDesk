@@ -17,6 +17,9 @@ public static class ApiMessages
     public const string ForgottenPasswordReset = "Your password has been reset successfully.";
     public const string Login = "User logged in successfully.";
     public const string Logout = "User logged out successfully.";
+    public const string LogoutAll = "User logged out from all devices successfully.";
+    public const string TerminateAllOtherUserSessions =
+        "All other sessions has terminated successfully";
     public const string TokenRefreshed = "Token refreshed successfully.";
     public const string PasswordReset = "Password reset successfully.";
     public const string TokenRevoked = "Token revoked successfully.";

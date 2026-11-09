@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { ApiResponse } from '../../http/models/api-response';
+import { ApiResponse } from '../../../shared/responses/api-response';
 import { LoginRequest } from '../../../features/auth/login/login-request';
 import { LoginResponse } from '../../../features/auth/login/login-response';
 import { environment } from '../../../../environments/environment';
@@ -12,7 +12,8 @@ import { resetPasswordResponse } from '../../../features/auth/reset-password/res
 import { resetPasswordRequest } from '../../../features/auth/reset-password/reset-password-request';
 import { CreateUserAccountRequest } from '../../../features/users/create/create-user-account-request';
 import { CreateUserAccountResponse } from '../../../features/users/create/create-user-account-response';
-import { UserAccountData } from '../../../shared/responses/data/user-account-data';
+import { UserAccountData } from '../../../shared/responses/user-account-data';
+import { LogoutResponse } from '@/features/auth/logout/logout-response';
 
 @Injectable({
   providedIn: 'root',
@@ -48,21 +49,16 @@ export class AuthService {
         }),
       );
   }
-  login(request: LoginRequest): Observable<LoginResponse> {
+
+  login(request: LoginRequest)
+    : Observable<ApiResponse<LoginResponse>> {
     return this.http
-      .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/auth/login`, {
+      .post<ApiResponse<LoginResponse>>(
+        `${environment.apiUrl}/auth/login`, {
         username: request.username,
         password: request.password,
         staySignedIn: request.staySignedIn,
-      })
-      .pipe(
-        map((response) => {
-          if (!response.data) {
-            throw new Error('Login response did not contain user account data.');
-          }
-          return response.data;
-        }),
-      );
+      });
   }
 
   refreshToken(): Observable<ApiResponse<RefreshTokenResponse>> {
@@ -72,33 +68,48 @@ export class AuthService {
     );
   }
 
-  resetPassword(request: resetPasswordRequest): Observable<resetPasswordResponse> {
+  resetPassword(request: resetPasswordRequest)
+    : Observable<ApiResponse<resetPasswordResponse>> {
     return this.http
-      .post<
-        ApiResponse<resetPasswordResponse>
-      >(`${environment.apiUrl}/auth/reset-password`, request)
-      .pipe(
-        map((response) => {
-          if (!response.data) {
-            throw new Error('reset password response did not contain user account data.');
-          }
-          return response.data;
-        }),
+      .post<ApiResponse<resetPasswordResponse>>(
+        `${environment.apiUrl}/auth/reset-password`,
+        request
       );
   }
 
-  changePassword(request: changePasswordRequest): Observable<changePasswordResponse> {
+  changePassword(request: changePasswordRequest)
+    : Observable<ApiResponse<changePasswordResponse>> {
     return this.http
-      .post<
-        ApiResponse<changePasswordResponse>
-      >(`${environment.apiUrl}/auth/change-password`, request)
-      .pipe(
-        map((response) => {
-          if (!response.data) {
-            throw new Error('change password response did not contain user account data.');
-          }
-          return response.data;
-        }),
+      .post<ApiResponse<changePasswordResponse>>(
+        `${environment.apiUrl}/auth/change-password`,
+        request
       );
   }
+
+  logout(): Observable<ApiResponse<LogoutResponse>> {
+    return this.http
+      .post<ApiResponse<LogoutResponse>>(
+        `${environment.apiUrl}/auth/logout`,
+        null
+      );
+  }
+
+
+
+
+
+  // changePassword(request: changePasswordRequest): Observable<changePasswordResponse> {
+  //   return this.http
+  //     .post<
+  //       ApiResponse<changePasswordResponse>
+  //     >(`${environment.apiUrl}/auth/change-password`, request)
+  //     .pipe(
+  //       map((response) => {
+  //         if (!response.data) {
+  //           throw new Error('change password response did not contain user account data.');
+  //         }
+  //         return response.data;
+  //       }),
+  //     );
+  // }
 }

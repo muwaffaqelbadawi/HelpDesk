@@ -7,8 +7,8 @@ import { environment } from '../environments/environment';
 import { authGuard } from './core/auth/guards/auth-guard';
 import { guestGuard } from './core/auth/guards/guest.guard';
 import { AuthStateService } from './core/auth/services/auth-state.service';
-import { PostLoginRedirectService } from './core/auth/services/post-login-redirect.service';
-import { UserAccountData } from './shared/responses/data/user-account-data';
+import { RedirectService } from './core/auth/services/redirect.service';
+import { UserAccountData } from './shared/responses/user-account-data';
 import { appConfig } from './app.config';
 
 describe('app initialization', () => {
@@ -92,7 +92,7 @@ describe('app initialization', () => {
     currentUserRequest.flush({ data: { userAccountData: user } });
     await donePromise;
 
-    const redirect = spyOn(TestBed.inject(PostLoginRedirectService), 'redirect');
+    const redirect = spyOn(TestBed.inject(RedirectService), 'redirect');
     const guardResult = TestBed.runInInjectionContext(() =>
       guestGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
     );

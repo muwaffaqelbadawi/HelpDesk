@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.src.Shared.DataAccess.Repositories;
 
-public sealed class UserSessionRepository(AppDbContext dbContext) : IUserSessionRepository
+public sealed class UserSessionRepository(AppDbContext dbContext)
+    : IUserSessionRepository
 {
     public async Task AddAsync(
         ApplicationUserSession userSession,
@@ -71,6 +72,7 @@ public sealed class UserSessionRepository(AppDbContext dbContext) : IUserSession
                 cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
+
         return updatedRows;
     }
 
@@ -83,6 +85,36 @@ public sealed class UserSessionRepository(AppDbContext dbContext) : IUserSession
             .Where(
                   x => x.Id == sessionId
                     && x.RevokedAt == null)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.RevokedAt, now),
+                    cancellationToken);
+    }
+
+    public async Task<int> RevokeAllAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.UserSessions
+            .Where(x => x.UserId == userId
+                && x.RevokedAt == null)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.RevokedAt, now),
+                    cancellationToken);
+    }
+
+    // Terminate all other sessions across all devices
+    // except the current one
+    public async Task<int> RevokeAllOtherAsync(
+        Guid userId,
+        Guid currentSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.UserSessions
+            .Where(x => x.UserId == userId
+                && x.Id != currentSessionId
+                && x.RevokedAt == null)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(x => x.RevokedAt, now),
                     cancellationToken);

@@ -13,6 +13,18 @@ public interface IRefreshTokenRepository
         DateTimeOffset now,
         CancellationToken cancellationToken);
 
+    Task<int> RevokeAllOtherAsync(
+        Guid userId,
+        Guid currentSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task<int> RevokeAsync(
+        Guid userId,
+        Guid userSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
     Task<DateTimeOffset?> RotateAsync(
         Guid currentRefreshTokenId,
         ApplicationRefreshToken replacement,

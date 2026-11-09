@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using HelpDesk.src.Features.Auth.Logout;
-using HelpDesk.src.Features.Auth.UserSession;
+using HelpDesk.src.Features.Auth.Logout.Current;
+using HelpDesk.src.Features.Auth.UserSession.Activity;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Extensions;
 using HelpDesk.src.Infrastructure.HttpContexts;
@@ -314,7 +314,9 @@ public sealed class UserSessionRevocationTests
         FutureRevocation
     }
 
-    private sealed class InMemoryUserSessionStore : IUserSessionReader, IUserSessionRepository
+    private sealed class InMemoryUserSessionStore
+        : IUserSessionReader,
+          IUserSessionRepository
     {
         private readonly object _sync = new();
         private readonly bool _pauseFirstActivityUpdate;
@@ -474,6 +476,25 @@ public sealed class UserSessionRevocationTests
             }
         }
 
+        public Task<int> RevokeAllAsync(
+            Guid userId,
+            DateTimeOffset now,
+            CancellationToken cancellationToken)
+        {
+            lock (_sync)
+            {
+                if (_session is null
+                    || _session.UserId != userId
+                    || _session.RevokedAt is not null)
+                {
+                    return Task.FromResult(0);
+                }
+
+                _session.RevokedAt = now;
+                return Task.FromResult(1);
+            }
+        }
+
         private static ApplicationUserSession Copy(ApplicationUserSession session)
         {
             return new ApplicationUserSession
@@ -486,6 +507,11 @@ public sealed class UserSessionRevocationTests
                 RevokedAt = session.RevokedAt,
                 IsPersistent = session.IsPersistent
             };
+        }
+
+        public Task<int> RevokeAllOtherAsync(Guid userId, Guid sessionId, DateTimeOffset now, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -515,7 +541,8 @@ public sealed class UserSessionRevocationTests
             Task.FromResult(false);
     }
 
-    private sealed class NoOpRefreshTokenRepository : IRefreshTokenRepository
+    private sealed class NoOpRefreshTokenRepository
+        : IRefreshTokenRepository
     {
         public Task AddAsync(
             ApplicationRefreshToken refreshToken,
@@ -524,6 +551,18 @@ public sealed class UserSessionRevocationTests
 
         public Task<int> RevokeAllAsync(
             Guid userId,
+            DateTimeOffset now,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(0);
+
+        public Task<int> RevokeAllOtherAsync(Guid userId, Guid currentSessionId, DateTimeOffset now, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> RevokeAsync(
+            Guid userId,
+            Guid userSessionId,
             DateTimeOffset now,
             CancellationToken cancellationToken) =>
             Task.FromResult(0);

@@ -91,9 +91,12 @@ public sealed class ChangePasswordHandler
             now,
             cancellationToken);
 
+
+        // Change the structure if the log
+
         // Success log
         _logger.LogInformation("User {UserId} changed password and received new tokens",
-            userId);
+           userId);
 
         // Get user
         var userAccountData = await _userReader.GetByIdAsync(

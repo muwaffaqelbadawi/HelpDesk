@@ -1,6 +1,6 @@
 using HelpDesk.src.Features.Auth.ChangePassword;
 using HelpDesk.src.Features.Auth.Login;
-using HelpDesk.src.Features.Auth.UserSession;
+using HelpDesk.src.Features.Auth.UserSession.Activity;
 using HelpDesk.src.Infrastructure.Behaviors;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Infrastructure.Middleware;

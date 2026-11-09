@@ -3,7 +3,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
-import { PostLoginRedirectService } from '../../../core/auth/services/post-login-redirect.service';
+import { RedirectService } from '../../../core/auth/services/redirect.service';
 import { LoginComponent } from './login';
 
 describe('LoginComponent', () => {
@@ -15,14 +15,16 @@ describe('LoginComponent', () => {
   beforeEach(async () => {
     login = jasmine.createSpy().and.returnValue(
       of({
-        userAccountData: {
-          userId: 'user-id',
-          userName: 'person',
-          email: 'person@example.com',
-          rowVersion: null,
-          mustResetPassword: false,
-          roles: ['Admin'],
-          employee: null,
+        data: {
+          userAccountData: {
+            userId: 'user-id',
+            userName: 'person',
+            email: 'person@example.com',
+            rowVersion: null,
+            mustResetPassword: false,
+            roles: ['Admin'],
+            employee: null,
+          },
         },
       }),
     );
@@ -35,7 +37,7 @@ describe('LoginComponent', () => {
         provideTranslateService(),
         { provide: AuthService, useValue: { login } },
         { provide: AuthStateService, useValue: { setSession } },
-        { provide: PostLoginRedirectService, useValue: { redirect } },
+        { provide: RedirectService, useValue: { redirect } },
       ],
     }).compileComponents();
 

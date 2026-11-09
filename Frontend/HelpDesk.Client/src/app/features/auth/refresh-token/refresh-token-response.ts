@@ -1,4 +1,4 @@
-import { UserAccountData } from '../../../shared/responses/data/user-account-data';
+import { UserAccountData } from '../../../shared/responses/user-account-data';
 
 export interface RefreshTokenResponse {
   userAccountData: UserAccountData;

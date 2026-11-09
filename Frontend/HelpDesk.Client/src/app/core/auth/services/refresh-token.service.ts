@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, finalize, map, shareReplay } from 'rxjs';
 import { AuthService } from './auth.service';
 import { RefreshTokenResponse } from '../../../features/auth/refresh-token/refresh-token-response';
-import { ApiResponse } from '../../http/models/api-response';
+import { ApiResponse } from '../../../shared/responses/api-response';
 
 @Injectable({
   providedIn: 'root',

@@ -5,10 +5,9 @@ import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { TranslatePipe } from '@ngx-translate/core';
-import { LanguageService } from '../../../core/localization/language.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
-import { PostLoginRedirectService } from '../../../core/auth/services/post-login-redirect.service';
+import { RedirectService } from '../../../core/auth/services/redirect.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -25,10 +24,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
-  readonly languageService = inject(LanguageService);
   private readonly authService = inject(AuthService);
   private readonly authState = inject(AuthStateService);
-  private readonly redirectService = inject(PostLoginRedirectService);
+  private readonly redirectService = inject(RedirectService);
 
   loginForm = this.fb.nonNullable.group({
     username: ['', [Validators.required]],
@@ -52,10 +50,19 @@ export class LoginComponent {
       })
       .subscribe({
         next: (response) => {
-          this.authState.setSession(response.userAccountData);
+          console.log(response.time);
+          console.log(response.message);
+          console.log(response.data);
+
+          if (!response.data?.userAccountData) {
+            throw new Error('Login response did not contain user account data.');
+          }
+
+          this.authState.setSession(response.data.userAccountData);
           this.redirectService.redirect();
         },
-        error: (error) => this.handleLoginError(error),
+
+        error: (error: unknown) => this.handleLoginError(error)
       });
   }
 
@@ -89,10 +96,6 @@ export class LoginComponent {
 
   get passwordMinLengthError(): boolean {
     return this.password.hasError('minlength');
-  }
-
-  get currentLanguage(): string | null {
-    return this.languageService.currentLanguage;
   }
 
   loginError = signal<string | null>(null);

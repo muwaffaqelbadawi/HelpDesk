@@ -2,8 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 import { catchError, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
 
-import { AuthSession } from '../models/auth-session';
-import { UserAccountData } from '../../../shared/responses/data/user-account-data';
+import { AuthSession } from '../user-session/auth-session';
+import { UserAccountData } from '../../../shared/responses/user-account-data';
 import type { AuthService } from './auth.service';
 
 @Injectable({

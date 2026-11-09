@@ -1,5 +1,5 @@
 ﻿using HelpDesk.src.Features.Auth.RefreshToken;
-using HelpDesk.src.Features.Auth.UserSession;
+using HelpDesk.src.Features.Auth.UserSession.Activity;
 
 namespace HelpDesk.src.Infrastructure.Logging;
 

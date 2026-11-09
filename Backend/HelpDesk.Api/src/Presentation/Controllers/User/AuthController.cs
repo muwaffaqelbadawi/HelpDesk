@@ -1,13 +1,15 @@
 ﻿using HelpDesk.src.Features.Auth.ChangePassword;
 using HelpDesk.src.Features.Auth.ForgotPassword;
 using HelpDesk.src.Features.Auth.Login;
-using HelpDesk.src.Features.Auth.Logout;
+using HelpDesk.src.Features.Auth.Logout.All;
+using HelpDesk.src.Features.Auth.Logout.Current;
 using HelpDesk.src.Features.Auth.Modules.GetMy;
 using HelpDesk.src.Features.Auth.Permissions.GetMy;
 using HelpDesk.src.Features.Auth.RefreshToken;
 using HelpDesk.src.Features.Auth.ResetPassword.User;
 using HelpDesk.src.Features.Auth.RevokeToken;
 using HelpDesk.src.Features.Auth.Roles.GetMy;
+using HelpDesk.src.Features.Auth.UserSession.TerminateAll;
 using HelpDesk.src.Infrastructure.Services.Jwt;
 using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
@@ -61,6 +63,45 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
 
         return Ok(new ApiResponse<LogoutResponse>(
             message: ApiMessages.Logout,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Logout-all
+    [HttpPost("logout-all")]
+    public async Task<IActionResult> LogoutAll(
+        [FromServices] ICommandHandler<LogoutAllCommand, LogoutAllResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new LogoutAllCommand();
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // Clear cookies
+        Response.ClearTokenCookies();
+
+        return Ok(new ApiResponse<LogoutAllResponse>(
+            message: ApiMessages.LogoutAll,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Terminate all user sessions
+    [HttpPost("terminate-all-other-user-sessions")]
+    public async Task<IActionResult> TerminateAllUserSessions(
+        [FromServices] ICommandHandler<TerminateAllUserSessionsCommand,
+            TerminateAllUserSessionsResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new TerminateAllUserSessionsCommand();
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // Clear cookies
+        Response.ClearTokenCookies();
+
+        return Ok(new ApiResponse<TerminateAllUserSessionsResponse>(
+            message: ApiMessages.TerminateAllOtherUserSessions,
             time: dateTimeService,
             data: result));
     }

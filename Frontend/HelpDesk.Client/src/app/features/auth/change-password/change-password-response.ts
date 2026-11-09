@@ -1,5 +1,5 @@
-import { TokenResult } from '../../../core/models/token-result';
-import { UserAccountData } from '../../../shared/responses/data/user-account-data';
+import { TokenResult } from '../../../core/auth/jwt/token-result';
+import { UserAccountData } from '../../../shared/responses/user-account-data';
 
 export interface changePasswordResponse {
   userAccountData: UserAccountData;

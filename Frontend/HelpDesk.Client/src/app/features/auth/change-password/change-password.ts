@@ -4,29 +4,26 @@ import { Card } from 'primeng/card';
 import { Message } from 'primeng/message';
 import { InputText } from 'primeng/inputtext';
 import { TranslatePipe } from '@ngx-translate/core';
-import { LanguageService } from '../../../core/localization/language.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
-import { Router } from '@angular/router';
 import { passwordValidators } from '../../../shared/validators/password.validators';
 import { passwordMatchValidator } from '@/shared/validators/password-match.validator';
 import { HttpErrorResponse } from '@angular/common/http';
 import { differentPasswordValidator } from '@/shared/validators/different-password.validator';
+import { RedirectService } from '@/core/auth/services/redirect.service';
 
 
 @Component({
   imports: [Card, InputText, ReactiveFormsModule, Button, TranslatePipe, Message],
-
   templateUrl: './change-password.html',
   styleUrl: './change-password.css',
 })
 export class ChangePasswordComponent {
   private fb = inject(FormBuilder);
-  languageService = inject(LanguageService);
   private readonly authService = inject(AuthService);
   private readonly authState = inject(AuthStateService);
-  private readonly router = inject(Router);
+  private readonly redirectService = inject(RedirectService);
 
   changePasswordForm = this.fb.nonNullable.group(
     {
@@ -49,7 +46,8 @@ export class ChangePasswordComponent {
       return;
     }
 
-    const { currentPassword, newPassword, confirmPassword } = this.changePasswordForm.getRawValue();
+    const { currentPassword, newPassword, confirmPassword }
+      = this.changePasswordForm.getRawValue();
 
     this.authService
       .changePassword({
@@ -59,15 +57,19 @@ export class ChangePasswordComponent {
       })
       .subscribe({
         next: (response) => {
-          this.authState.setSession(response.userAccountData);
-          this.router.navigate(['/']);
+          console.log(response.time);
+          console.log(response.message);
+          console.log(response.data);
+
+          if (!response.data?.userAccountData) {
+            throw new Error('Change password response did not contain user account data.');
+          }
+
+          this.authState.setSession(response.data.userAccountData);
+          this.redirectService.redirect();
         },
         error: (error) => this.handleChangePasswordError(error),
       });
-  }
-
-  get currentLanguage(): string | null {
-    return this.languageService.currentLanguage;
   }
 
   changePasswordError = signal<string | null>(null);

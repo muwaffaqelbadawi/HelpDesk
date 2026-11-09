@@ -1,13 +1,5 @@
-<div class="fixed top-4 right-4">
-  <button type="button" (click)="toggleLanguage()">
-    {{ languageService.currentLanguage === 'ar' ? 'English' : 'العربية' }}
-  </button>
-</div>
-
-<div class="flex justify-center items-center h-full">
-  @if (authState.backendUnavailable()) {
-  <app-backend-unavailable />
-  } @else {
-  <router-outlet />
-  }
+<div class="app-shell-grid">
+  <app-header />
+  <app-topbar />
+  <app-sidebar />
 </div>

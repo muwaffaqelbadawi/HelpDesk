@@ -18,4 +18,15 @@ public interface IUserSessionRepository
         Guid sessionId,
         DateTimeOffset now,
         CancellationToken cancellationToken);
+
+    Task<int> RevokeAllAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task<int> RevokeAllOtherAsync(
+        Guid userId,
+        Guid sessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
 }

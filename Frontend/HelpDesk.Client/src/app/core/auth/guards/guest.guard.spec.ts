@@ -4,10 +4,10 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { firstValueFrom, isObservable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { UserAccountData } from '../../../shared/responses/data/user-account-data';
+import { UserAccountData } from '../../../shared/responses/user-account-data';
 import { authInterceptor } from '../interceptors/auth.interceptor';
 import { AuthStateService } from '../services/auth-state.service';
-import { PostLoginRedirectService } from '../services/post-login-redirect.service';
+import { RedirectService } from '../services/redirect.service';
 import { guestGuard } from './guest.guard';
 import { routes } from '../../../app.routes';
 
@@ -36,7 +36,7 @@ describe('guestGuard', () => {
       providers: [
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
-        { provide: PostLoginRedirectService, useValue: { redirect } },
+        { provide: RedirectService, useValue: { redirect } },
       ],
     });
 

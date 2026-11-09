@@ -1,23 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { LanguageService } from './core/localization/language.service';
-import { BackendUnavailableComponent } from './core/backend-unavailable/backend-unavailable';
 import { AuthStateService } from './core/auth/services/auth-state.service';
+import { AppHeaderComponent } from './components/header/header';
+import { AppTopbarComponent } from './components/topbar/topar';
+import { AppSidebarComponent } from './components/sidebar/sidebar';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, BackendUnavailableComponent],
+  imports: [AppHeaderComponent, AppTopbarComponent, AppSidebarComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class AppComponent {
-  readonly languageService = inject(LanguageService);
   readonly authState = inject(AuthStateService);
-
-  get currentLanguage(): string | null {
-    return this.languageService.currentLanguage;
-  }
-
-  toggleLanguage(): void {
-    this.languageService.setLanguage(this.currentLanguage === 'ar' ? 'en' : 'ar');
-  }
 }

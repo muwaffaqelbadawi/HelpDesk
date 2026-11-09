@@ -1,88 +1,167 @@
-<form [formGroup]="createUserAccountForm" (ngSubmit)="onSubmit()">
-  <p-card [header]="'USERS.CREATE_USER_ACCOUNT.TITLE' | translate" [style]="{ width: '360px' }">
+<form
+  [formGroup]="createUserAccountForm"
+  (ngSubmit)="onSubmit()"
+  class="create-user-account-form"
+>
+  <p-card
+    [header]="'USERS.CREATE_USER_ACCOUNT.TITLE' | translate"
+    [style]="{ width: '100%', maxWidth: '900px' }"
+  >
+    <div class="create-user-account-grid">
+      <div class="field">
+        <label for="username">
+          {{ 'USERS.CREATE_USER_ACCOUNT.USERNAME' | translate }}
+        </label>
+        <input
+          id="username"
+          type="text"
+          pInputText
+          formControlName="username"
+          class="w-full"
+          name="username"
+          autocomplete="username"
+        />
+      </div>
 
-    <div class="field">
-      <label for="username">
-        {{ 'USERS.CREATE_USER_ACCOUNT.USERNAME' | translate }}
-      </label>
-      <input id="username" type="text" pInputText formControlName="username" class="w-full" name="username"
-        autocomplete="username" />
-    </div>
+      <div class="field">
+        <label for="email">
+          {{ 'USERS.CREATE_USER_ACCOUNT.EMAIL' | translate }}
+        </label>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          formControlName="email"
+          class="w-full"
+          name="email"
+          autocomplete="email"
+        />
+        @if (showEmailError) {
+        @if (requiredEmailError) {
+        <small class="block create-user-account-error">
+          Email is required.
+        </small>
+        } @else if (emailError) {
+        <small class="block create-user-account-error">
+          Email should be valid.
+        </small>
+        }
+        }
+      </div>
 
-    <div class="field">
-      <label for="email">
-        {{ 'USERS.CREATE_USER_ACCOUNT.EMAIL' | translate }}
-      </label>
-      <input id="email" type="email" pInputText formControlName="email" class="w-full" name="email"
-        autocomplete="email" />
-      @if (showEmailError) {
-      @if (requiredEmailError) {
-      <small class="block CREATE_USER_ACCOUNT-error"> Email is required. </small>
-      } @else if (emailError) {
-      <small class="block CREATE_USER_ACCOUNT-error"> Email should be valid. </small>
-      }
-      }
-    </div>
+      <div class="field">
+        <label for="phoneNumber">
+          {{ 'USERS.CREATE_USER_ACCOUNT.PHONE_NUMBER' | translate }}
+        </label>
+        <input
+          id="phoneNumber"
+          type="tel"
+          pInputText
+          formControlName="phoneNumber"
+          class="w-full"
+          name="phoneNumber"
+          autocomplete="tel"
+        />
+      </div>
 
-    <div class="field">
-      <label for="phoneNumber">
-        {{ 'USERS.CREATE_USER_ACCOUNT.PHONE_NUMBER' | translate }}
-      </label>
-      <input id="phoneNumber" type="tel" pInputText formControlName="phoneNumber" class="w-full" name="phoneNumber"
-        autocomplete="tel" />
-    </div>
+      <div class="field">
+        <label for="fullEnName">
+          {{ 'USERS.CREATE_USER_ACCOUNT.FULL_EN_NAME' | translate }}
+        </label>
+        <input
+          id="fullEnName"
+          type="text"
+          pInputText
+          formControlName="fullEnName"
+          class="w-full"
+          name="fullEnName"
+          autocomplete="name"
+        />
+      </div>
 
-    <div class="field">
-      <label for="fullEnName">
-        {{ 'USERS.CREATE_USER_ACCOUNT.FULL_EN_NAME' | translate }}
-      </label>
-      <input id="fullEnName" type="text" pInputText formControlName="fullEnName" class="w-full" name="fullEnName"
-        autocomplete="name" />
-    </div>
+      <div class="field">
+        <label for="fullArName">
+          {{ 'USERS.CREATE_USER_ACCOUNT.FULL_AR_NAME' | translate }}
+        </label>
+        <input
+          id="fullArName"
+          type="text"
+          pInputText
+          formControlName="fullArName"
+          class="w-full"
+          name="fullArName"
+          autocomplete="off"
+        />
+      </div>
 
-    <div class="field">
-      <label for="fullArName">
-        {{ 'USERS.CREATE_USER_ACCOUNT.FULL_AR_NAME' | translate }}
-      </label>
-      <input id="fullArName" type="text" pInputText formControlName="fullArName" class="w-full" name="fullArName"
-        autocomplete="off" />
-    </div>
+      <div class="field">
+        <label for="jobTitle">
+          {{ 'USERS.CREATE_USER_ACCOUNT.JOB_TITLE' | translate }}
+        </label>
+        <input
+          id="jobTitle"
+          type="text"
+          pInputText
+          formControlName="jobTitle"
+          class="w-full"
+          name="jobTitle"
+          autocomplete="organization-title"
+        />
+      </div>
 
-    <div class="field">
-      <label for="jobTitle">
-        {{ 'USERS.CREATE_USER_ACCOUNT.JOB_TITLE' | translate }}
-      </label>
-      <input id="jobTitle" type="text" pInputText formControlName="jobTitle" class="w-full" name="jobTitle"
-        autocomplete="job-title" />
-    </div>
+      <div class="field">
+        <span id="department-label">
+          {{ 'USERS.CREATE_USER_ACCOUNT.DEPARTMENT' | translate }}
+        </span>
+        <p-select
+          inputId="departmentId"
+          ariaLabelledBy="department-label"
+          formControlName="departmentId"
+          [options]="departments"
+          optionLabel="name"
+          optionValue="id"
+          class="w-full"
+        />
+      </div>
 
-    <div class="field">
-      <label for="departmentId">
-        {{ 'USERS.CREATE_USER_ACCOUNT.DEPARTMENT' | translate }}
-      </label>
-      <p-select id="departmentId" formControlName="departmentId" [options]="departments" optionLabel="name"
-        optionValue="id" class="w-full" />
-    </div>
+      <div class="field">
+        <span id="sector-label">
+          {{ 'USERS.CREATE_USER_ACCOUNT.SECTOR' | translate }}
+        </span>
+        <p-select
+          inputId="sectorId"
+          ariaLabelledBy="sector-label"
+          formControlName="sectorId"
+          [options]="sectors"
+          optionLabel="name"
+          optionValue="id"
+          class="w-full"
+        />
+      </div>
 
-    <div class="field">
-      <label for="sectorId">
-        {{ 'USERS.CREATE_USER_ACCOUNT.SECTOR' | translate }}
-      </label>
-      <p-select id="sectorId" formControlName="sectorId" [options]="sectors" optionLabel="name" optionValue="id"
-        class="w-full" />
-    </div>
+      <div class="field">
+        <span id="country-label">
+          {{ 'USERS.CREATE_USER_ACCOUNT.COUNTRY' | translate }}
+        </span>
+        <p-select
+          inputId="countryId"
+          ariaLabelledBy="country-label"
+          formControlName="countryId"
+          [options]="countries"
+          optionLabel="name"
+          optionValue="id"
+          class="w-full"
+        />
+      </div>
 
-    <div class="field">
-      <label for="countryId">
-        {{ 'USERS.CREATE_USER_ACCOUNT.COUNTRY' | translate }}
-      </label>
-      <p-select id="countryId" formControlName="countryId" [options]="countries" optionLabel="name" optionValue="id"
-        class="w-full" />
-    </div>
-
-    <div class="create-user-account-button">
-      <p-button type="submit" [label]="'USERS.CREATE_USER_ACCOUNT.SUBMIT' | translate" styleClass="w-full"
-        [disabled]="createUserAccountForm.invalid" />
+      <div class="create-user-account-button">
+        <p-button
+          type="submit"
+          [label]="'USERS.CREATE_USER_ACCOUNT.SUBMIT' | translate"
+          styleClass="w-full"
+          [disabled]="createUserAccountForm.invalid"
+        />
+      </div>
     </div>
   </p-card>
 </form>

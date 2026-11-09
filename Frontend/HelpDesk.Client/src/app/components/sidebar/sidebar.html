@@ -1,0 +1,14 @@
+<div class="sidebar-grid">
+  <aside>
+    <!-- Sidebar navigation -->
+  </aside>
+
+
+  <main>
+    @if (authState.backendUnavailable()) {
+    <app-backend-unavailable />
+    } @else {
+    <router-outlet />
+    }
+  </main>
+</div>

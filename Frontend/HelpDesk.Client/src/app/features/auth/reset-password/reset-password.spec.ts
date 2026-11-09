@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
-import { provideTranslateService } from '@ngx-translate/core';
-
+import { ActivatedRoute } from '@angular/router';
 import { ResetPasswordComponent } from './reset-password';
+import { RedirectService } from '@/core/auth/services/redirect.service';
+import { AuthStateService } from '@/core/auth/services/auth-state.service';
+import { AuthService } from '@/core/auth/services/auth.service';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
@@ -14,9 +14,10 @@ describe('ResetPasswordComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResetPasswordComponent],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideRouter([]),
+        { provide: AuthService, useValue: {} },
+        { provide: AuthStateService, useValue: {} },
+        { provide: ActivatedRoute, useValue: {} },
+        { provide: RedirectService, useValue: {} },
         provideTranslateService(),
       ],
     }).compileComponents();
