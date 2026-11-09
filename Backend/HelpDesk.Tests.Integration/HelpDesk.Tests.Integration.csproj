@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.14" />
     <PackageReference Include="Microsoft.Testing.Platform" Version="2.5.2" />
     <PackageReference Include="Microsoft.Testing.Platform.MSBuild" Version="2.5.2" />
-    <PackageReference Include="xunit.v3" Version="4.0.2" />
+    <PackageReference Include="xunit.v3" Version="4.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../HelpDesk.Api/HelpDesk.Api.csproj" />
