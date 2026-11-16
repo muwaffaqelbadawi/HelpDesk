@@ -2,13 +2,9 @@
 
 public sealed class AuthorizationFailedException : ForbiddenException
 {
-    public AuthorizationFailedException()
-        : base("Unauthorized user.")
-    {
-    }
-
-    public AuthorizationFailedException(string message)
-        : base(message)
+    public AuthorizationFailedException(Guid userId, Guid resourceId)
+        : base(
+            message: $"User '{userId}' is not authorized to access resource '{resourceId}'.")
     {
     }
 

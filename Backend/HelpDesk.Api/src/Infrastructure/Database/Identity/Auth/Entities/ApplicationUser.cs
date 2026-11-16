@@ -5,11 +5,6 @@ namespace HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 
 public sealed class ApplicationUser : IdentityUser<Guid>
 {
-    // Auth.Users
-
-    // Domain link
-
-
     public Guid StatusId { get; set; }
     public ApplicationUserStatus Status { get; set; } = null!;
 

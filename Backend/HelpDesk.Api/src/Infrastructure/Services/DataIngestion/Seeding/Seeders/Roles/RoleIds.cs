@@ -8,6 +8,9 @@ public static class RoleIds
     public static readonly Guid Admin =
         new("3274B5DB-C03F-4BB4-AA1E-F6EEED79B890");
 
+    public static readonly Guid Customer =
+        new("D9C66687-3F3D-41A4-BF5E-1B2CB3F5B878");
+
     public static readonly Guid Support =
         new("F6933762-B9E9-403A-BD6E-23A7EA3101F4");
 

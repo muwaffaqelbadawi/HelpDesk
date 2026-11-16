@@ -30,9 +30,18 @@ public sealed class TicketRepository(AppDbContext dbContext) : ITicketRepository
 
     public async Task AddAsync(
         Ticket ticket,
+        TicketComment comment,
+        List<TicketAttachment> attachments,
         CancellationToken cancellationToken)
     {
+        // add ticket
         dbContext.Tickets.Add(ticket);
+
+        // add ticket comment
+        dbContext.TicketComments.Add(comment);
+
+        // add ticket comment attachments
+        dbContext.TicketAttachments.AddRange(attachments);
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }

@@ -2,4 +2,6 @@
 
 public sealed record CreateTicketCommand(
     string TicketTitle,
-    string TicketSubject);
+    string TicketSubject,
+    string CommentContent,
+    ICollection<IFormFile> Attachments);

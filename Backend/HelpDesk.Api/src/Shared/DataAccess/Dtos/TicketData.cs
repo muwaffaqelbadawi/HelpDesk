@@ -9,6 +9,7 @@ public sealed record TicketData
     public string TicketPriority { get; init; } = null!;
     public string TicketStatus { get; init; } = null!;
     public Guid CreatedById { get; init; }
+    public string CreatedByName { get; init; } = null!;
     public DateTimeOffset CreatedAt { get; init; }
     public byte[]? TicketRowVersion { get; init; }
 };

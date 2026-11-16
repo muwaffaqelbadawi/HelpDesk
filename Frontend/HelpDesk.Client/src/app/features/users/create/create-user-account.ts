@@ -1,22 +1,22 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
-import { Router } from '@angular/router';
+import { Card } from 'primeng/card';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Select } from 'primeng/select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
-import { AuthService } from '../../../core/auth/services/auth.service';
-import { LanguageService } from '../../../core/localization/language.service';
+import { RedirectService } from '@/core/auth/services/redirect.service';
+import { UserService } from '@/core/business/services/user.service';
 
 @Component({
+  selector: 'app-create-user-account',
   imports: [
-    CardModule,
-    InputTextModule,
+    Card,
+    InputText,
+    Button,
+    Select,
     ReactiveFormsModule,
-    ButtonModule,
-    SelectModule,
     TranslatePipe,
   ],
   templateUrl: './create-user-account.html',
@@ -24,10 +24,9 @@ import { LanguageService } from '../../../core/localization/language.service';
 })
 export class CreateUserAccountComponent {
   private fb = inject(FormBuilder);
-  readonly languageService = inject(LanguageService);
-  private readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
   private readonly authState = inject(AuthStateService);
-  private readonly router = inject(Router);
+  private readonly redirectService = inject(RedirectService);
 
   createUserAccountForm = this.fb.nonNullable.group({
     username: ['', [Validators.required]],
@@ -38,7 +37,7 @@ export class CreateUserAccountComponent {
     jobTitle: ['', [Validators.required]],
     departmentId: ['', [Validators.required]],
     sectorId: ['', [Validators.required]],
-    countryId: ['', Validators.required],
+    countryId: ['', [Validators.required]],
   });
 
   departments = [];
@@ -51,13 +50,29 @@ export class CreateUserAccountComponent {
       return;
     }
 
-    this.authService.createUserAccount(this.createUserAccountForm.getRawValue()).subscribe({
-      next: (response) => {
-        this.authState.setSession(response.userAccountData);
-        this.router.navigate(['/']);
-      },
-      error: (error) => this.handleCreateUserAccountError(error),
-    });
+    this.userService
+      .createUserAccount(
+        this.createUserAccountForm
+          .getRawValue())
+      .subscribe({
+        next: (response) => {
+          console.log(response.time);
+          console.log(response.message);
+          console.log(response.data);
+
+          if (!response.data?.userAccountData) {
+            this.handleCreateUserAccountError(
+              new Error('Create user account response did not contain user account data.')
+            );
+            return;
+          }
+
+          this.authState.setSession(response.data.userAccountData);
+          this.redirectService.redirect();
+        },
+
+        error: (error) => this.handleCreateUserAccountError(error),
+      });
   }
 
   get email() {
@@ -77,6 +92,6 @@ export class CreateUserAccountComponent {
   }
 
   private handleCreateUserAccountError(error: unknown): void {
-    console.error('createUserAccount failed', error);
+    console.error('create user account failed', error);
   }
 }

@@ -8,11 +8,11 @@ public interface IRolesReader
         Guid roleId,
         CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<string>> GetUserRolesAsync(
+    Task<IReadOnlyCollection<string>> GetUserRoleAsync(
         Guid userId,
         CancellationToken cancellationToken);
 
-    Task<ApplicationUserRole?> GetAssignedRolesAsync(
+    Task<ApplicationUserRole?> GetAssignedRoleAsync(
         Guid userId,
         Guid roleId,
         CancellationToken cancellationToken);

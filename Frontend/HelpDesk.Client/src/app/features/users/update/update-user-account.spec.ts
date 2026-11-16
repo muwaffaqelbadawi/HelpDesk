@@ -3,10 +3,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UpdateUserAccountComponent } from './update-user-account';
 
 describe('UpdateUserAccountComponent', () => {
+
+
   let component: UpdateUserAccountComponent;
   let fixture: ComponentFixture<UpdateUserAccountComponent>;
 
   beforeEach(async () => {
+
+
+
     await TestBed.configureTestingModule({
       imports: [UpdateUserAccountComponent],
     }).compileComponents();
@@ -16,7 +21,9 @@ describe('UpdateUserAccountComponent', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('should create UpdateUserAccount component', () => {
     expect(component).toBeTruthy();
   });
+
+
 });

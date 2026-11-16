@@ -18,7 +18,7 @@ public sealed class RolesReader(AppDbContext dbContext) : IRolesReader
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(
+    public async Task<IReadOnlyCollection<string>> GetUserRoleAsync(
         Guid userId,
         CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ public sealed class RolesReader(AppDbContext dbContext) : IRolesReader
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<ApplicationUserRole?> GetAssignedRolesAsync(
+    public async Task<ApplicationUserRole?> GetAssignedRoleAsync(
         Guid userId,
         Guid roleId,
         CancellationToken cancellationToken)

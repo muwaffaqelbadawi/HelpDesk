@@ -26,7 +26,7 @@ public sealed class GetAllRolesTests
 
         // Mock roles reader to return the expected roles data
         rolesReader
-            .Setup(x => x.GetUserRolesAsync(
+            .Setup(x => x.GetUserRoleAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedRoles);
@@ -48,7 +48,7 @@ public sealed class GetAllRolesTests
         Assert.Equal(response, result);
 
         rolesReader.Verify(
-            x => x.GetUserRolesAsync(
+            x => x.GetUserRoleAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);

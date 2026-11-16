@@ -72,7 +72,24 @@ export const routes: Routes = [
           import('./features/users/create/create-user-account')
             .then((m) => m.CreateUserAccountComponent),
       },
-
+      {
+        path: 'admin/users/:id',
+        loadComponent: () =>
+          import('./features/users/get-by-id/get-by-id-user').then(
+            (m) => m.GetByIdUserComponent),
+      },
+      {
+        path: 'admin/users/:id/update',
+        loadComponent: () =>
+          import('./features/users/update/update-user-account')
+            .then((m) => m.UpdateUserAccountComponent),
+      },
+      {
+        path: 'admin/users/:id/delete',
+        loadComponent: () =>
+          import('./features/users/delete/delete-user-account')
+            .then((m) => m.DeleteUserAccountComponent),
+      },
       {
         path: 'admin/tickets',
         loadComponent: () =>
@@ -85,52 +102,34 @@ export const routes: Routes = [
           import('./features/tickets/create/create-ticket').then((m) => m.CreateTicketComponent),
       },
       {
+        path: 'admin/tickets/:id',
+        loadComponent: () =>
+          import('./features/tickets/get-by-id/get-by-id-ticket')
+            .then((m) => m.GetByIdTicketComponent),
+      },
+      {
         path: 'tickets',
         loadComponent: () =>
-          import('./features/tickets/get-owned/get-my-tickets').then(
+          import('./features/tickets/get-my/get-my-tickets').then(
             (m) => m.GetMyTicketsComponent),
       },
       {
-        path: 'admin/tickets/assign/:id',
+        path: 'admin/tickets/:id/assign',
         loadComponent: () =>
           import('./features/tickets/assign/assign-ticket')
             .then((m) => m.AssignTicketComponent),
       },
       {
-        path: 'admin/tickets/update/:id',
+        path: 'tickets/:id/update',
         loadComponent: () =>
           import('./features/tickets/update/update-ticket')
             .then((m) => m.UpdateTicketComponent),
       },
       {
-        path: 'admin/tickets/delete/:id',
+        path: 'tickets/:id/delete',
         loadComponent: () =>
           import('./features/tickets/delete/delete-ticket')
             .then((m) => m.DeleteTicketComponent),
-      },
-      {
-        path: 'admin/users/:id',
-        loadComponent: () =>
-          import('./features/users/get-by-id/get-by-id-user').then(
-            (m) => m.GetByIdUserComponent),
-      },
-      {
-        path: 'admin/users/update/:id',
-        loadComponent: () =>
-          import('./features/users/update/update-user-account')
-            .then((m) => m.UpdateUserAccountComponent),
-      },
-      {
-        path: 'admin/users/delete/:id',
-        loadComponent: () =>
-          import('./features/users/delete/delete-user-account')
-            .then((m) => m.DeleteUserAccountComponent),
-      },
-      {
-        path: 'admin/tickets/:id',
-        loadComponent: () =>
-          import('./features/tickets/get-by-id/get-by-id-ticket')
-            .then((m) => m.GetByIdTicketComponent),
       },
     ],
   },

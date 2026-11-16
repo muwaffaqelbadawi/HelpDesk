@@ -34,7 +34,6 @@ export class ResetPasswordComponent {
 
     const { newPassword } = this.resetPasswordForm.getRawValue();
 
-    // Read from query parameter
     const userId = this.route.snapshot.queryParamMap.get('userId');
     const resetToken = this.route.snapshot.queryParamMap.get('token');
 

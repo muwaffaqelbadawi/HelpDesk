@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
+import { TicketData } from "@/core/business/model/ticket-data";
+import { PagedResult } from "@/core/business/pagination/paged-result";
 
-@Component({
-  imports: [],
-  templateUrl: './get-all-tickets.html',
-  styleUrl: './get-all-tickets.css',
-})
-export class GetAllTicketsComponent { }
+export interface GetAllTicketsResponse {
+  pagedResult: PagedResult<TicketData>;
+}

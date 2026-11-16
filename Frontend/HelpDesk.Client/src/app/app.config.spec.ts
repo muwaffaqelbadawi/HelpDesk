@@ -8,7 +8,7 @@ import { authGuard } from './core/auth/guards/auth-guard';
 import { guestGuard } from './core/auth/guards/guest.guard';
 import { AuthStateService } from './core/auth/services/auth-state.service';
 import { RedirectService } from './core/auth/services/redirect.service';
-import { UserAccountData } from './shared/responses/user-account-data';
+import { UserAccountData } from './core/business/model/user-account-data';
 import { appConfig } from './app.config';
 
 describe('app initialization', () => {

@@ -17,12 +17,17 @@ public static class PermissionIds
     public static readonly Guid Assign =
         new("F881D759-779E-4BED-8B20-8F68181B55C6");
 
+    // For "Support" role
+    public static readonly Guid Assigned =
+        new("CECFA831-18ED-497D-8D88-55DA695004D0");
+
     public static IReadOnlyCollection<Guid> All { get; } =
     [
         View,
         Create,
         Update,
         Delete,
-        Assign
+        Assign,
+        Assigned
     ];
 }

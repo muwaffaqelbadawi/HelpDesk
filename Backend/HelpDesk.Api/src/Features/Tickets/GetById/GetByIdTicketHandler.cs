@@ -5,7 +5,7 @@ namespace HelpDesk.src.Features.Tickets.GetById;
 public sealed class GetByIdTicketHandler(
     ITicketReader ticketReader,
     ILogger<GetByIdTicketHandler> logger)
-    : IQueryHandler<GetByIdTicketQuery, GetByIdTicketResponse>
+        : IQueryHandler<GetByIdTicketQuery, GetByIdTicketResponse>
 {
     public async Task<GetByIdTicketResponse> HandleAsync(
         GetByIdTicketQuery query,

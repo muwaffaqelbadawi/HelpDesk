@@ -37,5 +37,11 @@ public static class PermissionsLookup
             Name: "Assign",
             Code: "ASSIGN",
             SortOrder: 5),
+
+        new(
+            Id: PermissionIds.Assigned,
+            Name: "Assigned",
+            Code: "ASSIGNED",
+            SortOrder: 6),
     ];
 }

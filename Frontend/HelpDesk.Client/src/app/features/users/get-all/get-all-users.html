@@ -1,0 +1,22 @@
+<div class="get-all-users-container">
+  <div class="get-all-users-button">
+    <p-button
+      type="button"
+      [label]="'userS.GET_ALL_userS' | translate"
+      styleClass="w-full"
+      (onClick)="onGetAll()"
+    />
+  </div>
+
+  <p-table
+    [value]="users"
+    [paginator]="true"
+    [lazy]="true"
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    [loading]="loading"
+  >
+    <!-- Table header and body go here -->
+  </p-table>
+</div>

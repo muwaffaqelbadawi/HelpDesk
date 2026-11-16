@@ -12,6 +12,11 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeuix/themes';
+import { routes } from './app.routes';
+import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
+import { AuthStateService } from './core/auth/services/auth-state.service';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { UserService } from './core/business/services/user.service';
 import AuraBase from '@primeuix/themes/aura/base';
 import AuraButton from '@primeuix/themes/aura/button';
 import AuraCard from '@primeuix/themes/aura/card';
@@ -19,11 +24,6 @@ import AuraInputText from '@primeuix/themes/aura/inputtext';
 import AuraMessage from '@primeuix/themes/aura/message';
 import AuraRipple from '@primeuix/themes/aura/ripple';
 import AuraSelect from '@primeuix/themes/aura/select';
-import { routes } from './app.routes';
-import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
-import { AuthService } from './core/auth/services/auth.service';
-import { AuthStateService } from './core/auth/services/auth-state.service';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const HelpDeskAura = definePreset(AuraBase, {
   components: {
@@ -39,22 +39,22 @@ const HelpDeskAura = definePreset(AuraBase, {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimationsAsync(),
-
     provideZoneChangeDetection({ eventCoalescing: true }),
-
     provideRouter(routes),
-
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideBrowserGlobalErrorListeners(),
 
     provideAppInitializer(() => {
-      const initialPath = inject(Location).path().split(/[?#]/, 1)[0].replace(/\/+$/, '') || '/';
+      const initialPath = inject(Location)
+        .path()
+        .split(/[?#]/, 1)[0].replace(/\/+$/, '') || '/';
       const authState = inject(AuthStateService);
 
       if (initialPath === '/auth/login') {
         return;
       }
 
-      return authState.initialize(inject(AuthService));
+      return authState.initialize(inject(UserService));
     }),
 
     provideTranslateService({
@@ -65,8 +65,6 @@ export const appConfig: ApplicationConfig = {
       fallbackLang: 'en',
       lang: 'en',
     }),
-
-    provideBrowserGlobalErrorListeners(),
 
     providePrimeNG({
       ripple: true,

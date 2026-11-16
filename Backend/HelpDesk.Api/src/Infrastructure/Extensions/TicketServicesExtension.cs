@@ -15,6 +15,9 @@ public static class TicketServicesExtension
         // TicketReader
         services.AddScoped<ITicketReader, TicketReader>();
 
+        // TicketAttachmentReader
+        services.AddScoped<ITicketAttachmentReader, TicketAttachmentReader>();
+
         return services;
     }
 }

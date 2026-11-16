@@ -44,6 +44,12 @@ public partial class AppDbContext
     // Business.TicketPriorities
     public DbSet<TicketPriority> TicketPriorities { get; set; } = null!;
 
+    // Business.TicketComments
+    public DbSet<TicketComment> TicketComments { get; set; } = null!;
+
+    // Business.TicketAttachments
+    public DbSet<TicketAttachment> TicketAttachments { get; set; } = null!;
+
     // Business.Histories
     public DbSet<TicketHistory> TicketHistories { get; set; } = null!;
 
@@ -290,6 +296,9 @@ public partial class AppDbContext
             entity.HasIndex(e => e.Number)
                 .IsUnique();
 
+            // UserId (Property)
+            entity.Property(e => e.UserId);
+
             // CreatedAt (Property)
             entity.Property(e => e.CreatedAt);
 
@@ -298,6 +307,12 @@ public partial class AppDbContext
 
             // DeletedAt (Property)
             entity.Property(e => e.DeletedAt);
+
+            // User (Relation)
+            entity.HasOne(e => e.User)
+                .WithOne(e => e.Employee)
+                .HasForeignKey<Employee>(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // CreatedBy (Relation)
             entity.HasOne(e => e.CreatedBy)
@@ -315,12 +330,6 @@ public partial class AppDbContext
             entity.HasOne(e => e.DeletedBy)
                 .WithMany(e => e.DeletedEmployees)
                 .HasForeignKey(e => e.DeletedById)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // User (Relation)
-            entity.HasOne(e => e.User)
-                .WithOne(e => e.Employee)
-                .HasForeignKey<Employee>(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Branch (Relation)
@@ -375,7 +384,7 @@ public partial class AppDbContext
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false);
 
-            // Employee Query filter (IsDeleted)
+            // Employee (Query filter)
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
 
@@ -454,6 +463,12 @@ public partial class AppDbContext
             entity.HasOne(e => e.Priority)
                 .WithMany()
                 .HasForeignKey(e => e.PriorityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Department (Relation)
+            entity.HasOne(e => e.Department)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(e => e.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // CreatedBy (Relation)
@@ -605,6 +620,153 @@ public partial class AppDbContext
                 .HasDefaultValue(0);
         });
 
+        // Business.TicketComments
+        modelBuilder.Entity<TicketComment>(entity =>
+        {
+            // Schema
+            entity.ToTable("TicketComments", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // Content
+            entity.Property(e => e.Content)
+                .IsRequired()
+                .HasMaxLength(4000);
+
+            // CreatedById
+            entity.Property(e => e.CreatedById)
+                .IsRequired();
+
+            // UpdatedById
+            entity.Property(e => e.UpdatedById);
+
+            // DeletedById
+            entity.Property(e => e.DeletedById);
+
+            // CreatedAt
+            entity.Property(e => e.CreatedAt);
+
+            // UpdatedAt
+            entity.Property(e => e.UpdatedAt);
+
+            // DeletedAt
+            entity.Property(e => e.DeletedAt);
+
+            // IsDeleted
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // IsInternal
+            entity.Property(e => e.IsInternal)
+                .HasDefaultValue(false);
+
+            // CreatedBy (Relation)
+            entity.HasOne(e => e.CreatedBy)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedById)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UpdatedBy (Relation)
+            entity.HasOne(e => e.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany()
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketComment (navigation property)
+            entity.HasOne(e => e.Ticket)
+                .WithMany(e => e.Comments)
+                .HasForeignKey(e => e.TicketId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketComment (Query filter)
+            entity.HasQueryFilter(e =>
+                !e.IsDeleted &&
+                !e.Ticket.IsDeleted);
+        });
+
+        // Business.TicketAttachments
+        modelBuilder.Entity<TicketAttachment>(entity =>
+        {
+            // Schema
+            entity.ToTable("TicketAttachments", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // TicketCommentId
+            entity.Property(e => e.TicketCommentId)
+                .IsRequired();
+
+            // FileName
+            entity.Property(e => e.FileName)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            // ContentType
+            entity.Property(e => e.ContentType)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            // Size
+            entity.Property(e => e.Size)
+                .IsRequired();
+
+            // StorageKey
+            entity.Property(e => e.StorageKey)
+                .IsRequired()
+                .HasMaxLength(512);
+
+            // UploadedById
+            entity.Property(e => e.UploadedById)
+                .IsRequired();
+
+            // UploadedAt
+            entity.Property(e => e.UploadedAt)
+                .IsRequired();
+
+            // DeletedAt
+            entity.Property(e => e.DeletedAt);
+
+            // IsDeleted
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany()
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UploadedBy (Relation)
+            entity.HasOne(e => e.UploadedBy)
+                .WithMany()
+                .HasForeignKey(e => e.UploadedById)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketAttachment (navigation property)
+            entity.HasOne(e => e.TicketComment)
+                .WithMany(e => e.Attachments)
+                .HasForeignKey(e => e.TicketCommentId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketAttachment (Query filter)
+            entity.HasQueryFilter(e =>
+                !e.IsDeleted &&
+                !e.TicketComment.IsDeleted &&
+                !e.TicketComment.Ticket.IsDeleted);
+        });
+
         // Business.TicketHistory
         modelBuilder.Entity<TicketHistory>(entity =>
         {
@@ -632,13 +794,14 @@ public partial class AppDbContext
             entity.Property(e => e.NewValueId)
                 .HasMaxLength(200);
 
+            // Histories (navigation property)
             entity.HasOne(e => e.Ticket)
                 .WithMany(e => e.Histories)
                 .HasForeignKey(e => e.TicketId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // TicketHistory Query filter
+            // TicketHistory (Query filter)
             entity.HasQueryFilter(e => !e.Ticket.IsDeleted);
         });
 

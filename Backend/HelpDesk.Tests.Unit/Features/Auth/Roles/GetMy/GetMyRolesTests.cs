@@ -40,7 +40,7 @@ public sealed class GetMyRolesTests
 
         // Mock ticket reader to return the expected ticket data
         rolesReader
-            .Setup(x => x.GetUserRolesAsync(
+            .Setup(x => x.GetUserRoleAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedRoles);
@@ -55,7 +55,7 @@ public sealed class GetMyRolesTests
         Assert.Equal(response, result);
 
         rolesReader.Verify(
-            x => x.GetUserRolesAsync(
+            x => x.GetUserRoleAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);

@@ -1,4 +1,4 @@
-import { UserAccountData } from '../../../shared/responses/user-account-data';
+import { UserAccountData } from '../../business/model/user-account-data';
 
 export interface AuthSession {
   userAccountData: UserAccountData;

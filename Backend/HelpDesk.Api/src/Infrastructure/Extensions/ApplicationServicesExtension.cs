@@ -29,6 +29,7 @@ public static class ApplicationServicesExtension
             .AddEmail()
             .AddCorsOptions()
             .AddDataImporters()
+            .AddAttachmentStorage()
             .AddScrutor()
             .AddCommandHandlerBehavior()
             .AddQueryHandlerBehavior()

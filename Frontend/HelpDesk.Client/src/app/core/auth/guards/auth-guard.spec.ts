@@ -9,8 +9,8 @@ import {
 import { firstValueFrom, isObservable, of } from 'rxjs';
 
 import { authGuard } from './auth-guard';
-import { AuthService } from '../services/auth.service';
 import { AuthStateService } from '../services/auth-state.service';
+import { UserService } from '@/core/business/services/user.service';
 
 describe('authGuard', () => {
   const executeGuard = () =>
@@ -20,18 +20,22 @@ describe('authGuard', () => {
   let isAuthenticated: jasmine.Spy;
   let isHydrated: jasmine.Spy;
   let initialize: jasmine.Spy;
-  let authService: jasmine.SpyObj<AuthService>;
+
+
+  let userService: jasmine.SpyObj<UserService>;
 
   beforeEach(() => {
     isAuthenticated = jasmine.createSpy().and.returnValue(false);
     isHydrated = jasmine.createSpy().and.returnValue(true);
     initialize = jasmine.createSpy().and.returnValue(of(undefined));
-    authService = jasmine.createSpyObj<AuthService>('AuthService', ['getCurrentUser']);
+
+
+    userService = jasmine.createSpyObj<UserService>('UserService', ['getCurrentUser']);
 
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AuthService, useValue: authService },
+        { provide: UserService, useValue: userService },
         {
           provide: AuthStateService,
           useValue: {
@@ -67,27 +71,39 @@ describe('authGuard', () => {
 
     const result = executeGuard();
 
-    expect(initialize).toHaveBeenCalledOnceWith(authService);
+    expect(initialize).toHaveBeenCalledOnceWith(userService);
     expect(isObservable(result)).toBeTrue();
     if (isObservable(result)) {
       expect(await firstValueFrom(result)).toBeTrue();
     }
   });
 
-  it('should hydrate the authenticated user with the UserAccountData returned by AuthService', async () => {
+  it('should hydrate the authenticated user with the UserAccountData returned by UserService', async () => {
     const user = {
-      userId: 'user-id',
-      userName: 'person',
-      email: 'person@example.com',
-      timeZone: 'Asia/Riyadh',
-      preferredLanguage: 'English',
-      roles: ['SuperAdmin'],
-      mustResetPassword: false,
-      rowVersion: null,
-      employee: null,
-    };
+      time: '2024-06-01T12:00:00Z',
+      message: 'User logged in successfully.',
+      data: {
+        userAccountData: {
+          userId: 'user-id',
+          userName: 'person',
+          email: 'person@example.com',
+          rowVersion: null,
+          mustResetPassword: false,
+          roles: [],
+          employee: null,
+        }
+      }
+    }
 
-    authService.getCurrentUser.and.returnValue(of(user));
+    userService
+      .getCurrentUser
+      .and
+      .returnValue(
+        of(user),
+      );
+
+
+
     TestBed.overrideProvider(AuthStateService, {
       useFactory: () => new AuthStateService(),
     });
@@ -100,8 +116,10 @@ describe('authGuard', () => {
       ? await firstValueFrom(guardResult)
       : await guardResult;
 
-    expect(authService.getCurrentUser).toHaveBeenCalledTimes(1);
-    expect(authState.session()).toEqual({ userAccountData: user });
+    expect(userService.getCurrentUser).toHaveBeenCalledTimes(1);
+    expect(authState.session()).toEqual({
+      userAccountData: user.data.userAccountData,
+    });
     expect(authState.isAuthenticated()).toBeTrue();
     expect(result).toBeTrue();
   });

@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthStateService } from '../../../core/auth/services/auth-state.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { RedirectService } from '../../../core/auth/services/redirect.service';
 import { LoginComponent } from './login';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('LoginComponent', () => {
   let login: jasmine.Spy;
@@ -12,32 +12,40 @@ describe('LoginComponent', () => {
   let redirect: jasmine.Spy;
   let component: LoginComponent;
 
+  const response = {
+    time: '2024-06-01T12:00:00Z',
+    message: 'User logged in successfully.',
+    data: {
+      userAccountData: {
+        userId: 'user-id',
+        userName: 'person',
+        email: 'person@example.com',
+        rowVersion: null,
+        mustResetPassword: false,
+        roles: [],
+        employee: null,
+      }
+    }
+  }
+
   beforeEach(async () => {
-    login = jasmine.createSpy().and.returnValue(
-      of({
-        data: {
-          userAccountData: {
-            userId: 'user-id',
-            userName: 'person',
-            email: 'person@example.com',
-            rowVersion: null,
-            mustResetPassword: false,
-            roles: ['Admin'],
-            employee: null,
-          },
-        },
-      }),
-    );
+    login = jasmine
+      .createSpy()
+      .and
+      .returnValue(
+        of(response),
+      );
+
     setSession = jasmine.createSpy();
     redirect = jasmine.createSpy();
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
       providers: [
-        provideTranslateService(),
         { provide: AuthService, useValue: { login } },
         { provide: AuthStateService, useValue: { setSession } },
         { provide: RedirectService, useValue: { redirect } },
+        provideTranslateService(),
       ],
     }).compileComponents();
 
@@ -51,7 +59,7 @@ describe('LoginComponent', () => {
       email: 'person@example.com',
       rowVersion: null,
       mustResetPassword: false,
-      roles: ['Admin'],
+      roles: [],
       employee: null,
     };
 

@@ -1,7 +1,22 @@
-<!-- Screen -->
-
-<div class="flex min-h-screen items-center justify-center">
-  <div class="w-full max-w-md">
-    <!-- Login screen -->
+<div class="get-all-tickets-container">
+  <div class="get-all-tickets-button">
+    <p-button
+      type="button"
+      [label]="'TICKETS.GET_ALL_TICKETS' | translate"
+      styleClass="w-full"
+      (onClick)="onGetAll()"
+    />
   </div>
+
+  <p-table
+    [value]="tickets"
+    [paginator]="true"
+    [lazy]="true"
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    [loading]="loading"
+  >
+    <!-- Table header and body go here -->
+  </p-table>
 </div>

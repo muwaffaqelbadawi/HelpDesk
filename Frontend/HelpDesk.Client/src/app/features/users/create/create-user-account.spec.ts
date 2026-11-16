@@ -1,21 +1,56 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
-import { provideTranslateService } from '@ngx-translate/core';
 import { CreateUserAccountComponent } from './create-user-account';
+import { RedirectService } from '@/core/auth/services/redirect.service';
+import { AuthStateService } from '@/core/auth/services/auth-state.service';
+import { AuthService } from '@/core/auth/services/auth.service';
+import { provideTranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
+import { UserService } from '@/core/business/services/user.service';
 
 describe('CreateUserAccountComponent', () => {
+  let createUserAccount: jasmine.Spy;
+  let setSession: jasmine.Spy;
+  let redirect: jasmine.Spy;
   let component: CreateUserAccountComponent;
   let fixture: ComponentFixture<CreateUserAccountComponent>;
 
+  const response = {
+    time: '2024-06-01T12:00:00Z',
+    message: 'User logged in successfully.',
+    data: {
+      userAccountData: {
+        userId: 'user-id',
+        userName: 'person',
+        email: 'person@example.com',
+        rowVersion: null,
+        mustResetPassword: false,
+        roles: [],
+        employee: null,
+      }
+    }
+  }
+
   beforeEach(async () => {
+    createUserAccount = jasmine
+      .createSpy()
+      .and
+      .returnValue(
+        of(response),
+      );
+
+    setSession = jasmine.createSpy();
+    redirect = jasmine.createSpy();
+
     await TestBed.configureTestingModule({
       imports: [CreateUserAccountComponent],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideRouter([]),
+        { provide: AuthService, useValue: { createUserAccount } },
+        { provide: AuthStateService, useValue: { setSession } },
+        { provide: RedirectService, useValue: { redirect } },
+        {
+          provide: UserService,
+          useValue: { getCurrentUser: jasmine.createSpy().and.returnValue(of(null)) }
+        },
         provideTranslateService(),
       ],
     }).compileComponents();

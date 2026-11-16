@@ -3,8 +3,8 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Tickets.Delete;
 
-public sealed class DeleteTicketHandler :
-    ICommandHandler<DeleteTicketCommand>
+public sealed class DeleteTicketHandler
+    : ICommandHandler<DeleteTicketCommand>
 {
     private readonly IUserContext _userContext;
     private readonly IUserReader _userReader;

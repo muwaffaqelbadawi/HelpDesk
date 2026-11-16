@@ -14,4 +14,27 @@ public static class RolePermissionModuleMatrix
             RoleIds.SuperAdmin,
             permission,
             module);
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Admin =>
+    [
+
+    ];
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Customer =>
+    [
+
+    ];
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Support =>
+    [
+        new(
+            RoleIds.Support,
+            PermissionIds.Assigned,
+            ModuleIds.Tickets)
+    ];
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Agent =>
+    [
+
+    ];
 }

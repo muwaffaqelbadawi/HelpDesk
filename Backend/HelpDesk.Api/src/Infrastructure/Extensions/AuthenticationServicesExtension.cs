@@ -67,6 +67,10 @@ public static class AuthenticationServicesExtension
         // Register ChangePasswordService as scoped service
         builder.Services.AddScoped<IChangePasswordService, ChangePasswordService>();
 
+        // Register link expiration
+        builder.Services.Configure<DataProtectionTokenProviderOptions>(
+            options => options.TokenLifespan = TimeSpan.FromHours(24));
+
         return builder;
     }
 }

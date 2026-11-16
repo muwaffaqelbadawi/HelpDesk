@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
 import { map } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 import { AuthStateService } from '../services/auth-state.service';
 import { RedirectService } from '../services/redirect.service';
+import { UserService } from '@/core/business/services/user.service';
 
 export const guestGuard: CanActivateFn = () => {
   const authState = inject(AuthStateService);
@@ -22,5 +22,5 @@ export const guestGuard: CanActivateFn = () => {
     return allowGuest();
   }
 
-  return authState.initialize(inject(AuthService)).pipe(map(allowGuest));
+  return authState.initialize(inject(UserService)).pipe(map(allowGuest));
 };

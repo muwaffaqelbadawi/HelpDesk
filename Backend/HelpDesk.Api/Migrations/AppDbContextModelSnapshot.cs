@@ -17,7 +17,7 @@ namespace HelpDesk.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.14")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -426,6 +426,9 @@ namespace HelpDesk.Migrations
                     b.Property<Guid?>("DeletedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -436,7 +439,7 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid?>("PriorityId")
+                    b.Property<Guid>("PriorityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
@@ -445,7 +448,7 @@ namespace HelpDesk.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<Guid?>("StatusId")
+                    b.Property<Guid>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Subject")
@@ -476,6 +479,8 @@ namespace HelpDesk.Migrations
 
                     b.HasIndex("DeletedById");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("PriorityId");
 
                     b.HasIndex("StatusId");
@@ -483,6 +488,116 @@ namespace HelpDesk.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("Tickets", "Business");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketAttachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<Guid>("TicketCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UploadedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UploadedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("TicketCommentId");
+
+                    b.HasIndex("UploadedById");
+
+                    b.ToTable("TicketAttachments", "Business");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsInternal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("TicketComments", "Business");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketHistory", b =>
@@ -1306,15 +1421,22 @@ namespace HelpDesk.Migrations
                         .HasForeignKey("DeletedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Department", "Department")
+                        .WithMany("Tickets")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketPriority", "Priority")
                         .WithMany("Tickets")
                         .HasForeignKey("PriorityId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketStatus", "Status")
                         .WithMany("Tickets")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "UpdatedBy")
                         .WithMany("UpdatedTickets")
@@ -1331,9 +1453,70 @@ namespace HelpDesk.Migrations
 
                     b.Navigation("DeletedBy");
 
+                    b.Navigation("Department");
+
                     b.Navigation("Priority");
 
                     b.Navigation("Status");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketAttachment", b =>
+                {
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketComment", "TicketComment")
+                        .WithMany("Attachments")
+                        .HasForeignKey("TicketCommentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "UploadedBy")
+                        .WithMany()
+                        .HasForeignKey("UploadedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DeletedBy");
+
+                    b.Navigation("TicketComment");
+
+                    b.Navigation("UploadedBy");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketComment", b =>
+                {
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Ticket", "Ticket")
+                        .WithMany("Comments")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("DeletedBy");
+
+                    b.Navigation("Ticket");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -1565,6 +1748,8 @@ namespace HelpDesk.Migrations
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Department", b =>
                 {
                     b.Navigation("Employees");
+
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Employee", b =>
@@ -1579,7 +1764,14 @@ namespace HelpDesk.Migrations
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Ticket", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Histories");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketComment", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.TicketPriority", b =>

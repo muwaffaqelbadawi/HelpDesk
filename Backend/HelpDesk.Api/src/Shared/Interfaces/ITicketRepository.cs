@@ -15,6 +15,8 @@ public interface ITicketRepository
 
     Task AddAsync(
         Ticket ticket,
+        TicketComment comment,
+        List<TicketAttachment> attachment,
         CancellationToken cancellationToken);
 
     Task AddToHistory(

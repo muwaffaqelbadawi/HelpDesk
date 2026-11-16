@@ -35,6 +35,7 @@ public static class UserQueries
                     EmployeeNumber = u.Employee.Number,
                     FullEnName = u.Employee.FullEnName,
                     FullArName = u.Employee.FullArName,
+                    JobTitle = u.Employee.JobTitle,
 
                     Department = u.Employee.Department != null
                         ? u.Employee.Department.Name

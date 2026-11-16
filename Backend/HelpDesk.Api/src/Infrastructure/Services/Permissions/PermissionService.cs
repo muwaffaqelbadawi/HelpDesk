@@ -11,7 +11,7 @@ public sealed class PermissionService(
     public async Task<IReadOnlyCollection<string>> GetUserPermissionsAsync(
         CancellationToken cancellationToken)
     {
-        var roles = await roleReader.GetUserRolesAsync(
+        var roles = await roleReader.GetUserRoleAsync(
             userContext.GuidUserId,
             cancellationToken);
 

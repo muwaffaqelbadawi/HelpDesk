@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
+using HelpDesk.src.Shared.Constraints;
 
 namespace HelpDesk.src.Features.Tickets.Create;
-
 
 public sealed class CreateTicketValidator : AbstractValidator<CreateTicketCommand>
 {
@@ -14,5 +14,17 @@ public sealed class CreateTicketValidator : AbstractValidator<CreateTicketComman
         RuleFor(x => x.TicketSubject)
             .NotEmpty()
             .MaximumLength(1000);
+
+        RuleFor(x => x.CommentContent)
+            .NotEmpty()
+            .MaximumLength(4000);
+
+        RuleForEach(x => x.Attachments)
+            .Must(file => file.Length > 0)
+            .WithMessage("Attachments cannot be empty.");
+
+        RuleForEach(x => x.Attachments)
+            .Must(file => file.Length <= AttachmentConstants.MaxFileSize)
+            .WithMessage("Attachment size cannot exceed 10 MB.");
     }
 }

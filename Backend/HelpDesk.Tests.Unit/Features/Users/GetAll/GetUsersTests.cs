@@ -17,15 +17,23 @@ public sealed class GetUsersTests
         var userReader = new Mock<IUserReader>();
 
         // SUT (System Under Test)
-        var handler = new GetUsersAccountHandler(userReader.Object);
+        var handler = new GetAllUsersAccountHandler(userReader.Object);
+
+        var queryParameters = new QueryParameters
+        {
+            PageNumber = 1,
+            PageSize = 10,
+        };
 
         // Prepare expected user data for assertion
         var expectedUserData = new PagedResult<UserAccountData>(
-            Items: [],
-            PageNumber: 1,
-            PageSize: 10,
-            TotalCount: 1,
-            TotalPages: 1);
+            Items: new List<UserAccountData>(),
+            PageNumber: queryParameters.PageNumber,
+            PageSize: queryParameters.PageSize,
+            TotalCount: 0,
+            TotalPages: 0);
+
+        var getUsersResponse = new GetAllUsersResponse(expectedUserData);
 
         // Mock user reader to return the expected user data
         userReader
@@ -42,7 +50,9 @@ public sealed class GetUsersTests
         // Assert
         Assert.NotNull(result);
 
-        Assert.Equal(expectedUserData, result);
+        Assert.Equal(
+            getUsersResponse,
+            result);
 
         userReader.Verify(
             x => x.GetAllAsync(

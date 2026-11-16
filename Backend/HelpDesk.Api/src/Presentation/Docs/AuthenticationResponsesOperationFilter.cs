@@ -39,12 +39,13 @@ public sealed class AuthenticationResponsesOperationFilter : IOperationFilter
         }
 
         operation.Responses ??= [];
+
         operation.Responses.TryAdd(
             StatusCodes.Status401Unauthorized.ToString(),
             new OpenApiResponse
             {
                 Description = ApiMessages.AuthenticationRequired,
-                Content = new Dictionary<string, OpenApiMediaType>
+                Content = new Dictionary<string, IOpenApiMediaType>
                 {
                     ["application/problem+json"] = new OpenApiMediaType
                     {
@@ -54,23 +55,17 @@ public sealed class AuthenticationResponsesOperationFilter : IOperationFilter
 
                         Example = new JsonObject
                         {
-                            ["type"] = JsonValue.Create(
-                            "https://example.com/errors/authentication"),
-
-                            ["title"] = JsonValue.Create("AuthenticateFailure"),
-
-                            ["status"] = JsonValue.Create(401),
-
-                            ["detail"] = JsonValue.Create(ApiMessages.AuthenticationRequired),
-
-                            ["instance"] = JsonValue.Create("/me/example"),
-
-                            ["traceId"] = JsonValue.Create("example-trace-id"),
-
-                            ["correlationId"] = JsonValue.Create("example-correlation-id")
+                            ["type"] = "https://example.com/errors/authentication",
+                            ["title"] = "AuthenticateFailure",
+                            ["status"] = 401,
+                            ["detail"] = "Authentication is required.",
+                            ["instance"] = "/me/example",
+                            ["traceId"] = "example-trace-id",
+                            ["correlationId"] = "example-correlation-id"
                         }
                     }
                 }
-            });
+            }
+        );
     }
 }

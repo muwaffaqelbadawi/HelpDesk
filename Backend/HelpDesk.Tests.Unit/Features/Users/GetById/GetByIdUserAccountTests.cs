@@ -14,10 +14,10 @@ public sealed class GetByIdUserAccountTests
     {
         // Arrange
         var userReader = new Mock<IUserReader>();
-        var logger = new Mock<ILogger<GetByIdUserAccountHandler>>();
+        var logger = new Mock<ILogger<GetByIdUserHandler>>();
 
         // SUT (System Under Test)
-        var handler = new GetByIdUserAccountHandler(
+        var handler = new GetByIdUserHandler(
             userReader.Object,
             logger.Object);
 
@@ -25,7 +25,7 @@ public sealed class GetByIdUserAccountTests
         var userAccountData = new UserAccountData();
 
         // Prepare expected user data for assertion
-        var expectedUser = new GetByIdUserAccountResponse(userAccountData);
+        var expectedUser = new GetByIdUserResponse(userAccountData);
 
         // Mock user reader to return the expected user account data
         userReader
@@ -36,7 +36,7 @@ public sealed class GetByIdUserAccountTests
 
         // Act
         var result = await handler.HandleAsync(
-            new GetByIdUserAccountQuery(Guid.NewGuid()),
+            new GetByIdUserQuery(Guid.NewGuid()),
             CancellationToken.None);
 
         // Assert

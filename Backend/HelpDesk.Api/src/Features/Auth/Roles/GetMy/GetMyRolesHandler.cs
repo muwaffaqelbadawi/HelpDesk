@@ -13,7 +13,7 @@ public sealed class GetMyRolesHandler(
     {
         var userId = userContext.GuidUserId;
 
-        var roles = await roleReader.GetUserRolesAsync(
+        var roles = await roleReader.GetUserRoleAsync(
             userId,
             cancellationToken);
 

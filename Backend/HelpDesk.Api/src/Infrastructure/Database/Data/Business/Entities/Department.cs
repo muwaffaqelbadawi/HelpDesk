@@ -11,4 +11,5 @@ public sealed class Department
 
     // Navigation property
     public ICollection<Employee> Employees { get; set; } = [];
+    public ICollection<Ticket> Tickets { get; set; } = [];
 }

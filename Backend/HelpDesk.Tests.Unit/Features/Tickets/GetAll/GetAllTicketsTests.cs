@@ -18,13 +18,21 @@ public sealed class GetAllTicketsTests
         // SUT (System Under Test)
         var handler = new GetTicketsHandler(ticketReader.Object);
 
+        var queryParameters = new QueryParameters
+        {
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
         // Prepare expected ticket data for assertion
         var expectedTicketData = new PagedResult<TicketData>(
-            Items: [],
-            PageNumber: 1,
-            PageSize: 10,
+            Items: new List<TicketData>(),
+            PageNumber: queryParameters.PageNumber,
+            PageSize: queryParameters.PageSize,
             TotalCount: 0,
             TotalPages: 0);
+
+        var getTicketsResponse = new GetTicketsResponse(expectedTicketData);
 
         // Mock ticket reader to return the expected ticket data
         ticketReader
@@ -41,7 +49,10 @@ public sealed class GetAllTicketsTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedTicketData, result);
+
+        Assert.Equal(
+            getTicketsResponse,
+            result);
 
         ticketReader.Verify(
             x => x.GetAllAsync(

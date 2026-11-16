@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { firstValueFrom, isObservable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { UserAccountData } from '../../../shared/responses/user-account-data';
+import { UserAccountData } from '../../business/model/user-account-data';
 import { authInterceptor } from '../interceptors/auth.interceptor';
 import { AuthStateService } from '../services/auth-state.service';
 import { RedirectService } from '../services/redirect.service';

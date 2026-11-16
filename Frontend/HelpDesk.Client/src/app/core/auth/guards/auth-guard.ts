@@ -2,7 +2,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthStateService } from '../services/auth-state.service';
 import { inject } from '@angular/core';
 import { map } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { UserService } from '@/core/business/services/user.service';
 
 export const authGuard: CanActivateFn = () => {
   const authState = inject(AuthStateService);
@@ -15,5 +15,5 @@ export const authGuard: CanActivateFn = () => {
     return checkAuthentication();
   }
 
-  return authState.initialize(inject(AuthService)).pipe(map(checkAuthentication));
+  return authState.initialize(inject(UserService)).pipe(map(checkAuthentication));
 };
