@@ -1,6 +1,7 @@
 ﻿using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidationException = FluentValidation.ValidationException;
 
@@ -33,6 +34,7 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 BusinessRuleViolationException => StatusCodes.Status422UnprocessableEntity,
                 IdentityOperationException => StatusCodes.Status400BadRequest,
                 NotImplementedException => StatusCodes.Status501NotImplemented,
+                InvalidOperationException => StatusCodes.Status500InternalServerError,
                 _ => StatusCodes.Status500InternalServerError
             };
 
@@ -223,10 +225,24 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 }
             },
 
+            InvalidOperationException => new ProblemDetails
+            {
+                Type = $"{baseUrl}/errors/internal-server-error",
+                Title = nameof(InternalServerError),
+                Status = status,
+                Detail = details,
+                Instance = path,
+                Extensions =
+                {
+                    ["traceId"] = traceId,
+                    ["correlationId"] = correlationId
+                }
+            },
+
             _ => new ProblemDetails
             {
                 Type = $"{baseUrl}/errors/internal-server-error",
-                Title = "InternalServerError",
+                Title = nameof(InternalServerError),
                 Status = status,
                 Detail = details,
                 Instance = path,

@@ -14,11 +14,14 @@ public static class UserQueries
                 UserId = u.Id,
                 UserName = u.UserName ?? string.Empty,
                 Email = u.Email ?? string.Empty,
-                TimeZone = u.TimeZone,
 
-                PreferredLanguage = u.PreferredLanguage == UserLanguage.English
-                    ? nameof(UserLanguage.English)
-                    : nameof(UserLanguage.Arabic),
+                TimeZone = u.TimeZone != null
+                    ? u.TimeZone.Name
+                    : null,
+
+                PreferredLanguage = u.PreferredLanguage == null
+                    ? default
+                    : u.PreferredLanguage.Value,
 
                 Roles = u.UserRoles
                     .Where(ur => ur.RemovedAt == null)

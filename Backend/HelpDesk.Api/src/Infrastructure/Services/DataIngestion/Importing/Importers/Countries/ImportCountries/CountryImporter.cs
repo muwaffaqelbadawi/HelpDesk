@@ -15,12 +15,12 @@ public sealed class CountryImporter
 {
     private readonly AppDbContext _dbContext;
     private readonly IHostEnvironment _environment;
-    private readonly DataImportOptions _options;
+    private readonly CountryImportOptions _options;
 
     public CountryImporter(
         AppDbContext dbContext,
         IHostEnvironment environment,
-        IOptions<DataImportOptions> options)
+        IOptions<CountryImportOptions> options)
     {
         _dbContext = dbContext;
         _environment = environment;
@@ -38,7 +38,7 @@ public sealed class CountryImporter
         var snapshotPath = Path.GetFullPath(
             Path.Combine(
                 _environment.ContentRootPath,
-                _options.RelativePath));
+                _options.CountriesPath));
 
         if (!File.Exists(snapshotPath))
         {
@@ -124,9 +124,11 @@ public sealed class CountryImporter
         IReadOnlyCollection<Country> entities,
         CancellationToken cancellationToken)
     {
+        var processedCount = entities.Count;
         var importedCount = 0;
         var updatedCount = 0;
         var skippedCount = 0;
+        var duration = TimeSpan.Zero;
 
         var existingCountries = await _dbContext.Countries
             .ToDictionaryAsync(
@@ -168,9 +170,11 @@ public sealed class CountryImporter
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new PersistResult(
+            processedCount,
             importedCount,
             updatedCount,
-            skippedCount);
+            skippedCount,
+            duration);
     }
 
     private static void Update(Country existing, Country entity)

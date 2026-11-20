@@ -10,4 +10,5 @@ public static class EmailSubject
     public const string PasswordResetLinkEmail = "Reset your password";
     public const string LoginEmail = "New login detected";
     public const string PasswordResetSuccessfullyEmail = "Password Reset Successfully";
+    public const string PasswordChangedEmail = "Password Changed Successfully";
 }

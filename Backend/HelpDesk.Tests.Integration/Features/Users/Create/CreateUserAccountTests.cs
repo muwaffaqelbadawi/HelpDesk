@@ -47,7 +47,7 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
 
         // Test user context
         var testUserContext = scope.ServiceProvider
-            .GetRequiredService<UserContextTestData>();
+            .GetRequiredService<TestUserContext>();
 
         // Query superadmin ID
         var superAdminId = await db.Users
@@ -59,7 +59,7 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
         testUserContext.GuidUserId = superAdminId;
 
         // command (Only enter the countryId everything else is automated!)
-        var command = UserTestData.CreateUserCommand(countryId);
+        var command = TestUser.CreateUserCommand(countryId);
 
         // Act
         await handler.HandleAsync(
@@ -77,6 +77,10 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
                 x => x.UserId == user.Id,
                 CancellationToken.None);
 
+        var databaseName = await db.Database
+            .SqlQueryRaw<string>("SELECT DB_NAME() AS [Value]")
+            .SingleAsync(TestContext.Current.CancellationToken);
+
         Assert.Equal(command.UserName, user.UserName);
         Assert.Equal(command.Email, user.Email);
         Assert.Equal(command.PhoneNumber, user.PhoneNumber);
@@ -86,5 +90,8 @@ public sealed class CreateUserAccountTests(HelpDeskApplicationFactory factory)
         Assert.Equal(command.DepartmentId, employee.DepartmentId);
         Assert.Equal(command.SectorId, employee.SectorId);
         Assert.Equal(command.CountryId, employee.CountryId);
+
+        // Check DB name
+        Assert.Equal("HelpDesk_IntegrationTests", databaseName);
     }
 }

@@ -234,6 +234,35 @@ public sealed class EmailService(
             cancellationToken: cancellationToken);
     }
 
+    public async Task PasswordChangedEmailAsync(
+        Guid userId,
+        string userName,
+        string changedPasswordTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken)
+    {
+
+
+        var body = await templateRenderer.RenderAsync(
+            templateName: TemplateName.PasswordChangedEmail,
+            placeholders: new Dictionary<string, string>
+            {
+                ["userName"] = userName,
+                ["changeTime"] = changedPasswordTime
+            });
+
+        await SendEmailAsync(
+            userId: userId,
+            recipientEmail: recipientEmail,
+            subject: EmailSubject.PasswordChangedEmail,
+            htmlBody: body,
+            traceId: traceId,
+            correlationId: correlationId,
+            cancellationToken: cancellationToken);
+    }
+
     private async Task SendEmailAsync(
         Guid userId,
         string recipientEmail,

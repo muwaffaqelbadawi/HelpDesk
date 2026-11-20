@@ -47,9 +47,12 @@ public sealed class ApplicationUser : IdentityUser<Guid>
     public bool IsDeleted { get; set; }
 
 
-    // Profile
-    public string TimeZone { get; set; } = null!;
-    public UserLanguage PreferredLanguage { get; set; }
+    // TimeZone
+    public Guid? TimeZoneId { get; set; }
+    public ApplicationTimeZone? TimeZone { get; set; }
+
+    // Language
+    public UserLanguage? PreferredLanguage { get; set; }
 
 
     // Concurrency

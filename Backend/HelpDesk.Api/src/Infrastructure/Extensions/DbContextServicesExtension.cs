@@ -13,12 +13,18 @@ public static class DbContextServicesExtension
         // It will be read from the environment variables
         // make sure to configure it in your profile
 
+        var connectionString = builder.Configuration
+            .GetConnectionString("AppDBConnection");
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "Connection string 'AppDBConnection' is not configured.");
+        }
+
         // Connection string
         builder.Services.AddDbContext<AppDbContext>(
-            options => options.UseSqlServer(
-                builder.Configuration.GetConnectionString("AppDBConnection")))
-            .AddValidation();
-        //.ValidateOnStart();
+            options => options.UseSqlServer(connectionString));
 
         return builder;
     }

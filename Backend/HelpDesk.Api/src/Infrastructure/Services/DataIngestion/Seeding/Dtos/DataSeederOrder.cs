@@ -8,7 +8,8 @@ public static class DataSeederOrder
 
     // External data importer
     public const int Country = 400;
+    public const int TimeZones = 500;
 
     // System account
-    public const int Superadmin = 500;
+    public const int Superadmin = 600;
 }

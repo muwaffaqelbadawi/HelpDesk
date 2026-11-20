@@ -77,4 +77,13 @@ public interface IEmailService
         string traceId,
         string correlationId,
         CancellationToken cancellationToken);
+
+    Task PasswordChangedEmailAsync(
+        Guid userId,
+        string userName,
+        string changedPasswordTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken);
 }

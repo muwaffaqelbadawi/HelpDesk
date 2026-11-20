@@ -2,7 +2,7 @@
 
 namespace HelpDesk.Tests.Integration.TestData;
 
-public sealed class UserContextTestData : IUserContext
+public sealed class TestUserContext : IUserContext
 {
     public string UserId => GuidUserId.ToString();
 

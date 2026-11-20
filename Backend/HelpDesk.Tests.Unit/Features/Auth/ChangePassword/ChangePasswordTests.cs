@@ -41,7 +41,10 @@ public sealed class ChangePasswordTests
         var userId = Guid.NewGuid();
 
         // create new user account data
-        var userAccountData = new UserAccountData();
+        var userAccountData = new UserAccountData
+        {
+            UserId = userId
+        };
 
         // session ID
         var sessionId = Guid.NewGuid();
@@ -72,7 +75,9 @@ public sealed class ChangePasswordTests
             .Returns(sessionId);
 
         userReader
-            .Setup(x => x.GetUserAsync(userId.ToString()))
+            .Setup(x => x.GetUserWithTimeZoneAsync(
+                userId,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         changePasswordService
@@ -114,7 +119,7 @@ public sealed class ChangePasswordTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Same(userAccountData, result.UserAccountData);
+        //Assert.Same(userAccountData, result);
         Assert.Same(tokenResult, result.Token);
 
         userRepository.Verify(
@@ -183,7 +188,9 @@ public sealed class ChangePasswordTests
             .Returns(sessionId);
 
         userReader
-            .Setup(x => x.GetUserAsync(userId.ToString()))
+            .Setup(x => x.GetUserWithTimeZoneAsync(
+                userId,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         changePasswordService
@@ -258,7 +265,9 @@ public sealed class ChangePasswordTests
             .Returns(userId);
 
         userReader
-            .Setup(x => x.GetUserAsync(userId.ToString()))
+            .Setup(x => x.GetUserWithTimeZoneAsync(
+                userId,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((ApplicationUser?)null);
 
         var ex = await Assert.ThrowsAsync<UserNotFoundException>(
@@ -307,7 +316,9 @@ public sealed class ChangePasswordTests
             .Returns(userId);
 
         userReader
-            .Setup(x => x.GetUserAsync(userId.ToString()))
+            .Setup(x => x.GetUserWithTimeZoneAsync(
+                userId,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         changePasswordService

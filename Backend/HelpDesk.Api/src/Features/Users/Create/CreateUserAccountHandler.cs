@@ -6,8 +6,8 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Features.Users.Create;
 
-public sealed class CreateUserAccountHandler :
-    ICommandHandler<CreateUserAccountCommand, CreateUserAccountResponse>
+public sealed class CreateUserAccountHandler
+    : ICommandHandler<CreateUserAccountCommand, CreateUserAccountResponse>
 {
     private readonly IUserContext _userContext;
     private readonly IUserRepository _userRepository;
@@ -79,7 +79,9 @@ public sealed class CreateUserAccountHandler :
         };
 
         // Validate department
-        if (!await _departmentRules.IsActiveAsync(command.DepartmentId, cancellationToken))
+        if (!await _departmentRules.IsActiveAsync(
+            command.DepartmentId,
+            cancellationToken))
         {
             throw new ValidationException(
                 errors: new()
@@ -89,7 +91,9 @@ public sealed class CreateUserAccountHandler :
         }
 
         // Validate sector
-        if (!await _sectorRules.IsActiveAsync(command.SectorId, cancellationToken))
+        if (!await _sectorRules.IsActiveAsync(
+            command.SectorId,
+            cancellationToken))
         {
             throw new ValidationException(
                 errors: new()
@@ -99,7 +103,9 @@ public sealed class CreateUserAccountHandler :
         }
 
         // Validate country
-        if (!await _countryRules.IsActiveAsync(command.CountryId, cancellationToken))
+        if (!await _countryRules.IsActiveAsync(
+            command.CountryId,
+            cancellationToken))
         {
             throw new ValidationException(
                 errors: new()
@@ -123,8 +129,6 @@ public sealed class CreateUserAccountHandler :
             MustResetPassword = true,
             CreatedById = currentUserId,
             CreatedAt = now,
-            TimeZone = _applicationOptions.DefaultTimeZone,
-            PreferredLanguage = _applicationOptions.DefaultLanguage
         };
 
         // Validate phone number
@@ -165,8 +169,6 @@ public sealed class CreateUserAccountHandler :
                 TempPassword: tempPassword),
             cancellationToken: cancellationToken);
 
-
-        return new CreateUserAccountResponse(
-            UserAccountData: userAccountData);
+        return new CreateUserAccountResponse(userAccountData);
     }
 }

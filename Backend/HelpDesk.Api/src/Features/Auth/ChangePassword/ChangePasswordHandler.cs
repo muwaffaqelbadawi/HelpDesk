@@ -41,8 +41,10 @@ public sealed class ChangePasswordHandler
     {
         var userId = _userContext.GuidUserId;
 
-        var user = await _userReader.GetUserAsync(userId.ToString())
-            ?? throw new UserNotFoundException(userId);
+        var user = await _userReader.GetUserWithTimeZoneAsync(
+            userId,
+            cancellationToken)
+                ?? throw new UserNotFoundException(userId);
 
         var changePasswordResult = await _changePasswordService.ChangePasswordAsync(
             user,
@@ -91,18 +93,6 @@ public sealed class ChangePasswordHandler
             now,
             cancellationToken);
 
-
-        // Change the structure if the log
-
-        // Success log
-        _logger.LogInformation("User {UserId} changed password and received new tokens",
-           userId);
-
-        // Get user
-        var userAccountData = await _userReader.GetByIdAsync(
-            userId,
-            cancellationToken);
-
         // Domain event
         await _dispatcher.DispatchAsync(
             @event: new PasswordChangedEvent(
@@ -110,8 +100,10 @@ public sealed class ChangePasswordHandler
                 OccurredAt: now),
             cancellationToken: cancellationToken);
 
-        return new ChangePasswordResponse(
-            userAccountData,
-            token);
+        // Success log
+        _logger.LogInformation("User {UserId} changed password and received new tokens",
+           userId);
+
+        return new ChangePasswordResponse(token);
     }
 }

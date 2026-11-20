@@ -2,23 +2,22 @@
 
 namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Core;
 
-public sealed class DataImportOptionsValidator
-    : IValidateOptions<DataImportOptions>
+public sealed class TimeZonesOptionsValidator : IValidateOptions<TimeZonesImportOptions>
 {
     public ValidateOptionsResult Validate(
         string? name,
-        DataImportOptions options)
+        TimeZonesImportOptions options)
     {
-        if (string.IsNullOrWhiteSpace(options.RelativePath))
+        if (string.IsNullOrWhiteSpace(options.TimeZonesPath))
         {
             return ValidateOptionsResult.Fail(
-                $"{nameof(options.RelativePath)} must be provided.");
+                $"{nameof(options.TimeZonesPath)} must be provided.");
         }
 
-        if (Path.IsPathRooted(options.RelativePath))
+        if (Path.IsPathRooted(options.TimeZonesPath))
         {
             return ValidateOptionsResult.Fail(
-                $"{nameof(options.RelativePath)}" +
+                $"{nameof(options.TimeZonesPath)}" +
                 $"must be relative to the application content root.");
         }
 

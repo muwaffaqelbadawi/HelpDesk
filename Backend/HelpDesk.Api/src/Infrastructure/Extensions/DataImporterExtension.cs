@@ -1,5 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Core;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries.ImportCountries;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.TimeZones.ImportTimeZones;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Options;
 
@@ -11,7 +12,12 @@ public static class DataImporterExtension
        this WebApplicationBuilder builder)
     {
         builder.Services
-            .AddOptions<DataImportOptions>()
+            .AddOptions<CountryImportOptions>()
+            .Bind(builder.Configuration.GetSection("DataImport"))
+            .ValidateOnStart();
+
+        builder.Services
+            .AddOptions<TimeZonesImportOptions>()
             .Bind(builder.Configuration.GetSection("DataImport"))
             .ValidateOnStart();
 
@@ -24,8 +30,12 @@ public static class DataImporterExtension
         builder.AddDataImportOptionsConfigs();
 
         builder.Services.AddSingleton<
-            IValidateOptions<DataImportOptions>,
-            DataImportOptionsValidator>();
+            IValidateOptions<CountryImportOptions>,
+            CountryOptionsValidator>();
+
+        builder.Services.AddSingleton<
+            IValidateOptions<TimeZonesImportOptions>,
+            TimeZonesOptionsValidator>();
 
         return builder;
     }
@@ -35,7 +45,11 @@ public static class DataImporterExtension
     {
         builder.AddDataImportOptions();
 
+        // Register CountryImporter as a scoped service
         builder.Services.AddScoped<ICountryImporter, CountryImporter>();
+
+        // Register TimeZonesImporter as a scoped service
+        builder.Services.AddScoped<ITimeZonesImporter, TimeZonesImporter>();
 
         return builder;
     }

@@ -58,4 +58,13 @@ public interface IQueueEmailService
         string traceId,
         string correlationId,
         CancellationToken cancellationToken);
+
+    Task PasswordChangedEmail(
+        Guid userId,
+        string userName,
+        string changedPasswordTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken);
 }

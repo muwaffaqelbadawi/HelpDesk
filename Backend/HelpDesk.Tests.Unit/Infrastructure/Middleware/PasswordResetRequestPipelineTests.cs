@@ -41,8 +41,14 @@ public sealed class PasswordResetRequestPipelineTests
         userContext.SetupGet(x => x.CorrelationId).Returns("correlation-id");
 
         var userReader = new Mock<IUserReader>();
+
         userReader
             .Setup(x => x.GetUserAsync(userId.ToString()))
+            .ReturnsAsync(user);
+        userReader
+            .Setup(x => x.GetUserWithTimeZoneAsync(
+                userId,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
         userReader
             .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
@@ -52,6 +58,7 @@ public sealed class PasswordResetRequestPipelineTests
             new ResetPasswordState(userContext.Object, userReader.Object));
 
         var changePasswordService = new Mock<IChangePasswordService>();
+
         changePasswordService
             .Setup(x => x.ChangePasswordAsync(
                 user,
@@ -60,6 +67,7 @@ public sealed class PasswordResetRequestPipelineTests
             .ReturnsAsync(IdentityResult.Success);
 
         var userRepository = new Mock<IUserRepository>();
+
         userRepository
             .Setup(x => x.UpdatePasswordAsync(
                 userId,
@@ -99,10 +107,12 @@ public sealed class PasswordResetRequestPipelineTests
             dateTimeService.Object,
             dispatcher.Object,
             Mock.Of<ILogger<ChangePasswordHandler>>());
+
         var changePasswordCommand = new ChangePasswordCommand(
             "CurrentPassword123!",
             "NewPassword123!",
             "NewPassword123!");
+
         var changePasswordPipeline =
             new CommandHandlerPipeline<ChangePasswordCommand, ChangePasswordResponse>(
                 changePasswordHandler,
@@ -115,11 +125,13 @@ public sealed class PasswordResetRequestPipelineTests
 
         var sessionActivityHandler =
             new Mock<ICommandHandler<UserSessionActivityCommand>>();
+
         sessionActivityHandler
             .Setup(x => x.HandleAsync(
                 It.IsAny<UserSessionActivityCommand>(),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
+
         var sessionActivityPipeline =
             new CommandHandlerPipeline<UserSessionActivityCommand>(
                 sessionActivityHandler.Object,
@@ -129,6 +141,7 @@ public sealed class PasswordResetRequestPipelineTests
                 ]);
 
         var changePasswordReached = false;
+
         var sessionActivityMiddleware = new UserSessionActivityMiddleware(
             async context =>
             {
@@ -138,6 +151,7 @@ public sealed class PasswordResetRequestPipelineTests
                     context.RequestAborted);
                 context.Response.StatusCode = StatusCodes.Status200OK;
             });
+
         var exceptionMiddleware = new ExceptionMiddleware(
             context => sessionActivityMiddleware.InvokeAsync(
                 context,
@@ -156,12 +170,17 @@ public sealed class PasswordResetRequestPipelineTests
             userContext.Object);
 
         httpContext.Response.Body.Position = 0;
+
         using var reader = new StreamReader(httpContext.Response.Body);
+
         var responseBody = await reader.ReadToEndAsync(cancellationToken);
 
         Assert.Equal(StatusCodes.Status200OK, httpContext.Response.StatusCode);
+
         Assert.DoesNotContain("Password reset is required before continuing.", responseBody);
+
         Assert.True(changePasswordReached);
+
         sessionActivityHandler.Verify(
             x => x.HandleAsync(
                 It.IsAny<UserSessionActivityCommand>(),
@@ -191,6 +210,7 @@ public sealed class PasswordResetRequestPipelineTests
 
         var ordinaryBehavior =
             new PasswordResetBehavior<OrdinaryApplicationCommand>(policy);
+
         await Assert.ThrowsAsync<PasswordResetRequiredException>(
             () => ordinaryBehavior.HandleAsync(
                 new OrdinaryApplicationCommand(),

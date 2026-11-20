@@ -1,10 +1,11 @@
 ﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Dtos;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries.ImportCountries;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Dtos;
 using HelpDesk.src.Shared.Interfaces;
 
-namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Importing.Importers.Countries.ImportCountries;
+namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Countries;
 
-public sealed class CountryDataImporterSeederService(
+public sealed class CountrySeederService(
     ICommandHandler<ImportCountriesCommand, ImportResult> handler) : ISeederService
 {
     // Schema: Business (data importer)
@@ -15,6 +16,8 @@ public sealed class CountryDataImporterSeederService(
     {
         var command = new ImportCountriesCommand();
 
-        await handler.HandleAsync(command, cancellationToken);
+        await handler.HandleAsync(
+            command,
+            cancellationToken);
     }
 }

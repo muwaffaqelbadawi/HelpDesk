@@ -5,6 +5,7 @@ namespace HelpDesk.src.Infrastructure.Options;
 
 public sealed class ApplicationOptions : IApplicationOptions
 {
+    // IANA time-zone identifiers
     public string DefaultTimeZone => "Asia/Riyadh";
     public UserLanguage DefaultLanguage => UserLanguage.English;
 }

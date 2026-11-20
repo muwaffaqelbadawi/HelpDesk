@@ -4,7 +4,7 @@ using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Sectors
 
 namespace HelpDesk.Tests.Integration.TestData;
 
-public static class UserTestData
+public static class TestUser
 {
     public static CreateUserAccountCommand CreateUserCommand(Guid countryId)
     {

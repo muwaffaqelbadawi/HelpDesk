@@ -11,7 +11,6 @@ using HelpDesk.src.Features.Auth.RevokeToken;
 using HelpDesk.src.Features.Auth.Roles.GetMy;
 using HelpDesk.src.Features.Auth.UserSession.TerminateAll;
 using HelpDesk.src.Infrastructure.Services.Jwt;
-using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -158,10 +157,10 @@ public sealed class AuthController(IDateTimeService dateTimeService) : Controlle
         // Overwrite cookies with fresh tokens (keep session alive)
         Response.SetTokenCookies(result.Token);
 
-        return Ok(new ApiResponse<UserAccountData>(
+        return Ok(new ApiResponse<ChangePasswordResponse>(
            message: ApiMessages.PasswordChanged,
            time: dateTimeService,
-           data: result.UserAccountData));
+           data: result));
     }
 
     // Forgot Password

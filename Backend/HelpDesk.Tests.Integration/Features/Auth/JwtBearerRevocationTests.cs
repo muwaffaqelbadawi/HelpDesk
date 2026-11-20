@@ -143,36 +143,6 @@ public sealed class JwtBearerRevocationTests
             document.RootElement.GetProperty("detail").GetString());
     }
 
-    //[Fact]
-    //public async Task Should_reject_a_revoked_token_through_the_real_redis_backed_pipeline()
-    //{
-    //    var connectionString =
-    //        RedisJwtRevocationStoreTests.GetRedisConnectionString();
-    //    var now = DateTimeOffset.UtcNow;
-    //    var jti = Guid.NewGuid();
-    //    await using var app = await CreateAppAsync(
-    //        revocationStore: null,
-    //        redisConnectionString: connectionString,
-    //        now: now);
-    //    await using (var scope = app.Services.CreateAsyncScope())
-    //    {
-    //        var store = scope.ServiceProvider
-    //            .GetRequiredService<IJwtRevocationStore>();
-    //        await store.RevokeAsync(
-    //            jti,
-    //            now.AddMinutes(10),
-    //            TestContext.Current.CancellationToken);
-    //    }
-
-    //    using var client = app.GetTestClient();
-    //    using var response = await SendAsync(
-    //        client,
-    //        CreateBearerToken(jti.ToString()));
-
-    //    Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    //    await AssertAuthenticationProblemDetailsAsync(response);
-    //}
-
     [Fact]
     public async Task Should_continue_to_accept_tokens_from_the_access_token_cookie()
     {
@@ -232,8 +202,8 @@ public sealed class JwtBearerRevocationTests
 
         builder.AddJwtOptions();
         builder.Services.AddAuthorization();
-        builder.Services.AddSingleton<IUserContext, UserContextTestData>();
-        builder.Services.AddSingleton<IApiContext, ApiContextTestData>();
+        builder.Services.AddSingleton<IUserContext, TestUserContext>();
+        builder.Services.AddSingleton<IApiContext, TestApiContext>();
 
         var app = builder.Build();
         app.UseExceptionHandling();

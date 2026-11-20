@@ -13,9 +13,11 @@ public sealed class PasswordResetEmailEventHandler(
         PasswordResetEvent @event,
         CancellationToken cancellationToken = default)
     {
+        var userId = @event.User.Id;
+
         logger.LogInformation("{handler}: Handling login event for user {UserId}",
             nameof(PasswordResetEmailEventHandler),
-            @event.User.Id);
+            userId);
 
         var userName = @event.User.UserName;
         var email = @event.User.Email;
@@ -39,15 +41,15 @@ public sealed class PasswordResetEmailEventHandler(
         }
 
         await queueEmailService.PasswordResetSuccessfullyEmail(
-            userId: @event.User.Id,
+            userId: userId,
             userName: userName,
-            @event.OccurredAt.ToString("dd MMM yyyy, hh:mm tt zzz"),
+            resetTime: @event.OccurredAt.ToString("dd MMM yyyy, hh:mm tt zzz"),
             recipientEmail: email,
             traceId: userContext.TraceId,
             correlationId: userContext.CorrelationId,
             cancellationToken: cancellationToken);
 
         logger.LogInformation("Login email for user {user} queued successfully.",
-            @event.User.Id);
+            userId);
     }
 }

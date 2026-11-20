@@ -63,4 +63,9 @@ public interface IUserRepository
         Guid userId,
         DateTimeOffset now,
         CancellationToken cancellationToken);
+
+    Task<int> UpdateTimeZoneAsync(
+        Guid userId,
+        Guid timeZoneId,
+        CancellationToken cancellationToken);
 }

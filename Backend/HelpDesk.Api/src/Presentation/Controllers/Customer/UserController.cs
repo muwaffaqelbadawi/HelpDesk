@@ -1,4 +1,5 @@
 ﻿using HelpDesk.src.Features.Users.GetMy;
+using HelpDesk.src.Features.Users.Settings.SetTimeZone;
 using HelpDesk.src.Features.Users.UpdateMy;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
@@ -8,14 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace HelpDesk.src.Presentation.Controllers.Customer;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/users/me")]
 [Authorize]
 public sealed class UserController(IDateTimeService dateTimeService) : ControllerBase
 {
     // Role: "Customer"
 
     // Get
-    [HttpGet("me")]
+    [HttpGet]
     public async Task<IActionResult> GetMytUserAccount(
         [FromServices] IQueryHandler<GetMyUserAccountResponse> handler,
         CancellationToken cancellationToken)
@@ -29,7 +30,7 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
     }
 
     // Update
-    [HttpPut("me")]
+    [HttpPut]
     public async Task<IActionResult> UpdateMyUserAccount(
         [FromServices] ICommandHandler<UpdateMyUserAccountCommand, UpdateMyUserAccountResponse> handler,
         [FromBody] UpdateMyUserAccountBody body,
@@ -47,5 +48,39 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
 
         // Return 204 No Content
         return NoContent();
+    }
+
+    // Get TimeZone
+    //[HttpGet("time-zone")]
+    //public async Task<IActionResult> GetAllTimeZones(
+    //    [FromServices] ICommandHandler<GetTimeZoneCommand, GetTimeZoneResponse> handler,
+    //    [FromBody] GetTimeZoneBody body,
+    //    CancellationToken cancellationToken)
+    //{
+    //    var command = new GetTimeZoneCommand(body.TimeZoneId);
+
+    //    var result = await handler.HandleAsync(command, cancellationToken);
+
+    //    return Ok(new ApiResponse<GetTimeZoneResponse>(
+    //        message: ApiMessages.UserTimeZoneSet,
+    //        time: dateTimeService,
+    //        data: result));
+    //}
+
+    // Set TimeZone
+    [HttpPut("time-zone")]
+    public async Task<IActionResult> SetTimeZone(
+        [FromServices] ICommandHandler<SetTimeZoneCommand, SetTimeZoneResponse> handler,
+        [FromBody] SetTimeZoneBody body,
+        CancellationToken cancellationToken)
+    {
+        var command = new SetTimeZoneCommand(body.TimeZoneId);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        return Ok(new ApiResponse<SetTimeZoneResponse>(
+            message: ApiMessages.UserTimeZoneSet,
+            time: dateTimeService,
+            data: result));
     }
 }

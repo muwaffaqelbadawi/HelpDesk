@@ -938,6 +938,33 @@ namespace HelpDesk.Migrations
                     b.ToTable("RolePermissionModules", "Auth");
                 });
 
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationTimeZone", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Release")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("NameIndex");
+
+                    b.ToTable("TimeZones", "Auth");
+                });
+
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1024,10 +1051,8 @@ namespace HelpDesk.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PreferredLanguage")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<int?>("PreferredLanguage")
+                        .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1041,11 +1066,8 @@ namespace HelpDesk.Migrations
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TimeZone")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("Asia/Riyadh");
+                    b.Property<Guid?>("TimeZoneId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -1079,6 +1101,8 @@ namespace HelpDesk.Migrations
                         .HasFilter("[IsDeleted] = 0 AND [NormalizedUserName] IS NOT NULL");
 
                     b.HasIndex("StatusId");
+
+                    b.HasIndex("TimeZoneId");
 
                     b.HasIndex("UpdatedById");
 
@@ -1618,6 +1642,11 @@ namespace HelpDesk.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationTimeZone", "TimeZone")
+                        .WithMany("Users")
+                        .HasForeignKey("TimeZoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
@@ -1630,6 +1659,8 @@ namespace HelpDesk.Migrations
                     b.Navigation("LockedBy");
 
                     b.Navigation("Status");
+
+                    b.Navigation("TimeZone");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -1799,6 +1830,11 @@ namespace HelpDesk.Migrations
                     b.Navigation("RolePermissionModules");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationTimeZone", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", b =>

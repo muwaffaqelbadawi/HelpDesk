@@ -15,9 +15,6 @@ public partial class AppDbContext
         ApplicationRoleClaim,
         ApplicationUserToken>
 {
-    // Add DbSet properties for your identity entities here
-
-
     // Auth.UserStatuses
     public DbSet<ApplicationUserStatus> UserStatuses { get; set; } = null!;
 
@@ -38,6 +35,9 @@ public partial class AppDbContext
 
     // Auth.UserHistories
     public DbSet<ApplicationUserHistory> UserHistories { get; set; } = null!;
+
+    // Auth.TimeZones
+    public DbSet<ApplicationTimeZone> TimeZones { get; set; } = null!;
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -126,12 +126,17 @@ public partial class AppDbContext
                 .HasDefaultValue(false);
 
             // TimeZone (Property)
-            entity.Property(e => e.TimeZone)
-                .HasDefaultValue("Asia/Riyadh");
+            entity.Property(e => e.TimeZoneId);
+
+            // TimeZone (Relation)
+            entity.HasOne(e => e.TimeZone)
+                .WithMany(e => e.Users)
+                .HasForeignKey(e => e.TimeZoneId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // PreferredLanguage (Property)
-            entity.Property(e => e.PreferredLanguage)
-                .HasDefaultValue(UserLanguage.English);
+            entity.Property(e => e.PreferredLanguage);
 
             // RowVersion (Property)
             entity.Property(e => e.RowVersion)
@@ -538,6 +543,33 @@ public partial class AppDbContext
 
             // UserSession query filter (IsDeleted)
             entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // Auth.TimeZones
+        modelBuilder.Entity<ApplicationTimeZone>(entity =>
+        {
+            // Schema
+            entity.ToTable("TimeZones", "Auth");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired();
+
+            // Name (Index)
+            entity.HasIndex(e => e.Name)
+                .HasDatabaseName("NameIndex")
+                .IsUnique();
+
+            // Release (Property)
+            entity.Property(e => e.Release)
+                .HasMaxLength(10)
+                .IsRequired();
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive);
         });
 
         ConfigureBusinessModel(modelBuilder);

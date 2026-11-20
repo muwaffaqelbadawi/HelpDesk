@@ -23,9 +23,11 @@ public sealed class UserAccountCreatedEmailEventHandler(
         UserAccountCreatedEvent @event,
         CancellationToken cancellationToken = default)
     {
+        var userId = @event.User.Id;
+
         logger.LogInformation("{handler}: Handling login event for user {UserId}",
             nameof(UserAccountCreatedEmailEventHandler),
-            @event.User.Id);
+            userId);
 
         var userName = @event.User.UserName;
         var email = @event.User.Email;
@@ -57,7 +59,7 @@ public sealed class UserAccountCreatedEmailEventHandler(
 
         var resetPasswordLink = ResetPasswordLink.Build(
             baseUrl: baseUrl,
-            userId: @event.User.Id,
+            userId: userId,
             token: passwordResetToken);
 
         // expired reset password link
@@ -67,7 +69,7 @@ public sealed class UserAccountCreatedEmailEventHandler(
             .ToString("dd MMM yyyy, hh:mm tt zzz");
 
         await queueEmailService.WelcomeEmail(
-            userId: @event.User.Id,
+            userId: userId,
             userName: userName,
             recipientEmail: email,
             tempPassword: @event.TempPassword,
@@ -78,6 +80,6 @@ public sealed class UserAccountCreatedEmailEventHandler(
             cancellationToken: cancellationToken);
 
         logger.LogInformation("Welcome email for user {user} queued successfully.",
-            @event.User.Id);
+            userId);
     }
 }

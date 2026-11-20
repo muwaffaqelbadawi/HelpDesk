@@ -167,13 +167,13 @@ public sealed class UserRepository(
                 && u.Employee.RowVersion == employeeRowVersion
                 && u.CreatedById == userId)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(u => u.UserName, userName)
-                .SetProperty(u => u.Email, email)
-                .SetProperty(u => u.Employee!.FullEnName, fullEnName)
-                .SetProperty(u => u.Employee!.FullArName, fullArName)
-                .SetProperty(u => u.UpdatedById, currentUserId)
-                .SetProperty(u => u.UpdatedAt, now),
-            cancellationToken);
+                    .SetProperty(u => u.UserName, userName)
+                    .SetProperty(u => u.Email, email)
+                    .SetProperty(u => u.Employee!.FullEnName, fullEnName)
+                    .SetProperty(u => u.Employee!.FullArName, fullArName)
+                    .SetProperty(u => u.UpdatedById, currentUserId)
+                    .SetProperty(u => u.UpdatedAt, now),
+                cancellationToken);
     }
 
     public async Task<int> UpdateAsync(
@@ -194,13 +194,13 @@ public sealed class UserRepository(
                 && u.Employee.RowVersion == employeeRowVersion
                 && u.CreatedById == userId)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(u => u.UserName, userName)
-                .SetProperty(u => u.Email, email)
-                .SetProperty(u => u.Employee!.FullEnName, fullEnName)
-                .SetProperty(u => u.Employee!.FullArName, fullArName)
-                .SetProperty(u => u.UpdatedById, userId)
-                .SetProperty(u => u.UpdatedAt, now),
-            cancellationToken);
+                    .SetProperty(u => u.UserName, userName)
+                    .SetProperty(u => u.Email, email)
+                    .SetProperty(u => u.Employee!.FullEnName, fullEnName)
+                    .SetProperty(u => u.Employee!.FullArName, fullArName)
+                    .SetProperty(u => u.UpdatedById, userId)
+                    .SetProperty(u => u.UpdatedAt, now),
+                cancellationToken);
     }
 
     public async Task<int> UpdatePasswordAsync(
@@ -211,9 +211,9 @@ public sealed class UserRepository(
         return await dbContext.Users
             .Where(u => u.Id == userId)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(u => u.LastPasswordChangedAt, now)
-                .SetProperty(u => u.LastPasswordChangedById, userId)
-                .SetProperty(u => u.MustResetPassword, false),
+                    .SetProperty(u => u.LastPasswordChangedAt, now)
+                    .SetProperty(u => u.LastPasswordChangedById, userId)
+                    .SetProperty(u => u.MustResetPassword, false),
                 cancellationToken);
     }
 
@@ -225,9 +225,21 @@ public sealed class UserRepository(
         return await dbContext.Users
             .Where(u => u.Id == userId)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(u => u.LastPasswordChangedAt, now)
-                .SetProperty(u => u.LastPasswordChangedById, userId)
-                .SetProperty(u => u.MustResetPassword, true),
+                    .SetProperty(u => u.LastPasswordChangedAt, now)
+                    .SetProperty(u => u.LastPasswordChangedById, userId)
+                    .SetProperty(u => u.MustResetPassword, true),
+                cancellationToken);
+    }
+
+    public async Task<int> UpdateTimeZoneAsync(
+        Guid userId,
+        Guid timeZoneId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(u => u.TimeZoneId, timeZoneId),
                 cancellationToken);
     }
 }

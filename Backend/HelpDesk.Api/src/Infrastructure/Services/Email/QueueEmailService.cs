@@ -5,7 +5,6 @@ namespace HelpDesk.src.Infrastructure.Services.Email;
 public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
     : IQueueEmailService
 {
-    // Test email
     public async Task TestEmail(
         Guid userId,
         string recipientEmail,
@@ -28,7 +27,6 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
         }, cancellationToken);
     }
 
-    // Reset password email
     public async Task ResetPasswordEmail(
         Guid userId,
         string userName,
@@ -55,7 +53,6 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
         }, cancellationToken);
     }
 
-    // Welcome email
     public async Task WelcomeEmail(
         Guid userId,
         string userName,
@@ -86,7 +83,6 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
         }, cancellationToken);
     }
 
-    // Superadmin welcome email
     public async Task SuperadminWelcomeEmail(
         Guid userId,
         string userName,
@@ -115,7 +111,6 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
         }, cancellationToken);
     }
 
-    // Login email
     public async Task LoginEmail(
         Guid userId,
         string userName,
@@ -165,6 +160,32 @@ public sealed class QueueEmailService(IBackgroundTaskQueue taskQueue)
                 userId: userId,
                 userName: userName,
                 resetTime: resetTime,
+                recipientEmail: recipientEmail,
+                traceId: traceId,
+                correlationId: correlationId,
+                cancellationToken: cancellationToken);
+        }, cancellationToken);
+    }
+
+    public async Task PasswordChangedEmail(
+        Guid userId,
+        string userName,
+        string changedPasswordTime,
+        string recipientEmail,
+        string traceId,
+        string correlationId,
+        CancellationToken cancellationToken)
+    {
+        await taskQueue.QueueBackgroundWorkItemAsync(async (services, cancellationToken) =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var emailSender = services.GetRequiredService<IEmailService>();
+
+            await emailSender.PasswordChangedEmailAsync(
+                userId: userId,
+                userName: userName,
+                changedPasswordTime: changedPasswordTime,
                 recipientEmail: recipientEmail,
                 traceId: traceId,
                 correlationId: correlationId,

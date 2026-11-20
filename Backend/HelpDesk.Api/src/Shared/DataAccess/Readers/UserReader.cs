@@ -11,11 +11,23 @@ namespace HelpDesk.src.Shared.DataAccess.Readers;
 
 public sealed class UserReader(
     UserManager<ApplicationUser> userManager,
-    AppDbContext dbContext) : IUserReader
+    AppDbContext dbContext)
+        : IUserReader
 {
     public Task<ApplicationUser?> GetUserAsync(string userId)
     {
         return userManager.FindByIdAsync(userId);
+    }
+
+    public async Task<ApplicationUser?> GetUserWithTimeZoneAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Include(u => u.TimeZone)
+            .SingleOrDefaultAsync(
+                u => u.Id == userId,
+                cancellationToken);
     }
 
     public Task<ApplicationUser?> GetUserByEmailAsync(string email)
@@ -25,7 +37,7 @@ public sealed class UserReader(
 
     public async Task<PagedResult<UserAccountData>> GetAllAsync(
         QueryParameters query,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         var queryable = dbContext.Users
             .AsNoTracking()
@@ -54,7 +66,7 @@ public sealed class UserReader(
         string? search,
         int offset,
         int pageSize,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         var query = dbContext.Users
             .AsNoTracking();
@@ -91,7 +103,7 @@ public sealed class UserReader(
 
     public async Task<UserAccountRowVersionData> GetNewRowVersionAsync(
         Guid userId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await dbContext.Users
             .Where(u => u.Id == userId)
@@ -105,11 +117,32 @@ public sealed class UserReader(
 
     public async Task<bool> IsEmployee(
         Guid userId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await dbContext.Users
             .AnyAsync(
                 u => u.Id == userId && u.Employee != null,
                 cancellationToken);
+    }
+
+    public async Task<bool> IsTimeZoneExistAndActiveAsync(
+        Guid timeZoneId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.TimeZones
+        .AnyAsync(
+            t => t.Id == timeZoneId && t.IsActive,
+            cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<string>> GetActiveTimeZonesAsync(
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.TimeZones
+            .AsNoTracking()
+            .Where(t => t.IsActive)
+            .OrderBy(t => t.Name)
+            .Select(t => t.Name)
+            .ToListAsync(cancellationToken);
     }
 }

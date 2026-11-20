@@ -14,7 +14,11 @@ public static class TemplateName
     // PasswordResetLinkEmail
     public const string PasswordResetLinkEmail = "PasswordResetLinkEmail.html";
 
+    // PasswordResetSuccessfullyEmail
     public const string PasswordResetSuccessfullyEmail = "PasswordResetSuccessfullyEmail.html";
+
+    // PasswordChangedEmail
+    public const string PasswordChangedEmail = "PasswordChangedEmail.html";
 
     // SuperadminWelcomeEmail
     public const string SuperadminWelcomeEmail = "SuperadminWelcomeEmail.html";

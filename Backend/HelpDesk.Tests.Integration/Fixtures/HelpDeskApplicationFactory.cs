@@ -1,12 +1,17 @@
-﻿using HelpDesk.src.Shared.AssemblyMarker;
+﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+using HelpDesk.src.Shared.AssemblyMarker;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.Tests.Integration.Configurations;
 using HelpDesk.Tests.Integration.TestData;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace HelpDesk.Tests.Integration.Fixtures;
 
 public sealed class HelpDeskApplicationFactory
@@ -30,9 +35,15 @@ public sealed class HelpDeskApplicationFactory
 
         builder.ConfigureTestServices(services =>
         {
-            services.AddScoped<UserContextTestData>();
+            services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
+
+            services.AddDbContext<AppDbContext>(
+                options => options.UseSqlServer(testConnectionString));
+
+            services.AddScoped<TestUserContext>();
+
             services.AddScoped<IUserContext>(sp =>
-                sp.GetRequiredService<UserContextTestData>());
+                sp.GetRequiredService<TestUserContext>());
         });
     }
 }
