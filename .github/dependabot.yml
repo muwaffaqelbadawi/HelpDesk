@@ -9,6 +9,8 @@ updates:
     ignore:
       - dependency-name: "Microsoft.*"
         versions: [">=11.0.0"]
+      - dependency-name: "System.*"
+        versions: [">=11.0.0"]
       - dependency-name: "Serilog.*"
         versions: [">=11.0.0"]
       - dependency-name: "Swashbuckle.*"
@@ -44,3 +46,9 @@ updates:
         versions: [">=6.0.0"]
       - dependency-name: "typescript"
         versions: [">=6.0.0"]
+      - dependency-name: "@eslint/js"
+        versions: [">=10.0.0"]
+      - dependency-name: "eslint"
+        versions: [">=10.0.0"]
+      - dependency-name: "angular-eslint"
+        versions: [">=21.0.0"]
