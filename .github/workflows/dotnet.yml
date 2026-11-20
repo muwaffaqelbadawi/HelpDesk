@@ -73,4 +73,11 @@ jobs:
             User Id=sa;
             Password=${{ secrets.SQLSERVER_SA_PASSWORD }};
             TrustServerCertificate=True;
+
+          ConnectionStrings__AppDBConnection: >-
+            Server=localhost,1433;
+            Database=HelpDesk_IntegrationTests;
+            User Id=sa;
+            Password=${{ secrets.SQLSERVER_SA_PASSWORD }};
+            TrustServerCertificate=True;
         run: dotnet test --solution HelpDesk.slnx --no-build --configuration Release --verbosity normal
