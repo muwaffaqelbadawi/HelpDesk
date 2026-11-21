@@ -9,12 +9,6 @@ updates:
     ignore:
       - dependency-name: "Microsoft.*"
         versions: [">=11.0.0"]
-      - dependency-name: "System.*"
-        versions: [">=11.0.0"]
-      - dependency-name: "Serilog.*"
-        versions: [">=11.0.0"]
-      - dependency-name: "Swashbuckle.*"
-        versions: [">=11.0.0"]
 
   # Frontend/Angular
   - package-ecosystem: "npm"
