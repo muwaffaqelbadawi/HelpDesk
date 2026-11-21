@@ -11,7 +11,9 @@ public sealed class GetTicketsHandler(ITicketReader ticketReader)
         CancellationToken cancellationToken)
     {
         var pagedResult = await ticketReader
-            .GetAllAsync(query, cancellationToken);
+            .GetAllAsync(
+                query,
+                cancellationToken);
 
         return new GetTicketsResponse(pagedResult);
     }

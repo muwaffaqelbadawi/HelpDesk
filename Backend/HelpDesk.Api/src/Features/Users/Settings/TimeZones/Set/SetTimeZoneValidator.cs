@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace HelpDesk.src.Features.Users.Settings.SetTimeZone;
+namespace HelpDesk.src.Features.Users.Settings.TimeZones.Set;
 
 public sealed class SetTimeZoneValidator : AbstractValidator<SetTimeZoneCommand>
 {

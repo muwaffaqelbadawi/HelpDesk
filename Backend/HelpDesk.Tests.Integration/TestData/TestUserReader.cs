@@ -64,4 +64,10 @@ internal sealed class TestUserReader(ApplicationUser user) : IUserReader
     {
         throw new NotImplementedException();
     }
+
+    public Task<IReadOnlyCollection<string>> GetAllActiveTimeZonesAsync(
+        CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

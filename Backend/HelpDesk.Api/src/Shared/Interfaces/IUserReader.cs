@@ -40,6 +40,6 @@ public interface IUserReader
         Guid timeZoneId,
         CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<string>> GetActiveTimeZonesAsync(
+    Task<IReadOnlyCollection<string>> GetAllActiveTimeZonesAsync(
         CancellationToken cancellationToken);
 }

@@ -135,7 +135,7 @@ public sealed class UserReader(
             cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<string>> GetActiveTimeZonesAsync(
+    public async Task<IReadOnlyCollection<string>> GetAllActiveTimeZonesAsync(
         CancellationToken cancellationToken)
     {
         return await dbContext.TimeZones

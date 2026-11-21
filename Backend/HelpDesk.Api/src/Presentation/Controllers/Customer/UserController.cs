@@ -1,5 +1,6 @@
 ﻿using HelpDesk.src.Features.Users.GetMy;
-using HelpDesk.src.Features.Users.Settings.SetTimeZone;
+using HelpDesk.src.Features.Users.Settings.TimeZones.Get;
+using HelpDesk.src.Features.Users.Settings.TimeZones.Set;
 using HelpDesk.src.Features.Users.UpdateMy;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Responses;
@@ -51,21 +52,18 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
     }
 
     // Get all TimeZone
-    //[HttpGet("time-zone")]
-    //public async Task<IActionResult> GetAllTimeZones(
-    //    [FromServices] ICommandHandler<GetTimeZoneCommand, GetTimeZoneResponse> handler,
-    //    [FromBody] GetTimeZoneBody body,
-    //    CancellationToken cancellationToken)
-    //{
-    //    var command = new GetTimeZoneCommand(body.TimeZoneId);
+    [HttpGet("time-zone")]
+    public async Task<IActionResult> GetAllTimeZones(
+        [FromServices] IQueryHandler<GetAllTimeZonesResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(cancellationToken);
 
-    //    var result = await handler.HandleAsync(command, cancellationToken);
-
-    //    return Ok(new ApiResponse<GetTimeZoneResponse>(
-    //        message: ApiMessages.UserTimeZoneSet,
-    //        time: dateTimeService,
-    //        data: result));
-    //}
+        return Ok(new ApiResponse<GetAllTimeZonesResponse>(
+            message: ApiMessages.UserTimeZoneRetrieved,
+            time: dateTimeService,
+            data: result));
+    }
 
     // Set TimeZone
     [HttpPut("time-zone")]

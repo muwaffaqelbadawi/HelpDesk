@@ -10,9 +10,10 @@ public sealed class GetMyTicketsHandler(
     public async Task<GetMyTicketsResponse> HandleAsync(
         CancellationToken cancellationToken)
     {
-        var tickets = await ticketReader.GetMyTicketsAsync(
-            userId: userContext.GuidUserId,
-            cancellationToken: cancellationToken);
+        var tickets = await ticketReader
+            .GetMyTicketsAsync(
+                userContext.GuidUserId,
+                cancellationToken);
 
         return new GetMyTicketsResponse(tickets);
     }
