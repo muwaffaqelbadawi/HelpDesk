@@ -50,7 +50,7 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
         return NoContent();
     }
 
-    // Get TimeZone
+    // Get all TimeZone
     //[HttpGet("time-zone")]
     //public async Task<IActionResult> GetAllTimeZones(
     //    [FromServices] ICommandHandler<GetTimeZoneCommand, GetTimeZoneResponse> handler,

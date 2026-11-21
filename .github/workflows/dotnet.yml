@@ -8,6 +8,9 @@ on:
 
   workflow_dispatch:
 
+env:
+  SQLSERVER_HOST_PORT: 11433
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,17 +32,20 @@ jobs:
 
       - name: Start SQL Server
         run: |
+          sqlserver_container_name="helpdesk-sqlserver-ci-${GITHUB_RUN_ID:-local}-${RANDOM}"
+          echo "SQLSERVER_CONTAINER_NAME=$sqlserver_container_name" >> "$GITHUB_ENV"
+
           docker run -d \
-            --name helpdesk-sqlserver-ci \
+            --name "$sqlserver_container_name" \
             -e ACCEPT_EULA=Y \
             -e MSSQL_SA_PASSWORD="${{ secrets.SQLSERVER_SA_PASSWORD }}" \
-            -p 1433:1433 \
+            -p "${SQLSERVER_HOST_PORT}:1433" \
             mcr.microsoft.com/mssql/server:2025-latest
 
       - name: Wait for SQL Server
         run: |
           for i in {1..60}; do
-            if docker exec helpdesk-sqlserver-ci \
+            if docker exec "$SQLSERVER_CONTAINER_NAME" \
               /opt/mssql-tools18/bin/sqlcmd \
               -S localhost \
               -U sa \
@@ -55,7 +61,7 @@ jobs:
           done
 
           echo "SQL Server failed to become ready."
-          docker logs helpdesk-sqlserver-ci
+          docker logs "$SQLSERVER_CONTAINER_NAME"
           exit 1
 
       - name: Show .NET SDK
@@ -68,16 +74,20 @@ jobs:
         working-directory: Backend
         env:
           ConnectionStrings__IntegrationTestConnection: >-
-            Server=localhost,1433;
+            Server=localhost,${{ env.SQLSERVER_HOST_PORT }};
             Database=HelpDesk_IntegrationTests;
             User Id=sa;
             Password=${{ secrets.SQLSERVER_SA_PASSWORD }};
             TrustServerCertificate=True;
 
           ConnectionStrings__AppDBConnection: >-
-            Server=localhost,1433;
+            Server=localhost,${{ env.SQLSERVER_HOST_PORT }};
             Database=HelpDesk_IntegrationTests;
             User Id=sa;
             Password=${{ secrets.SQLSERVER_SA_PASSWORD }};
             TrustServerCertificate=True;
         run: dotnet test --solution HelpDesk.slnx --no-build --configuration Release --verbosity normal
+
+      - name: Remove SQL Server container
+        if: always()
+        run: docker rm --force "$SQLSERVER_CONTAINER_NAME"
