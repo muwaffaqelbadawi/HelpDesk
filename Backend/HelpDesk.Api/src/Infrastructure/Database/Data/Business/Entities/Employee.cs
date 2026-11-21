@@ -16,6 +16,10 @@ public sealed class Employee
     public string? FullArName { get; set; } = null!;
     public string Number { get; set; } = null!;
 
+    // Language
+    public Guid? LanguageId { get; set; }
+    public Language? Language { get; set; }
+
     // Department
     public Guid? DepartmentId { get; set; }
     public Department? Department { get; set; }

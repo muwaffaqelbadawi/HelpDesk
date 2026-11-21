@@ -28,7 +28,6 @@ public sealed class CreateUserAccountTests
         var phoneNumberRules = new Mock<IPhoneNumberRules>();
         var numberingService = new Mock<INumberingService>();
         var dateTimeService = new Mock<IDateTimeService>();
-        var applicationOptions = new Mock<IApplicationOptions>();
         var queueEmailService = new Mock<IQueueEmailService>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
         var logger = new Mock<ILogger<CreateUserAccountHandler>>();
@@ -46,7 +45,6 @@ public sealed class CreateUserAccountTests
             phoneNumberRules.Object,
             numberingService.Object,
             dateTimeService.Object,
-            applicationOptions.Object,
             dispatcher.Object,
             logger.Object);
 
@@ -206,7 +204,6 @@ public sealed class CreateUserAccountTests
         var phoneNumberRules = new Mock<IPhoneNumberRules>();
         var numberingService = new Mock<INumberingService>();
         var dateTimeService = new Mock<IDateTimeService>();
-        var applicationOptions = new Mock<IApplicationOptions>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
         var logger = new Mock<ILogger<CreateUserAccountHandler>>();
 
@@ -222,7 +219,6 @@ public sealed class CreateUserAccountTests
             phoneNumberRules.Object,
             numberingService.Object,
             dateTimeService.Object,
-            applicationOptions.Object,
             dispatcher.Object,
             logger.Object);
 
@@ -301,7 +297,6 @@ public sealed class CreateUserAccountTests
         var phoneNumberRules = new Mock<IPhoneNumberRules>();
         var numberingService = new Mock<INumberingService>();
         var dateTimeService = new Mock<IDateTimeService>();
-        var applicationOptions = new Mock<IApplicationOptions>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
         var logger = new Mock<ILogger<CreateUserAccountHandler>>();
 
@@ -317,7 +312,6 @@ public sealed class CreateUserAccountTests
             phoneNumberRules.Object,
             numberingService.Object,
             dateTimeService.Object,
-            applicationOptions.Object,
             dispatcher.Object,
             logger.Object);
 
@@ -407,7 +401,6 @@ public sealed class CreateUserAccountTests
         var phoneNumberRules = new Mock<IPhoneNumberRules>();
         var numberingService = new Mock<INumberingService>();
         var dateTimeService = new Mock<IDateTimeService>();
-        var applicationOptions = new Mock<IApplicationOptions>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
         var logger = new Mock<ILogger<CreateUserAccountHandler>>();
 
@@ -423,7 +416,6 @@ public sealed class CreateUserAccountTests
             phoneNumberRules.Object,
             numberingService.Object,
             dateTimeService.Object,
-            applicationOptions.Object,
             dispatcher.Object,
             logger.Object);
 
@@ -512,7 +504,6 @@ public sealed class CreateUserAccountTests
         var phoneNumberRules = new Mock<IPhoneNumberRules>();
         var numberingService = new Mock<INumberingService>();
         var dateTimeService = new Mock<IDateTimeService>();
-        var applicationOptions = new Mock<IApplicationOptions>();
         var dispatcher = new Mock<IDomainEventDispatcher>();
         var logger = new Mock<ILogger<CreateUserAccountHandler>>();
 
@@ -528,7 +519,6 @@ public sealed class CreateUserAccountTests
             phoneNumberRules.Object,
             numberingService.Object,
             dateTimeService.Object,
-            applicationOptions.Object,
             dispatcher.Object,
             logger.Object);
 

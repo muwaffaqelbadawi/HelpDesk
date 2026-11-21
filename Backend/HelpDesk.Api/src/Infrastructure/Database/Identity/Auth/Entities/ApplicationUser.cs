@@ -9,6 +9,11 @@ public sealed class ApplicationUser : IdentityUser<Guid>
     public ApplicationUserStatus Status { get; set; } = null!;
 
 
+    // PreferredLanguage
+    public Guid? PreferredLanguageId { get; set; }
+    public Language? PreferredLanguage { get; set; }
+
+
     // Password lifecycle
     public DateTimeOffset? LastPasswordChangedAt { get; set; }
     public Guid? LastPasswordChangedById { get; set; }
@@ -50,9 +55,6 @@ public sealed class ApplicationUser : IdentityUser<Guid>
     // TimeZone
     public Guid? TimeZoneId { get; set; }
     public ApplicationTimeZone? TimeZone { get; set; }
-
-    // Language
-    public UserLanguage? PreferredLanguage { get; set; }
 
 
     // Concurrency

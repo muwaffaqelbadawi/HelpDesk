@@ -55,9 +55,7 @@ namespace HelpDesk.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -94,9 +92,7 @@ namespace HelpDesk.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -183,9 +179,7 @@ namespace HelpDesk.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -243,6 +237,9 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid?>("LanguageId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -283,6 +280,8 @@ namespace HelpDesk.Migrations
                     b.HasIndex("DeletedById");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("LanguageId");
 
                     b.HasIndex("Number")
                         .IsUnique();
@@ -332,6 +331,43 @@ namespace HelpDesk.Migrations
                     b.ToTable("EmployeeAvailabilities", "Business");
                 });
 
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Language", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Languages", "Business");
+                });
+
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Sector", b =>
                 {
                     b.Property<Guid>("Id")
@@ -359,9 +395,7 @@ namespace HelpDesk.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -666,9 +700,7 @@ namespace HelpDesk.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -705,9 +737,7 @@ namespace HelpDesk.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1051,8 +1081,8 @@ namespace HelpDesk.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PreferredLanguage")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("PreferredLanguageId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1099,6 +1129,8 @@ namespace HelpDesk.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[IsDeleted] = 0 AND [NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("PreferredLanguageId");
 
                     b.HasIndex("StatusId");
 
@@ -1371,6 +1403,11 @@ namespace HelpDesk.Migrations
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Language", "Language")
+                        .WithMany("Employees")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Sector", "Sector")
                         .WithMany("Employees")
                         .HasForeignKey("SectorId")
@@ -1398,6 +1435,8 @@ namespace HelpDesk.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Language");
 
                     b.Navigation("Sector");
 
@@ -1636,6 +1675,11 @@ namespace HelpDesk.Migrations
                         .HasForeignKey("LockedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Language", "PreferredLanguage")
+                        .WithMany("Users")
+                        .HasForeignKey("PreferredLanguageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUserStatus", "Status")
                         .WithMany("Users")
                         .HasForeignKey("StatusId")
@@ -1657,6 +1701,8 @@ namespace HelpDesk.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("LockedBy");
+
+                    b.Navigation("PreferredLanguage");
 
                     b.Navigation("Status");
 
@@ -1786,6 +1832,13 @@ namespace HelpDesk.Migrations
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Employee", b =>
                 {
                     b.Navigation("Availability");
+                });
+
+            modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Language", b =>
+                {
+                    b.Navigation("Employees");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Sector", b =>

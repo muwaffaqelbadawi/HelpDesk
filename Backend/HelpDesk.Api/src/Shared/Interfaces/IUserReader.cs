@@ -12,6 +12,10 @@ public interface IUserReader
         Guid userId,
         CancellationToken cancellationToken);
 
+    Task<ApplicationUser?> GetUserWithPreferredLanguageAsync(
+        Guid userId,
+        CancellationToken cancellationToken);
+
     Task<ApplicationUser?> GetUserByEmailAsync(string email);
 
     Task<PagedResult<UserAccountData>> GetAllAsync(
@@ -41,5 +45,12 @@ public interface IUserReader
         CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<string>> GetAllActiveTimeZonesAsync(
+        CancellationToken cancellationToken);
+
+    Task<IReadOnlyCollection<string>> GetAllActiveLanguagesAsync(
+        CancellationToken cancellationToken);
+
+    Task<bool> IsLanguageExistAndActiveAsync(
+        Guid languageId,
         CancellationToken cancellationToken);
 }

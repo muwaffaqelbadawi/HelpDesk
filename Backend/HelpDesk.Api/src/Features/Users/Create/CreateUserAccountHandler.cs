@@ -19,7 +19,6 @@ public sealed class CreateUserAccountHandler
     private readonly IPhoneNumberRules _phoneNumberRules;
     private readonly INumberingService _numberingService;
     private readonly IDateTimeService _dateTimeService;
-    private readonly IApplicationOptions _applicationOptions;
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly ILogger<CreateUserAccountHandler> _logger;
 
@@ -34,7 +33,6 @@ public sealed class CreateUserAccountHandler
         IPhoneNumberRules phoneNumberRules,
         INumberingService numberingService,
         IDateTimeService dateTimeService,
-        IApplicationOptions applicationOptions,
         IDomainEventDispatcher dispatcher,
         ILogger<CreateUserAccountHandler> logger)
     {
@@ -48,7 +46,6 @@ public sealed class CreateUserAccountHandler
         _phoneNumberRules = phoneNumberRules;
         _numberingService = numberingService;
         _dateTimeService = dateTimeService;
-        _applicationOptions = applicationOptions;
         _dispatcher = dispatcher;
         _logger = logger;
     }

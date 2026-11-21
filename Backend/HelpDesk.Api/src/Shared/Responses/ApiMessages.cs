@@ -61,7 +61,8 @@ public static class ApiMessages
     public const string UsersCreated = "Users created successfully.";
     public const string UserUpdated = "User updated successfully.";
     public const string UserTimeZoneSet = "User TimeZone set successfully.";
-    public const string UserTimeZoneRetrieved = "User TimeZone retrieved successfully.";
+    public const string UserPreferredLanguageSet =
+        "User preferred language set successfully.";
 
     // Email messages
     public const string TestEmail = "Test email sent successfully.";
@@ -72,4 +73,9 @@ public static class ApiMessages
     // Exceptions
     public const string AuthenticationRequired = "Authentication is required.";
     public const string ValidationException = "One or more validation errors occurred.";
+
+    // Time & Language
+    public const string TimeZonesRetrieved = "TimeZones retrieved successfully.";
+    public const string LanguagesRetrieved = "Languages retrieved successfully.";
+
 }

@@ -15,13 +15,17 @@ public static class UserQueries
                 UserName = u.UserName ?? string.Empty,
                 Email = u.Email ?? string.Empty,
 
+                TimeZoneId = u.TimeZoneId,
+
                 TimeZone = u.TimeZone != null
                     ? u.TimeZone.Name
                     : null,
 
-                PreferredLanguage = u.PreferredLanguage == null
-                    ? default
-                    : u.PreferredLanguage.Value,
+                PreferredLanguageId = u.PreferredLanguageId,
+
+                PreferredLanguage = u.PreferredLanguage != null
+                        ? u.PreferredLanguage.Name
+                        : null,
 
                 Roles = u.UserRoles
                     .Where(ur => ur.RemovedAt == null)
@@ -40,18 +44,24 @@ public static class UserQueries
                     FullArName = u.Employee.FullArName,
                     JobTitle = u.Employee.JobTitle,
 
+                    DepartmentId = u.Employee.DepartmentId,
+
                     Department = u.Employee.Department != null
                         ? u.Employee.Department.Name
                         : null,
+
+                    SectorId = u.Employee.SectorId,
 
                     Sector = u.Employee.Sector != null
                         ? u.Employee.Sector.Name
                         : null,
 
+                    CountryId = u.Employee.Country.Id,
                     Country = u.Employee.Country.Name,
                     RowVersion = u.Employee.RowVersion
                 }
                 : null,
-            });
+            }
+        );
     }
 }

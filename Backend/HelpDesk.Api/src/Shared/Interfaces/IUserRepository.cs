@@ -68,4 +68,9 @@ public interface IUserRepository
         Guid userId,
         Guid timeZoneId,
         CancellationToken cancellationToken);
+
+    Task<int> UpdatePreferredLanguageAsync(
+        Guid userId,
+        Guid preferredLanguageId,
+        CancellationToken cancellationToken);
 }

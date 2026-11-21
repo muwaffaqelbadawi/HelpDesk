@@ -135,8 +135,12 @@ public partial class AppDbContext
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // PreferredLanguage (Property)
-            entity.Property(e => e.PreferredLanguage);
+            // PreferredLanguage (Relation)
+            entity.HasOne(e => e.PreferredLanguage)
+                .WithMany(e => e.Users)
+                .HasForeignKey(e => e.PreferredLanguageId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // RowVersion (Property)
             entity.Property(e => e.RowVersion)

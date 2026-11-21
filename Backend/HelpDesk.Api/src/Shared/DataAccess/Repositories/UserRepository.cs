@@ -242,4 +242,16 @@ public sealed class UserRepository(
                     .SetProperty(u => u.TimeZoneId, timeZoneId),
                 cancellationToken);
     }
+
+    public async Task<int> UpdatePreferredLanguageAsync(
+        Guid userId,
+        Guid preferredLanguageId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(u => u.PreferredLanguageId, preferredLanguageId),
+                cancellationToken);
+    }
 }

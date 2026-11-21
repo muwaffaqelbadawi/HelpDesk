@@ -29,6 +29,9 @@ public partial class AppDbContext
     // Business.Companies 
     public DbSet<Company> Companies { get; set; } = null!;
 
+    // Business.Languages 
+    public DbSet<Language> Languages { get; set; } = null!;
+
     // Business.Employees
     public DbSet<Employee> Employees { get; set; } = null!;
 
@@ -94,8 +97,7 @@ public partial class AppDbContext
                 .HasDefaultValue(true);
 
             // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
+            entity.Property(e => e.SortOrder);
         });
 
         //Business.Countries
@@ -183,8 +185,7 @@ public partial class AppDbContext
                 .HasDefaultValue(true);
 
             // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
+            entity.Property(e => e.SortOrder);
         });
 
         // Business.Sectors
@@ -220,8 +221,7 @@ public partial class AppDbContext
                 .HasDefaultValue(true);
 
             // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
+            entity.Property(e => e.SortOrder);
         });
 
         // Business.Companies
@@ -257,8 +257,43 @@ public partial class AppDbContext
                 .HasDefaultValue(true);
 
             // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
+            entity.Property(e => e.SortOrder);
+        });
+
+        // Business.Languages
+        modelBuilder.Entity<Language>(entity =>
+        {
+            // Schema
+            entity.ToTable("Languages", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            // SortOrder (Property)
+            entity.Property(e => e.SortOrder);
         });
 
         // Employee Sequence (BIGINT)
@@ -308,6 +343,14 @@ public partial class AppDbContext
             // DeletedAt (Property)
             entity.Property(e => e.DeletedAt);
 
+            // PhotoUrl (Property)
+            entity.Property(e => e.PhotoUrl)
+                .HasMaxLength(500);
+
+            // JobTitle (Property)
+            entity.Property(e => e.JobTitle)
+                .HasMaxLength(200);
+
             // User (Relation)
             entity.HasOne(e => e.User)
                 .WithOne(e => e.Employee)
@@ -330,6 +373,12 @@ public partial class AppDbContext
             entity.HasOne(e => e.DeletedBy)
                 .WithMany(e => e.DeletedEmployees)
                 .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Language (Relation)
+            entity.HasOne(e => e.Language)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.LanguageId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Branch (Relation)
@@ -361,14 +410,6 @@ public partial class AppDbContext
                 .WithMany(e => e.Employees)
                 .HasForeignKey(e => e.SectorId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // PhotoUrl (Property)
-            entity.Property(e => e.PhotoUrl)
-                .HasMaxLength(500);
-
-            // JobTitle (Property)
-            entity.Property(e => e.JobTitle)
-                .HasMaxLength(200);
 
             // Employee (Relation)
             entity.HasOne(e => e.Availability)
@@ -579,8 +620,7 @@ public partial class AppDbContext
                 .HasDefaultValue(true);
 
             // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
+            entity.Property(e => e.SortOrder);
         });
 
         // Business.TicketPriorities
@@ -616,8 +656,7 @@ public partial class AppDbContext
                 .HasDefaultValue(true);
 
             // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
+            entity.Property(e => e.SortOrder);
         });
 
         // Business.TicketComments

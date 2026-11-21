@@ -1,6 +1,7 @@
 ﻿using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Branches;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Companies;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
+using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Languages;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Modules;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Permissions;
 using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.RolePermissionModules;
@@ -16,67 +17,73 @@ public static class SeedRegistry
 {
     public static readonly SeederIdentity Permissions =
         new(
-            Key: "Auth.Permissions",
+            Key: Keys.Permissions,
             Scope: nameof(PermissionSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity Roles =
         new(
-            Key: "Auth.Roles",
+            Key: Keys.Roles,
             Scope: nameof(RoleSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity Modules =
        new(
-           Key: "Auth.Modules",
+           Key: Keys.Modules,
            Scope: nameof(ModuleSeederService),
-           Version: "v1");
+           Version: Versions.One);
 
     public static readonly SeederIdentity RolePermissionModules =
         new(
-            Key: "Auth.RolePermissionModules",
+            Key: Keys.RolePermissionModules,
             Scope: nameof(RolePermissionModulesSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity UserStatuses =
         new(
-            Key: "Auth.UserStatuses",
+            Key: Keys.UserStatuses,
             Scope: nameof(UserStatusSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity Departments =
         new(
-            Key: "Business.Departments",
+            Key: Keys.Departments,
             Scope: nameof(DepartmentSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity Branches =
         new(
-            Key: "Business.Branches",
+            Key: Keys.Branches,
             Scope: nameof(BranchSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity Sectors =
         new(
-            Key: "Business.Sectors",
+            Key: Keys.Sectors,
             Scope: nameof(SectorSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity Companies =
         new(
-            Key: "Business.Companies",
+            Key: Keys.Companies,
             Scope: nameof(CompanySeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity TicketStatuses =
         new(
-            Key: "Business.TicketStatuses",
+            Key: Keys.TicketStatuses,
             Scope: nameof(TicketStatusSeederService),
-            Version: "v1");
+            Version: Versions.One);
 
     public static readonly SeederIdentity TicketPriorities =
         new(
-            Key: "Business.TicketPriorities",
+            Key: Keys.TicketPriorities,
             Scope: nameof(TicketPrioritySeederService),
-            Version: "v1");
+            Version: Versions.One);
+
+    public static readonly SeederIdentity Languages =
+        new(
+            Key: Keys.Languages,
+            Scope: nameof(LanguageSeederService),
+            Version: Versions.One);
 }

@@ -30,6 +30,17 @@ public sealed class UserReader(
                 cancellationToken);
     }
 
+    public async Task<ApplicationUser?> GetUserWithPreferredLanguageAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Include(u => u.PreferredLanguage)
+            .SingleOrDefaultAsync(
+                u => u.Id == userId,
+                cancellationToken);
+    }
+
     public Task<ApplicationUser?> GetUserByEmailAsync(string email)
     {
         return userManager.FindByEmailAsync(email);
@@ -52,7 +63,9 @@ public sealed class UserReader(
             .SelectUserAccount()
             .ToListAsync(cancellationToken);
 
-        var totalPages = TotalPages.Calculate(totalCount, query.PageSize);
+        var totalPages = TotalPages.Calculate(
+            totalCount,
+            query.PageSize);
 
         return new PagedResult<UserAccountData>(
             Items: users,
@@ -144,5 +157,28 @@ public sealed class UserReader(
             .OrderBy(t => t.Name)
             .Select(t => t.Name)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<string>> GetAllActiveLanguagesAsync(
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Languages
+            .AsNoTracking()
+            .Where(t => t.IsActive)
+            .OrderBy(t => t.Name)
+            .Select(t => t.Name)
+            .ToListAsync(cancellationToken);
+
+        throw new NotImplementedException();
+    }
+
+    public async Task<bool> IsLanguageExistAndActiveAsync(
+        Guid languageId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Languages
+        .AnyAsync(
+            t => t.Id == languageId && t.IsActive,
+            cancellationToken);
     }
 }
