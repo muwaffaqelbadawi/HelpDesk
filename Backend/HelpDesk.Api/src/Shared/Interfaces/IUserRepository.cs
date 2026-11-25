@@ -64,13 +64,73 @@ public interface IUserRepository
         DateTimeOffset now,
         CancellationToken cancellationToken);
 
+
+    // ----- Settings -----
+
+    // UpdateById (after settings)
+    Task<int> UpdateByIdAsync(
+        Guid userId,
+        Guid updaterUserId,
+        CancellationToken cancellationToken);
+
+    // TimeZone
     Task<int> UpdateTimeZoneAsync(
         Guid userId,
         Guid timeZoneId,
         CancellationToken cancellationToken);
 
+    // Language
     Task<int> UpdatePreferredLanguageAsync(
         Guid userId,
         Guid preferredLanguageId,
+        CancellationToken cancellationToken);
+
+    // Branch
+    Task<int> UpdateBranchAsync(
+        Guid userId,
+        Guid departmentId,
+        CancellationToken cancellationToken);
+
+    // Department
+    Task<int> UpdateDepartmentAsync(
+        Guid userId,
+        Guid departmentId,
+        CancellationToken cancellationToken);
+
+    // Sector
+    Task<int> UpdateSectorAsync(
+        Guid userId,
+        Guid sectorId,
+        CancellationToken cancellationToken);
+
+    // Company
+    Task<int> UpdateCompanyAsync(
+        Guid userId,
+        Guid companyId,
+        CancellationToken cancellationToken);
+
+    // Country
+    Task<int> UpdateCountryAsync(
+        Guid userId,
+        Guid countryId,
+        CancellationToken cancellationToken);
+
+
+
+
+    // TicketPriority
+    //Task<int> UpdateTicketPriorityAsync(
+    //    Guid userId,
+    //    Guid ticketId,
+    //    Guid priorityId,
+    //    CancellationToken cancellationToken);
+
+
+
+
+    // PhoneNumber
+    Task<int> UpdatePhoneNumberAsync(
+        Guid userId,
+        string phoneNumber,
         CancellationToken cancellationToken);
 }

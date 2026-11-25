@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.Exceptions;
 
-public class AuthenticationFailedException : Exception
+public sealed class AuthenticationFailedException : Exception
 {
     public AuthenticationFailedException(string message)
         : base(message)

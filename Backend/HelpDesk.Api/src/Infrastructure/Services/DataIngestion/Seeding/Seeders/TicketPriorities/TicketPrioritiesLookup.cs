@@ -9,46 +9,26 @@ public static class TicketPrioritiesLookup
         new(
             Id: TicketPriorityIds.Low,
             Name: "Low",
-            Code: "LOW",
-            SortOrder: 0),
+            Code: "LOW"),
 
         new(
             Id: TicketPriorityIds.Medium,
             Name: "Medium",
-            Code: "MEDIUM",
-            SortOrder: 1),
+            Code: "MEDIUM"),
 
         new(
             Id: TicketPriorityIds.High,
             Name: "High",
-            Code: "HIGH",
-            SortOrder: 2),
+            Code: "HIGH"),
 
         new(
             Id: TicketPriorityIds.Urgent,
             Name: "Urgent",
-            Code: "URGENT",
-            SortOrder: 3),
+            Code: "URGENT"),
 
         new(
             Id: TicketPriorityIds.Critical,
             Name: "Critical",
-            Code: "CRITICAL",
-            SortOrder: 0),
+            Code: "CRITICAL"),
     ];
-
-    public static LookupSeed Low =>
-        Priorities.Single(x => x.Id == TicketPriorityIds.Low);
-
-    public static LookupSeed Medium =>
-        Priorities.Single(x => x.Id == TicketPriorityIds.Medium);
-
-    public static LookupSeed High =>
-        Priorities.Single(x => x.Id == TicketPriorityIds.High);
-
-    public static LookupSeed Urgent =>
-        Priorities.Single(x => x.Id == TicketPriorityIds.Urgent);
-
-    public static LookupSeed Critical =>
-        Priorities.Single(x => x.Id == TicketPriorityIds.Critical);
 }

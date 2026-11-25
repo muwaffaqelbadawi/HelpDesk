@@ -8,7 +8,6 @@ public sealed class Branch
     public string Name { get; set; } = null!;
     public string NormalizedName { get; set; } = null!;
     public bool IsActive { get; set; }
-    public int SortOrder { get; set; }
 
     // Navigation property
     public ICollection<Employee> Employees { get; set; } = [];

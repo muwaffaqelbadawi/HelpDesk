@@ -7,7 +7,7 @@ namespace HelpDesk.src.Features.Tickets.Attachments;
 public sealed class GetTicketAttachmentHandler(
     IUserContext userContext,
     IRolesReader rolesReader,
-    IDepartmentReader departmentReader,
+    IUserReader userReader,
     ITicketAttachmentReader ticketAttachmentReader,
     IAttachmentStorage attachmentStorage)
         : IQueryHandler<GetTicketAttachmentQuery, GetTicketAttachmentResponse>
@@ -42,7 +42,7 @@ public sealed class GetTicketAttachmentHandler(
         if (!isAuthorized &&
             await HasRoleAsync(userId, RoleIds.Admin, cancellationToken))
         {
-            var adminDepartmentId = await departmentReader.GetUserDepartmentIdAsync(
+            var adminDepartmentId = await userReader.GetUserDepartmentIdAsync(
                 userId,
                 cancellationToken);
 

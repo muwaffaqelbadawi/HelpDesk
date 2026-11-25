@@ -82,7 +82,7 @@ public sealed class LogoutAllHandler
 
         // Retrieve current user for domain event
         var user = await _userReader.GetUserAsync(userId.ToString())
-            ?? throw new UserNotFoundException(userId);
+            ?? throw new UserNotFoundException();
 
         // Domain event
         await _dispatcher.DispatchAsync(

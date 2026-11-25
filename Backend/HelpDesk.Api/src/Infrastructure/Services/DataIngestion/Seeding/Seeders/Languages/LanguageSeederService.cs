@@ -73,7 +73,6 @@ public sealed class LanguageSeederService(
                         Name = seed.Name,
                         NormalizedName = normalizedName,
                         IsActive = seed.IsActive,
-                        SortOrder = seed.SortOrder,
                     });
 
                 continue;
@@ -82,7 +81,6 @@ public sealed class LanguageSeederService(
             existing.Name = seed.Name;
             existing.NormalizedName = normalizedName;
             existing.IsActive = seed.IsActive;
-            existing.SortOrder = seed.SortOrder;
         }
 
         // Add SeedHistory

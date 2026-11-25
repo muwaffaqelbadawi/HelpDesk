@@ -7,7 +7,6 @@ public sealed class ApplicationRole : IdentityRole<Guid>
     // Auth.Roles
     public string Code { get; set; } = null!;
     public bool IsActive { get; set; } = true;
-    public int SortOrder { get; set; }
 
 
     // RBAC

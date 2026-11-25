@@ -3,7 +3,7 @@ using HelpDesk.src.Shared.Interfaces;
 
 namespace HelpDesk.src.Infrastructure.SystemAccounts.Superadmin;
 
-public sealed record class SuperadminCreatedEvent(
+public sealed record SuperadminCreatedEvent(
     ApplicationUser User,
     DateTimeOffset OccurredAt,
     string TempPassword) : IDomainEvent;

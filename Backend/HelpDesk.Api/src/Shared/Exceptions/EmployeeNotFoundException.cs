@@ -1,14 +1,9 @@
 ﻿namespace HelpDesk.src.Shared.Exceptions;
 
-public sealed class EmployeeNotFoundException : NotFoundException
+public sealed class EmployeeNotFoundException : InvalidOperationException
 {
-    public EmployeeNotFoundException(Guid employeeId)
-        : base($"No employee associated with user: '{employeeId}'.")
-    {
-    }
-
-    public EmployeeNotFoundException(string message, Exception innerException)
-        : base(message, innerException)
+    public EmployeeNotFoundException()
+        : base("The user does not have an associated employee record.")
     {
     }
 }

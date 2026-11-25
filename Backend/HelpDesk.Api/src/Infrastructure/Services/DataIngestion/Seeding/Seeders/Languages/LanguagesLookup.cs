@@ -7,15 +7,13 @@ public static class LanguagesLookup
     public static IReadOnlyCollection<LookupSeed> Languages { get; } =
     [
         new(
-            Id: LanguagesIds.English,
-            Name: "English",
-            Code: "EN",
-            SortOrder: 0),
-
-        new(
             Id: LanguagesIds.Arabic,
             Name: "Arabic",
-            Code: "AR",
-            SortOrder: 1)
+            Code: "AR"),
+
+        new(
+            Id: LanguagesIds.English,
+            Name: "English",
+            Code: "EN")
     ];
 }

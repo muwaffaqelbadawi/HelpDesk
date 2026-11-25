@@ -25,8 +25,8 @@ public sealed class Employee
     public Department? Department { get; set; }
 
     // Country information
-    public Guid CountryId { get; set; }
-    public Country Country { get; set; } = null!;
+    public Guid? CountryId { get; set; }
+    public Country? Country { get; set; } = null!;
 
     // Job
     public string? JobTitle { get; set; }
@@ -45,7 +45,6 @@ public sealed class Employee
 
     // Audit
     public Guid CreatedById { get; set; }
-
     public ApplicationUser CreatedBy { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
 

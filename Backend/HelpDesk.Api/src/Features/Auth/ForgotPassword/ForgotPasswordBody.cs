@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Features.Auth.ForgotPassword;
 
-public sealed record class ForgotPasswordBody(
+public sealed record ForgotPasswordBody(
      Guid UserId,
     string Email,
     string Token,

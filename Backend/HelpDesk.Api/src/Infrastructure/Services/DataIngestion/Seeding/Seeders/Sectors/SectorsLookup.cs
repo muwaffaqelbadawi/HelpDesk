@@ -9,31 +9,26 @@ public static class SectorsLookup
         new(
             Id: SectorsIds.Technology,
             Name: "Technology",
-            Code: "TECH",
-            SortOrder: 0),
+            Code: "TECH"),
 
         new(
             Id: SectorsIds.Operations,
             Name: "Operations",
-            Code: "OPS",
-            SortOrder: 1),
+            Code: "OPS"),
 
         new(
             Id: SectorsIds.Finance,
             Name: "Finance",
-            Code: "FIN",
-            SortOrder: 2),
+            Code: "FIN"),
 
         new(
             Id: SectorsIds.HumanResources,
             Name: "Human Resources",
-            Code: "HR",
-            SortOrder: 3),
+            Code: "HR"),
 
         new(
             Id: SectorsIds.Administration,
             Name: "Administration",
-            Code: "ADM",
-            SortOrder: 4),
+            Code: "ADM"),
     ];
 }

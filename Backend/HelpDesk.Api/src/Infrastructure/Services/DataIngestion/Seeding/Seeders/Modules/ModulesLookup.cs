@@ -7,33 +7,23 @@ public static class ModulesLookup
     public static IReadOnlyCollection<LookupSeed> Modules { get; } =
     [
         new(
-            Id: ModuleIds.Users,
-            Name: "Users",
-            Code: "USERS",
-            SortOrder: 1),
+            Id: ModuleIds.Auth,
+            Name: "Auth",
+            Code: "BRANCHES"),
 
         new(
-            Id: ModuleIds.Roles,
-            Name: "Roles",
-            Code: "ROLES",
-            SortOrder: 2),
-
-        new(
-            Id: ModuleIds.Permissions,
-            Name: "Permissions",
-            Code: "PERMISSIONS",
-            SortOrder: 3),
-
-        new(
-            Id: ModuleIds.Modules,
-            Name: "Modules",
-            Code: "MODULES",
-            SortOrder: 4),
+            Id: ModuleIds.Settings,
+            Name: "Settings",
+            Code: "COMPANIES"),
 
         new(
             Id: ModuleIds.Tickets,
             Name: "Tickets",
-            Code: "TICKETS",
-            SortOrder: 5),
+            Code: "TICKETS"),
+
+        new(
+            Id: ModuleIds.Users,
+            Name: "Users",
+            Code: "USERS"),
     ];
 }

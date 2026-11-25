@@ -94,6 +94,102 @@ Do not change production code, rewrite working tests, or redesign the test archi
 - Avoid unrelated refactors and generated output (`bin/`, `obj/`, `node_modules/`, `dist/`) unless explicitly required.
 - Never commit secrets. Keep changes reviewable and prefer explicit, readable code.
 
+## Changelog and feature inventory
+
+Feature-related planning and implementation must consult both [`CHANGELOG.md`](CHANGELOG.md) and [`FEATURES.md`](FEATURES.md). Both documents must remain consistent with the actual repository implementation.
+
+### CHANGELOG.md
+
+The root-level `CHANGELOG.md` is a chronological historical record of notable HelpDesk changes. It describes how the product evolves and is not a current feature inventory.
+
+#### Structure
+
+- `[Unreleased]` contains changes made since the latest published release.
+- Versioned sections represent published releases and include their release dates.
+- Newest entries appear first.
+
+#### Categories
+
+- `Added`: New features and capabilities.
+- `Changed`: Changes to existing functionality or behavior.
+- `Fixed`: Bug fixes.
+- `Security`: Security-related improvements and fixes.
+- `Deprecated`: Functionality scheduled for removal.
+- `Removed`: Functionality removed from the product.
+
+#### Writing conventions
+
+- Describe changes from the product or user's perspective.
+- Use concise, meaningful descriptions.
+- Prefer past-tense wording such as "Introduced", "Added", "Improved", "Updated", and "Fixed".
+- Describe the outcome and capability rather than implementation minutiae.
+- Group related implementation work into one meaningful entry instead of documenting every commit.
+- Do not record trivial internal changes unless they have meaningful product or operational impact.
+- Preserve historical release entries. Do not rewrite published release history to reflect subsequent changes.
+
+#### Maintenance
+
+- Update `[Unreleased]` as part of completing meaningful feature work.
+- Do not create release versions prematurely.
+- Move accumulated changes into a dated version section only when an actual release is published.
+- Do not invent release dates or version numbers.
+
+### FEATURES.md
+
+The root-level `FEATURES.md` is a living feature inventory and development roadmap that tracks the current state of HelpDesk capabilities. It is not a chronological history and must not duplicate changelog entries.
+
+#### Organization
+
+- Organize features by business domain, not by backend/frontend project structure.
+- Keep related capabilities grouped under meaningful domain sections.
+- Use clear, concise feature descriptions.
+
+#### Feature statuses
+
+Each domain should organize capabilities into:
+
+- `Planned`: Approved or intended capabilities that have not started implementation.
+- `In Progress`: Capabilities currently being implemented.
+- `Implemented`: Capabilities whose implementation is complete and verified.
+
+Use Markdown checkboxes consistently:
+
+- `[ ]` for Planned and In Progress features.
+- `[x]` for Implemented features.
+
+#### Completion criteria
+
+Do not mark a feature as implemented merely because its backend endpoint or database entity exists.
+
+Verify the relevant implementation requirements, which may include:
+
+- Backend behavior.
+- Frontend integration.
+- Authentication and authorization.
+- Validation and error handling.
+- Automated tests and relevant verification.
+
+Apply criteria appropriate to the feature. Do not impose irrelevant requirements on every feature.
+
+#### Maintenance
+
+- Add newly identified capabilities to the appropriate domain.
+- Move features between sections as their implementation status changes.
+- Move completed and verified features into `Implemented`.
+- Do not remove completed features simply because implementation is finished.
+- Keep planned items accurate; do not list speculative ideas as approved requirements.
+- Do not mark existing functionality as implemented without repository evidence.
+- Update the inventory when feature implementation meaningfully changes its status.
+
+### Feature documentation workflow
+
+1. Before implementing a feature, consult `FEATURES.md` to understand its current status and existing capabilities.
+2. After meaningful feature implementation, update `CHANGELOG.md` under `[Unreleased]`.
+3. Update `FEATURES.md` to reflect the feature's new status.
+4. If a feature is already documented, update its existing entry instead of creating duplicates.
+5. If work is incomplete, keep it under `In Progress`; do not claim completion.
+6. If a change does not warrant a changelog entry or feature inventory update, do not create unnecessary documentation changes.
+
 ### Anonymous endpoints and UserContext
 
 An endpoint marked `[AllowAnonymous]` must not depend on `UserContext`, regardless of whether a particular property seems harmless or is expected to be available without authentication. Every component on that endpoint's execution path—including handlers, validators, application services, and their dependencies—must remain independent of `UserContext`. This prohibition covers direct and indirect dependencies and every property it exposes, including `UserId`, `GuidUserId`, `SessionId`, `JwtId`, `JwtExpiresAt`, `UserName`, `IsAuthenticated`, `HasClaims`, and any other current-authenticated user property.

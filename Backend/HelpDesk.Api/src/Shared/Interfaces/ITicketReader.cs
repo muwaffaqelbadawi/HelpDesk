@@ -1,4 +1,5 @@
-﻿using HelpDesk.src.Shared.DataAccess.Dtos;
+﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
+using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Pagination;
 
 namespace HelpDesk.src.Shared.Interfaces;
@@ -36,5 +37,15 @@ public interface ITicketReader
         CancellationToken cancellationToken = default);
 
     Task<TicketSummaryData> GetTicketSummaryAsync(
+        CancellationToken cancellationToken);
+
+    Task<Ticket?> GetTicketWithPriorityAsync(
+        Guid userId,
+        Guid ticketId,
+        CancellationToken cancellationToken);
+
+    Task<string> GetTicketPriorityNameAsync(
+        Guid userId,
+        Guid ticketId,
         CancellationToken cancellationToken);
 }

@@ -5,7 +5,6 @@ public static class FeaturesExtension
     public static WebApplicationBuilder AddFeatures(
         this WebApplicationBuilder builder)
     {
-        builder.Services.AddDepartmentsServices();
         builder.Services.AddTicketServices();
         builder.Services.AddUserServices();
 

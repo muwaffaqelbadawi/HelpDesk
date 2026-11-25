@@ -34,7 +34,7 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 BusinessRuleViolationException => StatusCodes.Status422UnprocessableEntity,
                 IdentityOperationException => StatusCodes.Status400BadRequest,
                 NotImplementedException => StatusCodes.Status501NotImplemented,
-                InvalidOperationException => StatusCodes.Status500InternalServerError,
+                EmployeeNotFoundException => StatusCodes.Status409Conflict,
                 _ => StatusCodes.Status500InternalServerError
             };
 
@@ -225,10 +225,10 @@ public sealed class ExceptionMiddleware(RequestDelegate next)
                 }
             },
 
-            InvalidOperationException => new ProblemDetails
+            EmployeeNotFoundException => new ProblemDetails
             {
-                Type = $"{baseUrl}/errors/internal-server-error",
-                Title = nameof(InternalServerError),
+                Type = $"{baseUrl}/errors/conflict",
+                Title = nameof(InvalidOperationException),
                 Status = status,
                 Detail = details,
                 Instance = path,

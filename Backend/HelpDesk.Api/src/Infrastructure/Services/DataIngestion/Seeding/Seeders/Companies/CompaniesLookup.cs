@@ -9,7 +9,6 @@ public static class CompaniesLookup
         new(
             Id: CompaniesIds.SiragFutureTechnology,
             Name: "Sirag Future Technology",
-            Code: "SFTech",
-            SortOrder: 0)
+            Code: "SFTech")
     ];
 }

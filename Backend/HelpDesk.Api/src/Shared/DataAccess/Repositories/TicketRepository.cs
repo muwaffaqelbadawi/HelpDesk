@@ -120,4 +120,20 @@ public sealed class TicketRepository(AppDbContext dbContext) : ITicketRepository
                 .SetProperty(t => t.UpdatedAt, now),
             cancellationToken);
     }
+
+    // TicketPriority
+    public async Task<int> UpdateTicketPriorityAsync(
+        Guid userId,
+        Guid ticketId,
+        Guid priorityId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .Where(e => e.CreatedById == userId
+                    && e.Id == ticketId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(e => e.PriorityId, priorityId),
+                cancellationToken);
+    }
 }

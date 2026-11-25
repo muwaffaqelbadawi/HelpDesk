@@ -109,7 +109,7 @@ public sealed class RefreshTokenHandler
 
         // lookup user
         var user = await _userReader.GetUserAsync(userId.ToString())
-            ?? throw new UserNotFoundException(userId);
+            ?? throw new UserNotFoundException();
 
         var userSessionId = existingRefreshToken.UserSessionId;
 

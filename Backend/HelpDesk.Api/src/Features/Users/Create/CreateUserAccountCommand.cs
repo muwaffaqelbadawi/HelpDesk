@@ -1,12 +1,7 @@
 ﻿namespace HelpDesk.src.Features.Users.Create;
 
-public sealed record class CreateUserAccountCommand(
+public sealed record CreateUserAccountCommand(
     string UserName,
     string Email,
-    string PhoneNumber,
     string FullEnName,
-    string FullArName,
-    string JobTitle,
-    Guid DepartmentId,
-    Guid SectorId,
-    Guid CountryId);
+    string FullArName);

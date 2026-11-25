@@ -9,52 +9,41 @@ public static class UserStatusLookup
         new(
             Id: UserStatusIds.Active,
             Name: "Active",
-            Code: "ACTIVE",
-            SortOrder: 0),
+            Code: "ACTIVE"),
 
         new(
             Id: UserStatusIds.Inactive,
             Name: "Inactive",
-            Code: "INACTIVE",
-            SortOrder: 1),
+            Code: "INACTIVE"),
 
         new(
             Id: UserStatusIds.Deleted,
             Name: "Deleted",
-            Code: "DELETED",
-            SortOrder: 2),
+            Code: "DELETED"),
 
         new(
             Id: UserStatusIds.Locked,
             Name: "Locked",
-            Code: "LOCKED",
-            SortOrder: 3),
+            Code: "LOCKED"),
 
         new(
             Id: UserStatusIds.Suspended,
             Name: "Suspended",
-            Code: "SUSPENDED",
-            SortOrder: 4),
+            Code: "SUSPENDED"),
 
         new(
             Id: UserStatusIds.OnLeave,
             Name: "OnLeave",
-            Code: "ONLEAVE",
-            SortOrder: 5),
+            Code: "ONLEAVE"),
 
         new(
             Id: UserStatusIds.Retired,
             Name: "Retired",
-            Code: "RETIRED",
-            SortOrder: 6),
+            Code: "RETIRED"),
 
         new(
             Id: UserStatusIds.Archived,
             Name: "Archived",
-            Code: "ARCHIVED",
-            SortOrder: 7)
+            Code: "ARCHIVED")
     ];
-
-    public static LookupSeed Deleted =>
-        Statuses.Single(x => x.Id == UserStatusIds.Deleted);
 }

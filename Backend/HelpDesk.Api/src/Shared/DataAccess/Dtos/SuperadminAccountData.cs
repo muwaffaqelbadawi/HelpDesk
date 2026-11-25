@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
-public sealed record SuperadminAccountData
+public sealed class SuperadminAccountData
 {
     public Guid UserId { get; init; }
     public string UserName { get; init; } = null!;

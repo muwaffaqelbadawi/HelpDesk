@@ -3,5 +3,5 @@ using HelpDesk.src.Shared.Pagination;
 
 namespace HelpDesk.src.Features.Tickets.GetAll;
 
-public sealed record class GetTicketsResponse(
+public sealed record GetTicketsResponse(
     PagedResult<TicketData> PagedResult);

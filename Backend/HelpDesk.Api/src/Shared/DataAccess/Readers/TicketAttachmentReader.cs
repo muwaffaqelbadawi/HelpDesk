@@ -1,6 +1,6 @@
 ﻿using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.DataAccess.Dtos;
-using HelpDesk.src.Shared.DataAccess.Projections;
+using HelpDesk.src.Shared.DataAccess.Queries;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

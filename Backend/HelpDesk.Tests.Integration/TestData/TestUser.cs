@@ -1,24 +1,17 @@
 ﻿using HelpDesk.src.Features.Users.Create;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Departments;
-using HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Sectors;
 
 namespace HelpDesk.Tests.Integration.TestData;
 
 public static class TestUser
 {
-    public static CreateUserAccountCommand CreateUserCommand(Guid countryId)
+    public static CreateUserAccountCommand CreateUserCommand()
     {
         var uniqueId = Guid.NewGuid().ToString("N")[..10];
 
         return new CreateUserAccountCommand(
             UserName: $"testuser-{uniqueId}",
             Email: $"testuser-{uniqueId}@example.com",
-            PhoneNumber: "+966112345678",
             FullEnName: $"Test User {uniqueId}",
-            FullArName: $"مستخدم اختبار {uniqueId}",
-            JobTitle: $"Software Engineer {uniqueId}",
-            DepartmentId: DepartmentsIds.InformationTechnology,
-            SectorId: SectorsIds.Technology,
-            CountryId: countryId);
+            FullArName: $"مستخدم اختبار {uniqueId}");
     }
 }

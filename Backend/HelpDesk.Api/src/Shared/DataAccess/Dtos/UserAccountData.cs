@@ -1,12 +1,12 @@
 ﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
-public sealed record UserAccountData
+public sealed class UserAccountData
 {
     public Guid UserId { get; init; }
     public string UserName { get; init; } = null!;
     public string Email { get; init; } = null!;
-    public Guid? TimeZoneId { get; set; }
-    public string? TimeZone { get; set; }
+    public Guid? TimeZoneId { get; init; }
+    public string? TimeZone { get; init; }
     public Guid? PreferredLanguageId { get; init; }
     public string? PreferredLanguage { get; init; }
     public IReadOnlyCollection<string> Roles { get; init; } = [];

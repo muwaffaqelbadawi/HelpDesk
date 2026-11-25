@@ -83,7 +83,8 @@ public partial class AppDbContext
             entity.Property(e => e.LastFailedLoginAt);
 
             // FailedLoginCount (Property)
-            entity.Property(e => e.FailedLoginCount);
+            entity.Property(e => e.FailedLoginCount)
+                .HasDefaultValue(0);
 
             // CreatedBy (Relation)
             entity.HasOne(e => e.CreatedBy)
@@ -180,10 +181,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
         });
 
         // Auth.UserClaims
@@ -223,10 +220,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
         });
 
         // Auth.RoleClaims
@@ -300,10 +293,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
         });
 
         // Auth.Permissions
@@ -336,10 +325,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder)
-                .HasDefaultValue(0);
         });
 
         // Auth.RolePermissionModules

@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.Exceptions;
 
-public class ResourceNotFoundException : NotFoundException
+public sealed class ResourceNotFoundException : NotFoundException
 {
     public ResourceNotFoundException(Guid resourceId)
         : base($"Resource with ID {resourceId} not found.")

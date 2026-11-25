@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
-public sealed record EmployeeData
+public sealed class EmployeeData
 {
     public Guid EmployeeId { get; init; }
     public string EmployeeNumber { get; init; } = null!;

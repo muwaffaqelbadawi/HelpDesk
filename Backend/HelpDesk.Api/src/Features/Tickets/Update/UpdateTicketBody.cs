@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Features.Tickets.Update;
 
-public sealed record class UpdateTicketBody(
+public sealed record UpdateTicketBody(
     string TicketTitle,
     string TicketSubject,
     Guid TicketPriorityId,

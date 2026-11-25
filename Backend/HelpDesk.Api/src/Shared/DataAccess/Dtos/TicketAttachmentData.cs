@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
-public sealed record TicketAttachmentData
+public sealed class TicketAttachmentData
 {
     // Parent ticket information
     public Guid TicketId { get; init; }

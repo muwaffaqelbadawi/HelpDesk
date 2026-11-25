@@ -1,14 +1,9 @@
 ﻿namespace HelpDesk.src.Shared.Exceptions;
 
-public class TicketNotFoundException : NotFoundException
+public sealed class TicketNotFoundException : NotFoundException
 {
-    public TicketNotFoundException(Guid ticketId)
-        : base($"Ticket '{ticketId}' was not found.")
-    {
-    }
-
-    public TicketNotFoundException(string message, Exception innerException)
-        : base(message, innerException)
+    public TicketNotFoundException()
+        : base("Ticket was not found.")
     {
     }
 }

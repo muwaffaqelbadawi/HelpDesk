@@ -4,7 +4,8 @@ using Microsoft.Extensions.Options;
 namespace HelpDesk.src.Infrastructure.Services.Permissions;
 
 public sealed class PermissionPolicyProvider(
-    IOptions<AuthorizationOptions> options) : IAuthorizationPolicyProvider
+    IOptions<AuthorizationOptions> options)
+        : IAuthorizationPolicyProvider
 {
     private const string PREFIX = "Permission:";
 
@@ -13,8 +14,6 @@ public sealed class PermissionPolicyProvider(
 
     public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
     {
-        // Use memory-safe Span<T>
-
         if (policyName.StartsWith(PREFIX))
         {
             ReadOnlySpan<char> permission = policyName.AsSpan(PREFIX.Length);

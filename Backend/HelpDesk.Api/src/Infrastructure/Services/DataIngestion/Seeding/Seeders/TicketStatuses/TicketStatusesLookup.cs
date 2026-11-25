@@ -9,70 +9,41 @@ public static class TicketStatusesLookup
         new(
             Id: TicketStatusIds.Open,
             Name: "Open",
-            Code: "OPEN",
-            SortOrder: 0),
+            Code: "OPEN"),
 
         new(
             Id: TicketStatusIds.Assigned,
             Name: "Assigned",
-            Code: "ASSIGNED",
-            SortOrder: 1),
+            Code: "ASSIGNED"),
 
         new(
             Id: TicketStatusIds.InProgress,
             Name: "InProgress",
-            Code: "INPROGRESS",
-            SortOrder: 2),
+            Code: "INPROGRESS"),
 
         new(
             Id: TicketStatusIds.Pending,
             Name: "Pending",
-            Code: "PENDING",
-            SortOrder: 3),
+            Code: "PENDING"),
 
         new(
             Id: TicketStatusIds.Resolved,
             Name: "Resolved",
-            Code: "RESOLVED",
-            SortOrder: 4),
+            Code: "RESOLVED"),
 
         new(
             Id: TicketStatusIds.Closed,
             Name: "Closed",
-            Code: "CLOSED",
-            SortOrder: 5),
+            Code: "CLOSED"),
 
         new(
             Id: TicketStatusIds.Cancelled,
             Name: "Cancelled",
-            Code: "CANCELLED",
-            SortOrder: 6),
+            Code: "CANCELLED"),
 
         new(
             Id: TicketStatusIds.Deleted,
             Name: "Deleted",
-            Code: "DELETED",
-            SortOrder: 7)
+            Code: "DELETED")
     ];
-
-    public static LookupSeed Open =>
-        Statuses.Single(x => x.Id == TicketStatusIds.Open);
-
-    public static LookupSeed Assigned =>
-        Statuses.Single(x => x.Id == TicketStatusIds.Assigned);
-
-    public static LookupSeed InProgress =>
-        Statuses.Single(x => x.Id == TicketStatusIds.InProgress);
-
-    public static LookupSeed Pending =>
-        Statuses.Single(x => x.Id == TicketStatusIds.Pending);
-
-    public static LookupSeed Resolved =>
-        Statuses.Single(x => x.Id == TicketStatusIds.Resolved);
-
-    public static LookupSeed Closed =>
-        Statuses.Single(x => x.Id == TicketStatusIds.Closed);
-
-    public static LookupSeed Cancelled =>
-        Statuses.Single(x => x.Id == TicketStatusIds.Cancelled);
 }

@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.Roles.Assign;
+﻿using HelpDesk.src.Features.Settings.Admin.Roles.Assign;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.DataAccess.Dtos;
 using HelpDesk.src.Shared.Interfaces;

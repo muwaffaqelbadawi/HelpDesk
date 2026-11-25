@@ -44,7 +44,7 @@ public sealed class ChangePasswordHandler
         var user = await _userReader.GetUserWithTimeZoneAsync(
             userId,
             cancellationToken)
-                ?? throw new UserNotFoundException(userId);
+                ?? throw new UserNotFoundException();
 
         var changePasswordResult = await _changePasswordService.ChangePasswordAsync(
             user,

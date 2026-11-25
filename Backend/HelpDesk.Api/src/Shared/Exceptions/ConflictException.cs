@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.Exceptions;
 
-public class ConflictException : Exception
+public sealed class ConflictException : Exception
 {
     public ConflictException()
         : base("One or more conflict errors occurred.")

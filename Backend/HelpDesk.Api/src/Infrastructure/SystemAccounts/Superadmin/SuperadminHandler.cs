@@ -61,16 +61,18 @@ public sealed class SuperadminHandler
         // now
         var now = _dateTimeService.UtcNow;
 
+        var userId = Guid.NewGuid();
+
         // Create superadmin object (in memory)
         var superadmin = new ApplicationUser
         {
-            Id = Guid.NewGuid(),
+            Id = userId,
             UserName = command.UserName,
             Email = command.Email,
             StatusId = UserStatusIds.Active,
             MustResetPassword = true,
             LastPasswordChangedAt = null,
-            CreatedById = null,
+            CreatedById = userId,
             CreatedAt = now,
         };
 

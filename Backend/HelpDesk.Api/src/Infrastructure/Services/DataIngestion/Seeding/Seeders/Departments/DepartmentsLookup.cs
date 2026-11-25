@@ -9,103 +9,86 @@ public static class DepartmentsLookup
         new(
             Id: DepartmentsIds.HumanResources,
             Name: "Human Resources",
-            Code: "HR",
-            SortOrder: 0),
+            Code: "HR"),
 
         new(
             Id: DepartmentsIds.InformationTechnology,
             Name: "Information Technology",
-            Code: "IT",
-            SortOrder: 1),
+            Code: "IT"),
 
         new(
             Id: DepartmentsIds.Finance,
             Name: "Finance",
-            Code: "FIN",
-            SortOrder: 2),
+            Code: "FIN"),
 
         new(
             Id: DepartmentsIds.Accounting,
             Name: "Accounting",
-            Code: "ACC",
-            SortOrder: 3),
+            Code: "ACC"),
 
         new(
             Id: DepartmentsIds.Operations,
             Name: "Operations",
-            Code: "OPS",
-            SortOrder: 4),
+            Code: "OPS"),
 
         new(
             Id: DepartmentsIds.Sales,
             Name: "Sales",
-            Code: "SAL",
-            SortOrder: 5),
+            Code: "SAL"),
 
         new(
             Id: DepartmentsIds.Marketing,
             Name: "Marketing",
-            Code: "MKT",
-            SortOrder: 6),
+            Code: "MKT"),
 
         new(
             Id: DepartmentsIds.CustomerService,
             Name: "Customer Service",
-            Code: "CS",
-            SortOrder: 7),
+            Code: "CS"),
 
         new(
             Id: DepartmentsIds.Procurement,
             Name: "Procurement",
-            Code: "PRC",
-            SortOrder: 8),
+            Code: "PRC"),
 
         new(
             Id: DepartmentsIds.Legal,
             Name: "Legal",
-            Code: "LEG",
-            SortOrder: 9),
+            Code: "LEG"),
 
             new(
             Id: DepartmentsIds.Administration,
             Name: "Administration",
-            Code: "ADM",
-            SortOrder: 10),
+            Code: "ADM"),
 
         new(
             Id: DepartmentsIds.ResearchAndDevelopment,
             Name: "Research & Development",
-            Code: "RND",
-            SortOrder: 11),
+            Code: "RND"),
 
         new(
             Id: DepartmentsIds.QualityAssurance,
             Name: "Quality Assurance",
-            Code: "QA",
-            SortOrder: 12),
+            Code: "QA"),
 
         new(
             Id: DepartmentsIds.Compliance,
             Name: "Compliance",
-            Code: "CMP",
-            SortOrder: 13),
+            Code: "CMP"),
 
         new(
             Id: DepartmentsIds.Security,
             Name: "Security",
-            Code: "SEC",
-            SortOrder: 14),
+            Code: "SEC"),
 
         new(
             Id: DepartmentsIds.Logistics,
             Name: "Logistics",
-            Code: "LOG",
-            SortOrder: 15),
+            Code: "LOG"),
 
         new(
             Id: DepartmentsIds.SupplyChain,
             Name: "Supply Chain",
-            Code: "SCM",
-            SortOrder: 16),
+            Code: "SCM"),
     ];
 }

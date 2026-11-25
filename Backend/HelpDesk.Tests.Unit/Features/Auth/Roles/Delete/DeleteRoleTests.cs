@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.Roles.Delete;
+﻿using HelpDesk.src.Features.Settings.Admin.Roles.Delete;
 using HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;

@@ -2,13 +2,8 @@
 
 public sealed class UserNotFoundException : NotFoundException
 {
-    public UserNotFoundException(Guid userId)
-        : base(message: $"User '{userId}' was not found.")
-    {
-    }
-
-    public UserNotFoundException(string message, Exception innerException)
-        : base(message, innerException)
+    public UserNotFoundException()
+        : base("User was not found.")
     {
     }
 }

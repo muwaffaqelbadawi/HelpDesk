@@ -4,44 +4,51 @@ namespace HelpDesk.src.Infrastructure.Services.DataIngestion.Seeding.Seeders.Per
 
 public static class PermissionsLookup
 {
-    // 5 permissions
-
     public static IReadOnlyCollection<LookupSeed> Permissions { get; } =
     [
         new(
             Id: PermissionIds.View,
             Name: "View",
-            Code: "VIEW",
-            SortOrder: 1),
+            Code: "VIEW"),
 
         new(
             Id: PermissionIds.Create,
             Name: "Create",
-            Code: "CREATE",
-            SortOrder: 2),
+            Code: "CREATE"),
+
+        new(
+            Id: PermissionIds.Set,
+            Name: "Set",
+            Code: "SET"),
 
         new(
             Id: PermissionIds.Update,
             Name: "Update",
-            Code: "UPDATE",
-            SortOrder: 3),
+            Code: "UPDATE"),
 
         new(
             Id: PermissionIds.Delete,
             Name: "Delete",
-            Code: "DELETE",
-            SortOrder: 4),
+            Code: "DELETE"),
 
         new(
             Id: PermissionIds.Assign,
             Name: "Assign",
-            Code: "ASSIGN",
-            SortOrder: 5),
+            Code: "ASSIGN"),
 
         new(
             Id: PermissionIds.Assigned,
             Name: "Assigned",
-            Code: "ASSIGNED",
-            SortOrder: 6),
+            Code: "ASSIGNED"),
+
+        new(
+            Id: PermissionIds.Reset,
+            Name: "Reset",
+            Code: "RESET"),
+
+        new(
+            Id: PermissionIds.Change,
+            Name: "Change",
+            Code: "CHANGE"),
     ];
 }

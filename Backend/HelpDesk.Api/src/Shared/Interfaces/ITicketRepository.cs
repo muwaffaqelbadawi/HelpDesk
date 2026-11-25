@@ -43,4 +43,11 @@ public interface ITicketRepository
         byte[] ticketRowVersion,
         DateTimeOffset now,
         CancellationToken cancellationToken);
+
+    // TicketPriority
+    Task<int> UpdateTicketPriorityAsync(
+        Guid userId,
+        Guid ticketId,
+        Guid priorityId,
+        CancellationToken cancellationToken);
 }

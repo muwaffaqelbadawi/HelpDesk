@@ -10,6 +10,12 @@ This is the repository-level starting point for coding agents working in HelpDes
 - `docker/`: API and frontend Dockerfiles plus Nginx configuration; root `docker-compose.yml` orchestrates the local services.
 - Root documentation includes `README.md`, `SECURITY.md`, and `SKILL.md`; root configuration includes `.gitignore`, `.dockerignore`, `global.json`, and `dotnet-tools.json`.
 
+## Changelog and feature inventory
+
+- Maintain the root-level [`CHANGELOG.md`](CHANGELOG.md), a chronological record of notable HelpDesk changes throughout development and releases. Update meaningful feature, improvement, bug-fix, and security work under `[Unreleased]`; detailed categories and maintenance rules are in [SKILL.md](SKILL.md#changelog-and-feature-inventory).
+- Maintain the root-level [`FEATURES.md`](FEATURES.md), a living inventory of HelpDesk's planned, in-progress, and implemented capabilities. Synchronize it with actual implementation progress and move completed, verified features into `Implemented`.
+- For feature-related planning, implementation, review, or completion, treat both documents as mandatory references and follow the detailed conventions and workflow in [SKILL.md](SKILL.md#changelog-and-feature-inventory).
+
 ## Working Flow
 
 1. Start at the repository root and read this file, then consult [SKILL.md](SKILL.md) for the applicable project guidance.

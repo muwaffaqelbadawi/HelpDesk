@@ -47,7 +47,7 @@ public sealed class AdminResetPasswordHandler
 
         // user
         var user = await _userReader.GetUserAsync(userId.ToString())
-            ?? throw new UserNotFoundException(userId);
+            ?? throw new UserNotFoundException();
 
         // reset token
         var resetToken = await _resetPasswordService.GeneratePasswordAsync(user);

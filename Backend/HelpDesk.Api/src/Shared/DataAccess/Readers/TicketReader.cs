@@ -1,6 +1,7 @@
-﻿using HelpDesk.src.Infrastructure.Database.DbContext;
+﻿using HelpDesk.src.Infrastructure.Database.Data.Business.Entities;
+using HelpDesk.src.Infrastructure.Database.DbContext;
 using HelpDesk.src.Shared.DataAccess.Dtos;
-using HelpDesk.src.Shared.DataAccess.Projections;
+using HelpDesk.src.Shared.DataAccess.Queries;
 using HelpDesk.src.Shared.Exceptions;
 using HelpDesk.src.Shared.Interfaces;
 using HelpDesk.src.Shared.Pagination;
@@ -117,7 +118,7 @@ public sealed class TicketReader(AppDbContext dbContext) : ITicketReader
                 t.RowVersion
             })
             .SingleOrDefaultAsync(cancellationToken)
-                ?? throw new TicketNotFoundException(ticketId);
+                ?? throw new TicketNotFoundException();
 
         return (state.AssignedAt, state.RowVersion);
     }
@@ -128,5 +129,32 @@ public sealed class TicketReader(AppDbContext dbContext) : ITicketReader
         return await dbContext.Tickets
             .AsNoTracking()
             .SelectTicketSummaryData(cancellationToken);
+    }
+
+    public async Task<Ticket?> GetTicketWithPriorityAsync(
+        Guid userId,
+        Guid ticketId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .Include(t => t.Priority)
+            .Include(t => t.CreatedBy)
+            .SingleOrDefaultAsync(
+                t => t.Id == ticketId
+                  && t.CreatedById == userId,
+                cancellationToken);
+    }
+
+    public async Task<string> GetTicketPriorityNameAsync(
+        Guid userId,
+        Guid ticketId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.Id == ticketId
+                    && t.CreatedById == userId)
+            .Select(t => t.Priority.Name)
+            .SingleAsync(cancellationToken);
     }
 }

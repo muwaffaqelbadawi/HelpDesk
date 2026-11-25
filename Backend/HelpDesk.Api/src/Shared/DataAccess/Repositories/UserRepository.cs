@@ -101,23 +101,18 @@ public sealed class UserRepository(
         DateTimeOffset now,
         CancellationToken cancellationToken)
     {
-        // Soft-delete user
         user.IsDeleted = true;
         user.StatusId = UserStatusIds.Deleted;
         user.DeletedById = currentUserId;
         user.DeletedAt = now;
 
-        // Check for EmployeeId
         if (user.Employee is not null)
         {
-            // lookup employee
             var employee = await dbContext.Employees.FindAsync(
                 [user.Employee], cancellationToken);
 
-            // Ensure an employee with ID user.EmployeeId exists
             if (employee is not null)
             {
-                // Soft-delete the employee
                 employee.IsDeleted = true;
                 employee.DeletedById = currentUserId;
                 employee.DeletedAt = now;
@@ -231,6 +226,22 @@ public sealed class UserRepository(
                 cancellationToken);
     }
 
+    //----- Settings -----
+
+    // UpdateById (after settings)
+    public async Task<int> UpdateByIdAsync(
+        Guid userId,
+        Guid updaterUserId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(u => u.UpdatedById, updaterUserId),
+                cancellationToken);
+    }
+
+    // TimeZone
     public async Task<int> UpdateTimeZoneAsync(
         Guid userId,
         Guid timeZoneId,
@@ -243,6 +254,7 @@ public sealed class UserRepository(
                 cancellationToken);
     }
 
+    // PreferredLanguage
     public async Task<int> UpdatePreferredLanguageAsync(
         Guid userId,
         Guid preferredLanguageId,
@@ -252,6 +264,93 @@ public sealed class UserRepository(
             .Where(u => u.Id == userId)
             .ExecuteUpdateAsync(setters => setters
                     .SetProperty(u => u.PreferredLanguageId, preferredLanguageId),
+                cancellationToken);
+    }
+
+    // Branch
+    public async Task<int> UpdateBranchAsync(
+        Guid userId,
+        Guid branchId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Employees
+            .Where(e => e.UserId == userId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(e => e.BranchId, branchId),
+                cancellationToken);
+    }
+
+    // Department
+    public async Task<int> UpdateDepartmentAsync(
+        Guid userId,
+        Guid departmentId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Employees
+            .Where(e => e.UserId == userId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(e => e.DepartmentId, departmentId),
+                cancellationToken);
+    }
+
+    // Sector
+    public async Task<int> UpdateSectorAsync(
+        Guid userId,
+        Guid sectorId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Employees
+            .Where(e => e.UserId == userId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(e => e.SectorId, sectorId),
+                cancellationToken);
+    }
+
+    // Company
+    public async Task<int> UpdateCompanyAsync(
+        Guid userId,
+        Guid companyId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Employees
+            .Where(e => e.UserId == userId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(e => e.CompanyId, companyId),
+                cancellationToken);
+    }
+
+    // Country
+    public async Task<int> UpdateCountryAsync(
+        Guid userId,
+        Guid countryId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Employees
+            .Where(e => e.UserId == userId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(e => e.CompanyId, countryId),
+                cancellationToken);
+    }
+
+
+
+    // PhoneNumber
+    public async Task<int> UpdatePhoneNumberAsync(
+        Guid userId,
+        string phoneNumber,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Users
+            .Where(e => e.Id == userId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(e => e.PhoneNumber, phoneNumber)
+                    .SetProperty(e => e.PhoneNumberConfirmed, false),
                 cancellationToken);
     }
 }

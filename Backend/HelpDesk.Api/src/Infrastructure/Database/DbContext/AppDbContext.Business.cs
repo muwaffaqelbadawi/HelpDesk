@@ -95,9 +95,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder);
         });
 
         //Business.Countries
@@ -183,9 +180,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder);
         });
 
         // Business.Sectors
@@ -219,9 +213,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder);
         });
 
         // Business.Companies
@@ -255,9 +246,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder);
         });
 
         // Business.Languages
@@ -291,9 +279,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder);
         });
 
         // Employee Sequence (BIGINT)
@@ -618,9 +603,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder);
         });
 
         // Business.TicketPriorities
@@ -654,9 +636,6 @@ public partial class AppDbContext
             // IsActive (Property)
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
-
-            // SortOrder (Property)
-            entity.Property(e => e.SortOrder);
         });
 
         // Business.TicketComments

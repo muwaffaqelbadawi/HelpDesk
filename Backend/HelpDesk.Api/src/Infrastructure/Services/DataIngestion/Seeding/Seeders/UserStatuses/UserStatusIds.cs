@@ -25,6 +25,4 @@ public sealed class UserStatusIds
 
     public static readonly Guid Archived =
         new("CD65D65B-CA35-4504-898B-89EE5820A0C1");
-
-
 }

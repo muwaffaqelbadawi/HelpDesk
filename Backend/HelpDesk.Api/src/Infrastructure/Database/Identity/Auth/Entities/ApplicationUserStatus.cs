@@ -9,7 +9,6 @@ public sealed class ApplicationUserStatus
     public string Name { get; set; } = null!;
     public string NormalizedName { get; set; } = null!;
     public bool IsActive { get; set; }
-    public int SortOrder { get; set; }
 
     // RBAC
     public ICollection<ApplicationUser> Users { get; set; } = [];

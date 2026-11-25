@@ -7,7 +7,6 @@ public sealed class ApplicationPermission
     public string Name { get; set; } = null!;
     public string? NormalizedName { get; set; }
     public bool IsActive { get; set; }
-    public int SortOrder { get; set; }
 
     public ICollection<ApplicationRolePermissionModule> RolePermissionModules { get; set; } = [];
 }

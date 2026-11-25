@@ -65,13 +65,8 @@ public sealed class UserController(IDateTimeService dateTimeService) : Controlle
         var command = new CreateUserAccountCommand(
             UserName: body.UserName,
             Email: body.Email,
-            PhoneNumber: body.PhoneNumber,
             FullEnName: body.FullEnName,
-            FullArName: body.FullArName,
-            JobTitle: body.JobTitle,
-            DepartmentId: body.DepartmentId,
-            SectorId: body.SectorId,
-            CountryId: body.CountryId);
+            FullArName: body.FullArName);
 
         var result = await handler.HandleAsync(command, cancellationToken);
 

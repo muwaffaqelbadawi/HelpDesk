@@ -54,9 +54,6 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -90,9 +87,6 @@ namespace HelpDesk.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -178,9 +172,6 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -201,7 +192,7 @@ namespace HelpDesk.Migrations
                     b.Property<Guid?>("CompanyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CountryId")
+                    b.Property<Guid?>("CountryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -357,9 +348,6 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -393,9 +381,6 @@ namespace HelpDesk.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -699,9 +684,6 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -735,9 +717,6 @@ namespace HelpDesk.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -773,11 +752,6 @@ namespace HelpDesk.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -811,11 +785,6 @@ namespace HelpDesk.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -906,11 +875,6 @@ namespace HelpDesk.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -1011,7 +975,7 @@ namespace HelpDesk.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("CreatedById")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
@@ -1028,7 +992,9 @@ namespace HelpDesk.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("FailedLoginCount")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -1093,7 +1059,7 @@ namespace HelpDesk.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("StatusId")
+                    b.Property<Guid?>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TimeZoneId")
@@ -1337,11 +1303,6 @@ namespace HelpDesk.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -1384,8 +1345,7 @@ namespace HelpDesk.Migrations
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Data.Business.Entities.Country", "Country")
                         .WithMany("Employees")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "CreatedBy")
                         .WithMany("CreatedEmployees")
@@ -1663,7 +1623,8 @@ namespace HelpDesk.Migrations
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUser", "DeletedBy")
                         .WithMany()
@@ -1683,8 +1644,7 @@ namespace HelpDesk.Migrations
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationUserStatus", "Status")
                         .WithMany("Users")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities.ApplicationTimeZone", "TimeZone")
                         .WithMany("Users")

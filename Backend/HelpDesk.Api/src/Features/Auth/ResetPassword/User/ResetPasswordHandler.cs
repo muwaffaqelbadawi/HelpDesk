@@ -44,7 +44,7 @@ public sealed class ResetPasswordHandler
 
         // user
         var user = await _userReader.GetUserAsync(userId.ToString())
-            ?? throw new UserNotFoundException(userId);
+            ?? throw new UserNotFoundException();
 
         var result = await _resetPasswordService.ResetPasswordAsync(
             user,

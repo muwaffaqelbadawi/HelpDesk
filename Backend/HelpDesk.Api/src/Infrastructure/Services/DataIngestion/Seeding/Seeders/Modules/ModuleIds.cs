@@ -2,27 +2,23 @@
 
 public static class ModuleIds
 {
-    public static readonly Guid Users =
-        new("8F42D75F-423E-402D-B67E-568B97339A86");
+    public static readonly Guid Auth =
+        new("E6043E87-AB14-4F09-9518-51A4B3E07FA7");
 
-    public static readonly Guid Roles =
-        new("4692F230-B449-4415-96E4-CDF072994D07");
-
-    public static readonly Guid Permissions =
-        new("65E05C0D-4DCE-4E8F-BFB7-664D146E9A08");
-
-    public static readonly Guid Modules =
-        new("28CB36B2-1B12-40D3-BBA3-5DC5F12B562E");
+    public static readonly Guid Settings =
+        new("B48A566F-544D-41B3-B35E-DEC316963562");
 
     public static readonly Guid Tickets =
         new("1CB2F0A4-EB25-4CD3-93B4-B2513DF78143");
 
+    public static readonly Guid Users =
+        new("8F42D75F-423E-402D-B67E-568B97339A86");
+
     public static IReadOnlyCollection<Guid> All { get; } =
     [
-        Users,
-        Roles,
-        Permissions,
-        Modules,
+        Auth,
+        Settings,
         Tickets,
+        Users,
     ];
 }

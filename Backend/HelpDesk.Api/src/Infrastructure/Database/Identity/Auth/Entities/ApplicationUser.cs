@@ -5,8 +5,8 @@ namespace HelpDesk.src.Infrastructure.Database.Identity.Auth.Entities;
 
 public sealed class ApplicationUser : IdentityUser<Guid>
 {
-    public Guid StatusId { get; set; }
-    public ApplicationUserStatus Status { get; set; } = null!;
+    public Guid? StatusId { get; set; }
+    public ApplicationUserStatus? Status { get; set; } = null!;
 
 
     // PreferredLanguage
@@ -25,21 +25,25 @@ public sealed class ApplicationUser : IdentityUser<Guid>
 
     // Login Tracking/Auditing
     public DateTimeOffset? LastLoginAt { get; set; }
-    public DateTimeOffset? LastFailedLoginAt { get; set; }
+
+
+    // Failed login
     public int FailedLoginCount { get; set; }
+    public DateTimeOffset? LastFailedLoginAt { get; set; }
 
 
-    // Audit
-    public Guid? CreatedById { get; set; }
-    public ApplicationUser? CreatedBy { get; set; } = null!;
+    // Create
+    public Guid CreatedById { get; set; }
+    public ApplicationUser CreatedBy { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
 
 
+    // Update (including properties)
     public Guid? UpdatedById { get; set; }
     public ApplicationUser? UpdatedBy { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
 
-
+    // Lock
     public Guid? LockedById { get; set; }
     public ApplicationUser? LockedBy { get; set; }
     public DateTimeOffset? LockedAt { get; set; }

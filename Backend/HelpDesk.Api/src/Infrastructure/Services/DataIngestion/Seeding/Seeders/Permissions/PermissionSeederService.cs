@@ -75,7 +75,6 @@ public sealed class PermissionSeederService(
                        NormalizedName = normalizedName,
                        Code = seed.Code,
                        IsActive = seed.IsActive,
-                       SortOrder = seed.SortOrder
                    });
 
                 continue;
@@ -85,7 +84,6 @@ public sealed class PermissionSeederService(
             existing.Name = seed.Name;
             existing.NormalizedName = normalizedName;
             existing.IsActive = seed.IsActive;
-            existing.SortOrder = seed.SortOrder;
         }
 
         // Add SeedHistory

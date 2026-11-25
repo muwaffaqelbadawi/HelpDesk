@@ -1,7 +1,7 @@
 ﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
-public sealed record UserAccountRowVersionData
+public sealed class UserAccountRowVersionData
 {
-    public byte[] UserRowVersion { get; set; } = null!;
-    public byte[]? EmployeeRowVersion { get; set; }
+    public byte[] UserRowVersion { get; init; } = null!;
+    public byte[]? EmployeeRowVersion { get; init; }
 }

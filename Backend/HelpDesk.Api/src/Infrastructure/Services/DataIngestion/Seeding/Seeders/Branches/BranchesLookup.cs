@@ -9,61 +9,51 @@ public static class BranchesLookup
         new(
             Id: BranchesIds.Madinah,
             Name: "Madinah",
-            Code: "MED",
-            SortOrder: 0),
+            Code: "MED"),
 
         new(
             Id: BranchesIds.Riyadh,
             Name: "Riyadh",
-            Code: "RUH",
-            SortOrder: 1),
+            Code: "RUH"),
 
         new(
             Id: BranchesIds.Jeddah,
             Name: "Jeddah",
-            Code: "JED",
-            SortOrder: 2),
+            Code: "JED"),
 
         new(
             Id: BranchesIds.Dammam,
             Name: "Dammam",
-            Code: "DAM",
-            SortOrder: 3),
+            Code: "DAM"),
 
         new(
             Id: BranchesIds.Makkah,
             Name: "Makkah",
-            Code: "MKK",
-            SortOrder: 4),
+            Code: "MKK"),
 
         new(
             Id: BranchesIds.Tabuk,
             Name: "Tabuk",
-            Code: "TAB",
-            SortOrder: 5),
+            Code: "TAB"),
 
         new(
             Id: BranchesIds.Abha,
             Name: "Abha",
-            Code: "ABH",
-            SortOrder: 6),
+            Code: "ABH"),
 
         new(
             Id: BranchesIds.Qassim,
             Name: "Qassim",
-            Code: "QSM",
-            SortOrder: 7),
+            Code: "QSM"),
 
         new(
             Id: BranchesIds.Jizan,
             Name: "Jizan",
-            Code: "JZN",
-            SortOrder: 8),
+            Code: "JZN"),
 
         new(
             Id: BranchesIds.AlAhsa,
             Name: "AlAhsa",
-            Code: "HOF",
-            SortOrder: 9),
+            Code: "HOF"),
     ];
 }

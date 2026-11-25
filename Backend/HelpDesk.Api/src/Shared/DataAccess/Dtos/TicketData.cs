@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
-public sealed record TicketData
+public sealed class TicketData
 {
     public Guid TicketId { get; init; }
     public string TicketNumber { get; init; } = null!;

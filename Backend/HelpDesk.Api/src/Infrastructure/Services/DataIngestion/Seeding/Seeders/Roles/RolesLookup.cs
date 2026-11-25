@@ -9,31 +9,26 @@ public static partial class RolesLookup
         new(
             Id: RoleIds.SuperAdmin,
             Name: "SuperAdmin",
-            Code: "SUPERADMIN",
-            SortOrder: 0),
+            Code: "SUPERADMIN"),
 
         new(
             Id: RoleIds.Admin,
             Name: "Admin",
-            Code: "ADMIN",
-            SortOrder: 1),
+            Code: "ADMIN"),
 
         new(
             Id: RoleIds.Customer,
             Name: "Customer",
-            Code: "CUSTOMER",
-            SortOrder: 2),
+            Code: "CUSTOMER"),
 
         new(
             Id: RoleIds.Support,
             Name: "Support",
-            Code: "SUPPORT",
-            SortOrder: 3),
+            Code: "SUPPORT"),
 
         new(
             Id: RoleIds.Agent,
             Name: "Agent",
-            Code: "AGENT",
-            SortOrder: 4)
+            Code: "AGENT")
     ];
 }

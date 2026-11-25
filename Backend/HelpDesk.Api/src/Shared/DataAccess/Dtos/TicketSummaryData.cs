@@ -1,6 +1,6 @@
 ﻿namespace HelpDesk.src.Shared.DataAccess.Dtos;
 
-public sealed record TicketSummaryData
+public sealed class TicketSummaryData
 {
     public int TotalTickets { get; init; }
     public int OpenTickets { get; init; }

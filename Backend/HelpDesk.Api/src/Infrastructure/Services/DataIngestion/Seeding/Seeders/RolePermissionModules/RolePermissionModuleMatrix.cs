@@ -27,10 +27,7 @@ public static class RolePermissionModuleMatrix
 
     public static IEnumerable<RolePermissionModuleLookupSeed> Support =>
     [
-        new(
-            RoleIds.Support,
-            PermissionIds.Assigned,
-            ModuleIds.Tickets)
+
     ];
 
     public static IEnumerable<RolePermissionModuleLookupSeed> Agent =>

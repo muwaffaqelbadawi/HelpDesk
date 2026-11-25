@@ -1,4 +1,4 @@
-﻿using HelpDesk.src.Features.Auth.Modules.GetAll;
+﻿using HelpDesk.src.Features.Settings.Admin.Modules.GetAll;
 using HelpDesk.src.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 using Moq;
