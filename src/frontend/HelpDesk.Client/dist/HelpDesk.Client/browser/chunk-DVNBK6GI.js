@@ -1,1 +1,0 @@
-import{Fb as m,Qa as t,jb as n,kb as a}from"./chunk-HTIDVUAZ.js";var i=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["ng-component"]],decls:2,vars:0,template:function(e,s){e&1&&(n(0,"p"),m(1,"revoke-token works!"),a())},encapsulation:2})};export{i as RevokeTokenComponent};

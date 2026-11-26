@@ -1,1 +1,0 @@
-import{Fb as p,Qa as t,jb as n,kb as m}from"./chunk-HTIDVUAZ.js";var a=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-home"]],decls:2,vars:0,template:function(e,s){e&1&&(n(0,"p"),p(1,"home works!"),m())},encapsulation:2})};export{a as AppHomeComponent};

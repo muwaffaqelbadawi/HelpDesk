@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../node_modules/@primeuix/themes/dist/aura/card/index.mjs"],
-  "sourcesContent": ["var o={background:\"{content.background}\",borderRadius:\"{border.radius.xl}\",color:\"{content.color}\",shadow:\"0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)\"},t={padding:\"1.125rem\",gap:\"0.5rem\"},r={gap:\"0.5rem\"},e={fontSize:\"1.125rem\",fontWeight:\"500\"},a={color:\"{text.muted.color}\",fontSize:\"1rem\",fontWeight:\"{typography.font.weight}\"},n={root:o,body:t,caption:r,title:e,subtitle:a};export{t as body,r as caption,n as default,o as root,a as subtitle,e as title};"],
-  "mappings": ";;;AAAA,IAAI,IAAE,EAAC,YAAW,wBAAuB,cAAa,sBAAqB,OAAM,mBAAkB,QAAO,oEAAmE;AAA7K,IAA+K,IAAE,EAAC,SAAQ,YAAW,KAAI,SAAQ;AAAjN,IAAmN,IAAE,EAAC,KAAI,SAAQ;AAAlO,IAAoO,IAAE,EAAC,UAAS,YAAW,YAAW,MAAK;AAA3Q,IAA6Q,IAAE,EAAC,OAAM,sBAAqB,UAAS,QAAO,YAAW,2BAA0B;AAAhW,IAAkW,IAAE,EAAC,MAAK,GAAE,MAAK,GAAE,SAAQ,GAAE,OAAM,GAAE,UAAS,EAAC;",
-  "names": []
-}

@@ -436,22 +436,22 @@ FodyWeavers.xsd
 # Angular .gitignore
 
 # Angular specific
-frontend/HelpDesk.Client/dist/
-frontend/HelpDesk.Client/out-tsc/
-frontend/HelpDesk.Client/tmp/
-frontend/HelpDesk.Client/coverage/
-frontend/HelpDesk.Client/e2e/test-output/
-frontend/HelpDesk.Client/.angular/
+src/frontend/HelpDesk.Client/dist/
+src/frontend/HelpDesk.Client/out-tsc/
+src/frontend/HelpDesk.Client/tmp/
+src/frontend/HelpDesk.Client/coverage/
+src/frontend/HelpDesk.Client/e2e/test-output/
+src/frontend/HelpDesk.Client/.angular/
 
 # Environment files
 
 # TypeScript cache
-frontend/HelpDesk.Client/*.tsbuildinfo
+src/frontend/HelpDesk.Client/*.tsbuildinfo
 
 # Logs
-frontend/HelpDesk.Client/npm-debug.log*
-frontend/HelpDesk.Client/yarn-debug.log*
-frontend/HelpDesk.Client/yarn-error.log*
+src/frontend/HelpDesk.Client/npm-debug.log*
+src/frontend/HelpDesk.Client/yarn-debug.log*
+src/frontend/HelpDesk.Client/yarn-error.log*
 
 # Local development certificates
 dev_certificate/
