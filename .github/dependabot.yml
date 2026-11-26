@@ -46,3 +46,5 @@ updates:
         versions: [">=10.0.0"]
       - dependency-name: "angular-eslint"
         versions: [">=21.0.0"]
+      - dependency-name: "zone.js"
+        versions: [">=0.15.1"]
