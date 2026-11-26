@@ -4,23 +4,23 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY global.json ./
-COPY Backend/HelpDesk.slnx ./Backend/
-COPY Backend/HelpDesk.Api/HelpDesk.Api.csproj ./Backend/HelpDesk.Api/
-COPY Backend/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj ./Backend/HelpDesk.Tests.Unit/
-COPY Backend/HelpDesk.Tests.Integration/HelpDesk.Tests.Integration.csproj ./Backend/HelpDesk.Tests.Integration/
+COPY backend/src/HelpDesk.slnx ./backend/src/
+COPY backend/src/HelpDesk.Api/HelpDesk.Api.csproj ./backend/src/HelpDesk.Api/
+COPY backend/src/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj ./backend/src/HelpDesk.Tests.Unit/
+COPY backend/src/HelpDesk.Tests.Integration/HelpDesk.Tests.Integration.csproj ./backend/src/HelpDesk.Tests.Integration/
 
-RUN dotnet restore Backend/HelpDesk.slnx
+RUN dotnet restore backend/src/HelpDesk.slnx
 
-COPY Backend/ ./Backend/
+COPY backend/src/ ./backend/src/
 
-RUN dotnet build Backend/HelpDesk.slnx \
+RUN dotnet build backend/src/HelpDesk.slnx \
     --configuration Release \
     --no-restore
 
 # Unit tests run during the deployment image build and gate publishing.
 FROM build AS unit-tests
 
-RUN dotnet test Backend/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj \
+RUN dotnet test backend/src/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj \
     --configuration Release \
     --no-build \
     --no-restore
@@ -28,17 +28,17 @@ RUN dotnet test Backend/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj \
 # Run unit tests on demand in a container.
 FROM build AS tests
 
-ENTRYPOINT ["dotnet", "test", "Backend/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj", "--configuration", "Release", "--no-build", "--no-restore"]
+ENTRYPOINT ["dotnet", "test", "backend/src/HelpDesk.Tests.Unit/HelpDesk.Tests.Unit.csproj", "--configuration", "Release", "--no-build", "--no-restore"]
 
 # Run integration tests against a reachable SQL Server.
 FROM build AS integration-tests
 
-ENTRYPOINT ["dotnet", "test", "Backend/HelpDesk.Tests.Integration/HelpDesk.Tests.Integration.csproj", "--configuration", "Release", "--no-build", "--no-restore"]
+ENTRYPOINT ["dotnet", "test", "backend/src/HelpDesk.Tests.Integration/HelpDesk.Tests.Integration.csproj", "--configuration", "Release", "--no-build", "--no-restore"]
 
 # Publish only after the unit-test gate succeeds.
 FROM unit-tests AS publish
 
-RUN dotnet publish Backend/HelpDesk.Api/HelpDesk.Api.csproj \
+RUN dotnet publish backend/src/HelpDesk.Api/HelpDesk.Api.csproj \
     --configuration Release \
     --output /app/publish \
     --no-build \

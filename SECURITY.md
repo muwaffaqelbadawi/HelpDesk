@@ -23,7 +23,7 @@ Security reports may concern the ASP.NET Core API, ASP.NET Core Identity, JWT au
 - The API configures ASP.NET Core Identity password complexity, failed-login lockout, and unique email addresses. JWT validation checks the signing key, issuer, audience, and lifetime. Access and refresh tokens are issued in `HttpOnly`, `Secure`, `SameSite=Strict` cookies; refresh tokens are stored server-side and can be revoked.
 - The API configures HTTPS redirection, credentialed CORS for configured origins, FluentValidation-based request validation, and centralized exception responses. These application settings do not guarantee that a particular deployment is correctly configured or exposed only over HTTPS.
 - GitHub Actions runs CodeQL analysis for C# and JavaScript/TypeScript on pushes and pull requests to `main`, and on a weekly schedule. Dependabot is configured for weekly NuGet and npm dependency update checks. The repository does not configure a separate dependency-scanning workflow. The Angular workflow builds the client but does not run its tests.
-- The root `dockerfile` builds the .NET API, runs unit tests before publishing, and uses a non-root ASP.NET runtime image. `docker-compose.yml` publishes SQL Server and Mailpit ports; restrict network access when running this configuration. The repository does not document a production hosting environment or deployment hardening standard.
+- `docker/api/dockerfile` builds the .NET API, runs unit tests before publishing, and uses a non-root ASP.NET runtime image. `docker-compose.yml` publishes SQL Server and Mailpit ports; restrict network access when running this configuration. The repository does not document a production hosting environment or deployment hardening standard.
 
 These are descriptions of configured behavior, not a guarantee that the application or any deployment is free of vulnerabilities.
 
@@ -33,7 +33,7 @@ Do not commit production credentials, signing keys, tokens, connection strings, 
 
 `.env.example` documents SQL Server, API connection, JWT, and SMTP environment variables with placeholders; replace those values for local use instead of treating them as usable credentials. Angular environment files are client-side configuration and must not contain secrets.
 
-The root `.gitignore` contains an `*.env` pattern and ignores `dev_certificate/`; it does not ignore `appsettings.Development.json`. The root `.dockerignore` excludes `.env` files, certificate/key files, `secrets.json`, development certificates, and generated output. However, it does not exclude `Backend/HelpDesk.Api/appsettings.Development.json`, which is tracked and contains a development JWT signing key. The root Docker build copies `Backend/` into its build context, so that file can enter the build and published image. Do not reuse its key; this build-context exposure should be addressed separately.
+The root `.gitignore` contains an `*.env` pattern and ignores `dev_certificate/`; it does not ignore `appsettings.Development.json`. The root `.dockerignore` excludes `.env` files, certificate/key files, `secrets.json`, development certificates, generated output, and `**/appsettings.Development.json`. This excludes `backend/src/HelpDesk.Api/appsettings.Development.json` from the API Docker build context, although the tracked file contains a development JWT signing key. Do not reuse its key.
 
 ## Disclosure and Security Updates
 

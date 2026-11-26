@@ -1,0 +1,15 @@
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace HelpDesk.Infrastructure.Database.Identity.Auth.Entities;
+
+public sealed class ApplicationRole : IdentityRole<Guid>
+{
+    // Auth.Roles
+    public string Code { get; set; } = null!;
+    public bool IsActive { get; set; } = true;
+
+
+    // RBAC
+    public ICollection<ApplicationUserRole> UserRoles { get; set; } = [];
+    public ICollection<ApplicationRolePermissionModule> RolePermissionModules { get; set; } = [];
+}

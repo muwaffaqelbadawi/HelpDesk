@@ -1,0 +1,14 @@
+﻿using HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Dtos;
+
+namespace HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Seeders.Companies;
+
+public static class CompaniesLookup
+{
+    public static IReadOnlyCollection<LookupSeed> Companies { get; } =
+    [
+        new(
+            Id: CompaniesIds.SiragFutureTechnology,
+            Name: "Sirag Future Technology",
+            Code: "SFTech")
+    ];
+}

@@ -1,0 +1,34 @@
+﻿using HelpDesk.Infrastructure.Database.Identity.Auth.Entities;
+
+namespace HelpDesk.Shared.Interfaces;
+
+public interface IRefreshTokenRepository
+{
+    Task AddAsync(
+        ApplicationRefreshToken refreshToken,
+        CancellationToken cancellationToken);
+
+    Task<int> RevokeAllAsync(
+        Guid userId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task<int> RevokeAllOtherAsync(
+        Guid userId,
+        Guid currentSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task<int> RevokeAsync(
+        Guid userId,
+        Guid userSessionId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task<DateTimeOffset?> RotateAsync(
+        Guid currentRefreshTokenId,
+        ApplicationRefreshToken replacement,
+        DateTimeOffset now,
+        TimeSpan sessionLifetime,
+        CancellationToken cancellationToken);
+}

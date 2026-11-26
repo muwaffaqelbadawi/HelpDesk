@@ -6,7 +6,7 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
-      - "D:/HelpDesk/DockerData/:/var/opt/mssql/backup"
+      - "D:/HelpDesk/docker_data/:/var/opt/mssql/backup"
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
@@ -49,8 +49,8 @@ services:
       Smtp__SenderEmail: noreply@helpdesk_test.local
       UserSession__UserSessionExpiryDays: "7"
       AttachmentStorage__RootPath: App_Data/Attachments
-      DataImport__CountriesPath: src/Infrastructure/Services/DataIngestion/Importing/Importers/Countries/data/countries.json
-      DataImport__TimeZonesPath: src/Infrastructure/Services/DataIngestion/Importing/Importers/Timezones/data/timezone-names.json
+      DataImport__CountriesPath: Infrastructure/Services/DataIngestion/Importing/Importers/Countries/data/countries.json
+      DataImport__TimeZonesPath: Infrastructure/Services/DataIngestion/Importing/Importers/Timezones/data/timezone-names.json
     healthcheck:
       test:
         [
@@ -74,7 +74,7 @@ services:
 
   frontend:
     build:
-      context: ./Frontend/HelpDesk.Client
+      context: ./frontend/HelpDesk.Client
       dockerfile: ../../docker/frontend/dockerfile
       target: production
     container_name: helpdesk-frontend

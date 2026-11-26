@@ -1,0 +1,860 @@
+﻿using HelpDesk.Infrastructure.Database.Data.Business.Entities;
+using HelpDesk.Infrastructure.Services.SQLServerSequence;
+using Microsoft.EntityFrameworkCore;
+
+namespace HelpDesk.Infrastructure.Database.DbContext;
+
+public partial class AppDbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
+    {
+    }
+
+    // Add DbSet properties for your business entities here
+
+
+    // Business.Branches
+    public DbSet<Branch> Branches { get; set; } = null!;
+
+    // Business.Countries
+    public DbSet<Country> Countries { get; set; } = null!;
+
+    // Business.Departments
+    public DbSet<Department> Departments { get; set; } = null!;
+
+    // Business.Sectors
+    public DbSet<Sector> Sectors { get; set; } = null!;
+
+    // Business.Companies 
+    public DbSet<Company> Companies { get; set; } = null!;
+
+    // Business.Languages 
+    public DbSet<Language> Languages { get; set; } = null!;
+
+    // Business.Employees
+    public DbSet<Employee> Employees { get; set; } = null!;
+
+    // Business.EmployeeAvailabilities
+    public DbSet<EmployeeAvailability> EmployeeAvailabilities { get; set; } = null!;
+
+    // Business.Tickets
+    public DbSet<Ticket> Tickets { get; set; } = null!;
+
+    // Business.TicketStatuses
+    public DbSet<TicketStatus> TicketStatuses { get; set; } = null!;
+
+    // Business.TicketPriorities
+    public DbSet<TicketPriority> TicketPriorities { get; set; } = null!;
+
+    // Business.TicketComments
+    public DbSet<TicketComment> TicketComments { get; set; } = null!;
+
+    // Business.TicketAttachments
+    public DbSet<TicketAttachment> TicketAttachments { get; set; } = null!;
+
+    // Business.Histories
+    public DbSet<TicketHistory> TicketHistories { get; set; } = null!;
+
+    // Business.SeedHistories
+    public DbSet<SeedHistory> SeedHistories { get; set; } = null!;
+
+    private static void ConfigureBusinessModel(ModelBuilder modelBuilder)
+    {
+        // Business configuration
+
+
+        // Business.Branches
+        modelBuilder.Entity<Branch>(entity =>
+        {
+            // Schema
+            entity.ToTable("Branches", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        //Business.Countries
+        modelBuilder.Entity<Country>(entity =>
+        {
+            // Schema
+            entity.ToTable("Countries", "Business");
+
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // M49Code (Property)
+            entity.Property(e => e.M49Code)
+                .HasMaxLength(3)
+                .IsRequired();
+
+            // M49Code (Index)
+            entity.HasIndex(e => e.M49Code)
+                .IsUnique();
+
+            // Alpha2Code (Property)
+            entity.Property(e => e.Alpha2Code)
+                .HasMaxLength(2)
+                .IsRequired();
+
+            // Alpha2Code (Index)
+            entity.HasIndex(e => e.Alpha2Code)
+                .IsUnique();
+
+            // Alpha3Code (Property)
+            entity.Property(e => e.Alpha3Code)
+                .HasMaxLength(3)
+                .IsRequired();
+
+            // Alpha3Code (Index)
+            entity.HasIndex(e => e.Alpha3Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            // NameArabic (Property)
+            entity.Property(e => e.NameArabic)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // Business.Departments
+        modelBuilder.Entity<Department>(entity =>
+        {
+            // Schema
+            entity.ToTable("Departments", "Business");
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // Business.Sectors
+        modelBuilder.Entity<Sector>(entity =>
+        {
+            // Schema
+            entity.ToTable("Sectors", "Business");
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // Business.Companies
+        modelBuilder.Entity<Company>(entity =>
+        {
+            // Schema
+            entity.ToTable("Companies", "Business");
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // Business.Languages
+        modelBuilder.Entity<Language>(entity =>
+        {
+            // Schema
+            entity.ToTable("Languages", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // Employee Sequence (BIGINT)
+        modelBuilder.HasSequence<long>(
+            BusinessSchema.EmployeeNumber,
+            BusinessSchema.Name)
+        .StartsAt(Numbering.Start)
+        .IncrementsBy(increment: Numbering.Increment);
+
+        // Business.Employees
+        modelBuilder.Entity<Employee>(entity =>
+        {
+            // Schema
+            entity.ToTable("Employees", "Business");
+
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // FullEnName (Property)
+            entity.Property(e => e.FullEnName)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            // FullArName (Property)
+            entity.Property(e => e.FullArName)
+                .HasMaxLength(200);
+
+            // Number (Property)
+            entity.Property(e => e.Number)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // Number (Index)
+            entity.HasIndex(e => e.Number)
+                .IsUnique();
+
+            // UserId (Property)
+            entity.Property(e => e.UserId);
+
+            // CreatedAt (Property)
+            entity.Property(e => e.CreatedAt);
+
+            // UpdatedAt (Property)
+            entity.Property(e => e.UpdatedAt);
+
+            // DeletedAt (Property)
+            entity.Property(e => e.DeletedAt);
+
+            // PhotoUrl (Property)
+            entity.Property(e => e.PhotoUrl)
+                .HasMaxLength(500);
+
+            // JobTitle (Property)
+            entity.Property(e => e.JobTitle)
+                .HasMaxLength(200);
+
+            // User (Relation)
+            entity.HasOne(e => e.User)
+                .WithOne(e => e.Employee)
+                .HasForeignKey<Employee>(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // CreatedBy (Relation)
+            entity.HasOne(e => e.CreatedBy)
+                .WithMany(e => e.CreatedEmployees)
+                .HasForeignKey(e => e.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UpdatedBy (Relation)
+            entity.HasOne(e => e.UpdatedBy)
+                .WithMany(e => e.UpdatedEmployees)
+                .HasForeignKey(e => e.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany(e => e.DeletedEmployees)
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Language (Relation)
+            entity.HasOne(e => e.Language)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.LanguageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Branch (Relation)
+            entity.HasOne(e => e.Branch)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.BranchId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Company (Relation)
+            entity.HasOne(e => e.Company)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Department (Relation)
+            entity.HasOne(e => e.Department)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Country (Relation)
+            entity.HasOne(e => e.Country)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Sector (Relation)
+            entity.HasOne(e => e.Sector)
+                .WithMany(e => e.Employees)
+                .HasForeignKey(e => e.SectorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Employee (Relation)
+            entity.HasOne(e => e.Availability)
+                .WithOne(a => a.Employee)
+                .HasForeignKey<EmployeeAvailability>(a => a.EmployeeId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // RowVersion (Property)
+            entity.Property(e => e.RowVersion)
+                .IsRowVersion();
+
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // Employee (Query filter)
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // Business.EmployeeAvailabilities
+        modelBuilder.Entity<EmployeeAvailability>(entity =>
+        {
+            // Schema
+            entity.ToTable("EmployeeAvailabilities", "Business");
+
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // EmployeeId (Property)
+            entity.Property(e => e.EmployeeId);
+
+            // Reason (Property)
+            entity.Property(e => e.Reason);
+
+            // StartsAt (Property)
+            entity.Property(e => e.StartsAt);
+
+            // EndsAt (Property)
+            entity.Property(e => e.EndsAt);
+
+            // Message (Property)
+            entity.Property(e => e.Message)
+                .HasMaxLength(1000);
+
+            // IsDeleted (Property)
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // EmployeeAvailability Query filter (IsDeleted)
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // TicketSequence (BIGINT)
+        modelBuilder.HasSequence<long>(
+            BusinessSchema.TicketNumber,
+            BusinessSchema.Name)
+       .StartsAt(Numbering.Start)
+       .IncrementsBy(Numbering.Increment);
+
+        // Business.Tickets
+        modelBuilder.Entity<Ticket>(entity =>
+        {
+            // Schema
+            entity.ToTable("Tickets", "Business");
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // Number (Property)
+            entity.Property(e => e.Number)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // Title (Property)
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            // Subject (Property)
+            entity.Property(e => e.Subject)
+                .IsRequired()
+                .HasMaxLength(1000);
+
+            // Status (Relation)
+            entity.HasOne(e => e.Status)
+                .WithMany()
+                .HasForeignKey(e => e.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Priority (Relation)
+            entity.HasOne(e => e.Priority)
+                .WithMany()
+                .HasForeignKey(e => e.PriorityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Department (Relation)
+            entity.HasOne(e => e.Department)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // CreatedBy (Relation)
+            entity.HasOne(e => e.CreatedBy)
+                .WithMany(e => e.CreatedTickets)
+                .HasForeignKey(e => e.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // CreatedAt (Property)
+            entity.Property(e => e.CreatedAt);
+
+            // AssignedBy (Relation)
+            entity.HasOne(e => e.AssignedBy)
+                .WithMany(e => e.AssignedByTickets)
+                .HasForeignKey(e => e.AssignedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // AssignedTo (Relation)
+            entity.HasOne(e => e.AssignedTo)
+                .WithMany(e => e.AssignedToTickets)
+                .HasForeignKey(e => e.AssignedToId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // AssignedAt (Property)
+            entity.Property(e => e.AssignedAt);
+
+            // UpdatedBy (Relation)
+            entity.HasOne(e => e.UpdatedBy)
+                .WithMany(e => e.UpdatedTickets)
+                .HasForeignKey(e => e.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UpdatedAt (Property)
+            entity.Property(e => e.UpdatedAt);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany(e => e.DeletedTickets)
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DeletedAt (Property)
+            entity.Property(e => e.DeletedAt);
+
+            // ClosedBy (Relation)
+            entity.HasOne(e => e.ClosedBy)
+                .WithMany(e => e.ClosedTickets)
+                .HasForeignKey(e => e.ClosedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketStatus (Relation)
+            entity.HasOne(e => e.Status)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(e => e.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketPriority (Relation)
+            entity.HasOne(e => e.Priority)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(e => e.PriorityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ClosedAt (Property)
+            entity.Property(e => e.ClosedAt);
+
+            // IsDeleted (Property)
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // RowVersion (Property)
+            entity.Property(e => e.RowVersion)
+                .IsRowVersion();
+
+            // Ticket Query filter
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // Business.TicketStatuses
+        modelBuilder.Entity<TicketStatus>(entity =>
+        {
+            // Schema
+            entity.ToTable("TicketStatuses", "Business");
+
+            // Id (Key)
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Index)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // Business.TicketPriorities
+        modelBuilder.Entity<TicketPriority>(entity =>
+        {
+            // Schema
+            entity.ToTable("TicketPriorities", "Business");
+
+            // ID (Key)
+            entity.HasKey(e => e.Id);
+
+            // Code (Property)
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Code (Index)
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+
+            // Name (Property)
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // NormalizedName (Property)
+            entity.Property(e => e.NormalizedName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // IsActive (Property)
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // Business.TicketComments
+        modelBuilder.Entity<TicketComment>(entity =>
+        {
+            // Schema
+            entity.ToTable("TicketComments", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // Content
+            entity.Property(e => e.Content)
+                .IsRequired()
+                .HasMaxLength(4000);
+
+            // CreatedById
+            entity.Property(e => e.CreatedById)
+                .IsRequired();
+
+            // UpdatedById
+            entity.Property(e => e.UpdatedById);
+
+            // DeletedById
+            entity.Property(e => e.DeletedById);
+
+            // CreatedAt
+            entity.Property(e => e.CreatedAt);
+
+            // UpdatedAt
+            entity.Property(e => e.UpdatedAt);
+
+            // DeletedAt
+            entity.Property(e => e.DeletedAt);
+
+            // IsDeleted
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // IsInternal
+            entity.Property(e => e.IsInternal)
+                .HasDefaultValue(false);
+
+            // CreatedBy (Relation)
+            entity.HasOne(e => e.CreatedBy)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedById)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UpdatedBy (Relation)
+            entity.HasOne(e => e.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany()
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketComment (navigation property)
+            entity.HasOne(e => e.Ticket)
+                .WithMany(e => e.Comments)
+                .HasForeignKey(e => e.TicketId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketComment (Query filter)
+            entity.HasQueryFilter(e =>
+                !e.IsDeleted &&
+                !e.Ticket.IsDeleted);
+        });
+
+        // Business.TicketAttachments
+        modelBuilder.Entity<TicketAttachment>(entity =>
+        {
+            // Schema
+            entity.ToTable("TicketAttachments", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // TicketCommentId
+            entity.Property(e => e.TicketCommentId)
+                .IsRequired();
+
+            // FileName
+            entity.Property(e => e.FileName)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            // ContentType
+            entity.Property(e => e.ContentType)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            // Size
+            entity.Property(e => e.Size)
+                .IsRequired();
+
+            // StorageKey
+            entity.Property(e => e.StorageKey)
+                .IsRequired()
+                .HasMaxLength(512);
+
+            // UploadedById
+            entity.Property(e => e.UploadedById)
+                .IsRequired();
+
+            // UploadedAt
+            entity.Property(e => e.UploadedAt)
+                .IsRequired();
+
+            // DeletedAt
+            entity.Property(e => e.DeletedAt);
+
+            // IsDeleted
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            // DeletedBy (Relation)
+            entity.HasOne(e => e.DeletedBy)
+                .WithMany()
+                .HasForeignKey(e => e.DeletedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UploadedBy (Relation)
+            entity.HasOne(e => e.UploadedBy)
+                .WithMany()
+                .HasForeignKey(e => e.UploadedById)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketAttachment (navigation property)
+            entity.HasOne(e => e.TicketComment)
+                .WithMany(e => e.Attachments)
+                .HasForeignKey(e => e.TicketCommentId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketAttachment (Query filter)
+            entity.HasQueryFilter(e =>
+                !e.IsDeleted &&
+                !e.TicketComment.IsDeleted &&
+                !e.TicketComment.Ticket.IsDeleted);
+        });
+
+        // Business.TicketHistory
+        modelBuilder.Entity<TicketHistory>(entity =>
+        {
+            // Schema
+            entity.ToTable("TicketHistory", "Business");
+
+            // ID
+            entity.HasKey(e => e.Id);
+
+            // Type (Property)
+            entity.Property(e => e.Type);
+
+            // CreatedAt (Property)
+            entity.Property(e => e.OccurredAt);
+
+            // Description (Property)
+            entity.Property(e => e.Description)
+                .HasMaxLength(200);
+
+            // OldValueId (Property)
+            entity.Property(e => e.OldValueId)
+                .HasMaxLength(200);
+
+            // NewValueId (Property)
+            entity.Property(e => e.NewValueId)
+                .HasMaxLength(200);
+
+            // Histories (navigation property)
+            entity.HasOne(e => e.Ticket)
+                .WithMany(e => e.Histories)
+                .HasForeignKey(e => e.TicketId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TicketHistory (Query filter)
+            entity.HasQueryFilter(e => !e.Ticket.IsDeleted);
+        });
+
+        // Business.SeedHistory
+        modelBuilder.Entity<SeedHistory>(entity =>
+        {
+            // Schema
+            entity.ToTable("SeedHistory", "Business");
+
+            // ID (Composite key)
+            entity.HasKey(e => new
+            {
+                e.Key,
+                e.Version,
+                e.Scope
+            });
+
+            // Key (Property)
+            entity.Property(e => e.Key)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            // Version (Property)
+            entity.Property(e => e.Version)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            // Scope (Property)
+            entity.Property(e => e.Scope)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            // AppliedAt (Property)
+            entity.Property(e => e.AppliedAt)
+                .IsRequired();
+        });
+    }
+}

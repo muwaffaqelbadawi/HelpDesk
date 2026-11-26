@@ -1,0 +1,24 @@
+﻿using HelpDesk.Infrastructure.Database.Identity.Auth.Entities;
+
+namespace HelpDesk.Infrastructure.Database.Data.Business.Entities;
+
+public sealed class TicketHistory
+{
+    public Guid Id { get; set; }
+
+
+    public Guid UserId { get; set; }
+    public ApplicationUser User { get; set; } = null!;
+
+    public Guid TicketId { get; set; }
+    public Ticket Ticket { get; set; } = null!;
+
+
+    // History type
+    public TicketHistoryType Type { get; set; }
+    public DateTimeOffset OccurredAt { get; set; }
+    public string? Description { get; set; }
+
+    public Guid? OldValueId { get; set; }
+    public Guid? NewValueId { get; set; }
+}

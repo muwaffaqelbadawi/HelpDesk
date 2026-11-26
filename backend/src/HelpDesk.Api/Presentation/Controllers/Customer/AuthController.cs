@@ -1,0 +1,270 @@
+﻿using HelpDesk.Features.Auth.ChangePassword;
+using HelpDesk.Features.Auth.ForgotPassword;
+using HelpDesk.Features.Auth.Login;
+using HelpDesk.Features.Auth.Logout.All;
+using HelpDesk.Features.Auth.Logout.Current;
+using HelpDesk.Features.Auth.RefreshToken;
+using HelpDesk.Features.Auth.ResetPassword.User;
+using HelpDesk.Features.Auth.RevokeToken;
+using HelpDesk.Features.Auth.UserSession.TerminateAll;
+using HelpDesk.Features.Settings.Admin.Modules.GetMy;
+using HelpDesk.Features.Settings.Admin.Permissions.GetMy;
+using HelpDesk.Features.Settings.Admin.Roles.GetMy;
+using HelpDesk.Infrastructure.Services.Jwt;
+using HelpDesk.Shared.Interfaces;
+using HelpDesk.Shared.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HelpDesk.Presentation.Controllers.Customer;
+
+[ApiController]
+[Route("api/auth")]
+[Authorize]
+public sealed class AuthController(IDateTimeService dateTimeService) : ControllerBase
+{
+    // Role: "Customer"
+
+    // Login
+    [HttpPost("login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login(
+        [FromServices] ICommandHandler<LoginCommand, LoginResponse> handler,
+        [FromBody] LoginBody body,
+        CancellationToken cancellationToken)
+    {
+        var command = new LoginCommand(
+            Username: body.Username,
+            Password: body.Password,
+            StaySignedIn: body.StaySignedIn);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // Set a new token cookies
+        Response.SetTokenCookies(result.Token);
+
+        return Ok(new ApiResponse<LoginResponse>(
+            message: ApiMessages.Login,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Logout
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(
+        [FromServices] ICommandHandler<LogoutCommand, LogoutResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new LogoutCommand();
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // Clear cookies
+        Response.ClearTokenCookies();
+
+        return Ok(new ApiResponse<LogoutResponse>(
+            message: ApiMessages.Logout,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Logout-all
+    [HttpPost("logout-all")]
+    public async Task<IActionResult> LogoutAll(
+        [FromServices] ICommandHandler<LogoutAllCommand, LogoutAllResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new LogoutAllCommand();
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // Clear cookies
+        Response.ClearTokenCookies();
+
+        return Ok(new ApiResponse<LogoutAllResponse>(
+            message: ApiMessages.LogoutAll,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Terminate all user sessions
+    [HttpPost("terminate-all-other-user-sessions")]
+    public async Task<IActionResult> TerminateAllUserSessions(
+        [FromServices] ICommandHandler<TerminateAllUserSessionsCommand,
+            TerminateAllUserSessionsResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new TerminateAllUserSessionsCommand();
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // Clear cookies
+        Response.ClearTokenCookies();
+
+        return Ok(new ApiResponse<TerminateAllUserSessionsResponse>(
+            message: ApiMessages.TerminateAllOtherUserSessions,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Refresh Token
+    [HttpPost("refresh-token")]
+    [AllowAnonymous]
+    public async Task<IActionResult> RefreshToken(
+        [FromServices] ICommandHandler<RefreshTokenCommand, RefreshTokenResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var refreshTokenValue = Request.Cookies["refresh_token"];
+
+        if (string.IsNullOrEmpty(refreshTokenValue))
+        {
+            return Unauthorized(
+            new
+            {
+                Message = "No refresh token provided."
+            });
+        }
+
+        // Create command from cookie value
+        var command = new RefreshTokenCommand(refreshTokenValue);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // set new cookies
+        Response.SetTokenCookies(result.Token);
+
+        return Ok(new ApiResponse<RefreshTokenResponse>(
+           message: ApiMessages.TokenRefreshed,
+           time: dateTimeService,
+           data: result));
+    }
+
+    // Change Password
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(
+        [FromServices] ICommandHandler<ChangePasswordCommand, ChangePasswordResponse> handler,
+        [FromBody] ChangePasswordBody body,
+        CancellationToken cancellationToken)
+    {
+        // Create command from cookie value
+        var command = new ChangePasswordCommand(
+            body.CurrentPassword,
+            body.NewPassword,
+            body.ConfirmPassword);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        // Overwrite cookies with fresh tokens (keep session alive)
+        Response.SetTokenCookies(result.Token);
+
+        return Ok(new ApiResponse<ChangePasswordResponse>(
+           message: ApiMessages.PasswordChanged,
+           time: dateTimeService,
+           data: result));
+    }
+
+    // Forgot Password
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword(
+        [FromServices] ICommandHandler<ForgotPasswordCommand> handler,
+        [FromBody] ForgotPasswordBody body,
+        CancellationToken cancellationToken)
+    {
+        var command = new ForgotPasswordCommand(
+            UserId: body.UserId,
+            Email: body.Email,
+            Token: body.Token,
+            NewPassword: body.NewPassword,
+            ConfirmPassword: body.ConfirmPassword);
+
+        await handler.HandleAsync(command, cancellationToken);
+
+        return Ok(new ApiResponse(
+           message: ApiMessages.ForgotPassword,
+           time: dateTimeService));
+    }
+
+    [HttpPost("revoke-token")]
+    public async Task<IActionResult> RevokeTokens(
+        [FromServices] ICommandHandler<RevokeTokenCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new RevokeTokenCommand();
+
+        await handler.HandleAsync(
+            command,
+            cancellationToken);
+
+        return Ok(new ApiResponse(
+            message: ApiMessages.RevokedTokens,
+            time: dateTimeService));
+    }
+
+    // Reset Password
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(
+        [FromServices] ICommandHandler<ResetPasswordCommand, ResetPasswordResponse> handler,
+        [FromServices] IDateTimeService dateTimeService,
+        [FromBody] ResetPasswordBody body,
+        CancellationToken cancellationToken)
+    {
+        var command = new ResetPasswordCommand(
+            UserId: body.UserId,
+            ResetToken: body.ResetToken,
+            NewPassword: body.NewPassword,
+            ConfirmPassword: body.ConfirmPassword);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        return Ok(new ApiResponse<ResetPasswordResponse>(
+            message: ApiMessages.PasswordReset,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Roles
+    // GetMy
+    [HttpGet("me/roles")]
+    public async Task<IActionResult> GetMyRoles(
+        [FromServices] IQueryHandler<GetMyRolesResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(cancellationToken);
+
+        return Ok(new ApiResponse<GetMyRolesResponse>(
+            message: ApiMessages.RolesRetrieved,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Modules
+    // GetAll
+    [HttpGet("me/modules")]
+    public async Task<IActionResult> GetMyModules(
+        [FromServices] IQueryHandler<GetMyModulesResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(cancellationToken);
+
+        return Ok(new ApiResponse<GetMyModulesResponse>(
+            message: ApiMessages.ModulesRetrieved,
+            time: dateTimeService,
+            data: result));
+    }
+
+    // Permissions
+    // GetAll
+    [HttpGet("me/permissions")]
+    public async Task<IActionResult> GetMyPermissions(
+        [FromServices] IQueryHandler<GetMyPermissionsResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(cancellationToken);
+
+        return Ok(new ApiResponse<GetMyPermissionsResponse>(
+            message: ApiMessages.PermissionsRetrieved,
+            time: dateTimeService,
+            data: result));
+    }
+}

@@ -1,0 +1,160 @@
+﻿using HelpDesk.Infrastructure.Database.Data.Business.Entities;
+using HelpDesk.Infrastructure.Database.DbContext;
+using HelpDesk.Shared.DataAccess.Dtos;
+using HelpDesk.Shared.DataAccess.Queries;
+using HelpDesk.Shared.Exceptions;
+using HelpDesk.Shared.Interfaces;
+using HelpDesk.Shared.Pagination;
+using Microsoft.EntityFrameworkCore;
+
+namespace HelpDesk.Shared.DataAccess.Readers;
+
+public sealed class TicketReader(AppDbContext dbContext) : ITicketReader
+{
+    public async Task<PagedResult<TicketData>> GetAllAsync(
+        QueryParameters query,
+        CancellationToken cancellationToken = default)
+    {
+        var queryable = dbContext.Tickets.AsQueryable();
+
+        var totalCount = await queryable.CountAsync(cancellationToken);
+
+        var totalPages = TotalPages.Calculate(totalCount, query.PageSize);
+
+        var tickets = await queryable
+            .AsNoTracking()
+            .OrderByDescending(t => t.CreatedAt)
+            .Skip(query.Offset)
+            .Take(query.PageSize)
+            .SelectTicketData()
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<TicketData>(
+            Items: tickets,
+            PageNumber: query.PageNumber,
+            PageSize: query.PageSize,
+            TotalCount: totalCount,
+            TotalPages: totalPages);
+    }
+
+    public async Task<IReadOnlyCollection<TicketData>> GetAssignedAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.AssignedToId == userId)
+            .OrderByDescending(t => t.AssignedAt)
+            .SelectTicketData()
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<TicketData>> GetAsync(
+        string? search,
+        int offset,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var query = dbContext.Tickets
+            .AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(
+                t => (t.Title != null && t.Title.Contains(search)));
+        }
+
+        return await query
+            .SelectTicketData()
+            .Skip(offset)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<TicketData> GetByIdAsync(
+        Guid ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.Id == ticketId)
+            .SelectTicketData()
+            .SingleAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<TicketData>> GetMyTicketsAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.CreatedById == userId)
+            .OrderByDescending(t => t.CreatedAt)
+            .SelectTicketData()
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<byte[]> GetNewRowAsync(
+        Guid ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.Id == ticketId)
+            .Select(t => t.RowVersion)
+            .SingleAsync(cancellationToken);
+    }
+
+    public async Task<(DateTimeOffset? AssignedAt, byte[] RowVersion)> GetStateAsync(
+        Guid ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        var state = await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.Id == ticketId)
+            .Select(t => new
+            {
+                t.AssignedAt,
+                t.RowVersion
+            })
+            .SingleOrDefaultAsync(cancellationToken)
+                ?? throw new TicketNotFoundException();
+
+        return (state.AssignedAt, state.RowVersion);
+    }
+
+    public async Task<TicketSummaryData> GetTicketSummaryAsync(
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .SelectTicketSummaryData(cancellationToken);
+    }
+
+    public async Task<Ticket?> GetTicketWithPriorityAsync(
+        Guid userId,
+        Guid ticketId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .Include(t => t.Priority)
+            .Include(t => t.CreatedBy)
+            .SingleOrDefaultAsync(
+                t => t.Id == ticketId
+                  && t.CreatedById == userId,
+                cancellationToken);
+    }
+
+    public async Task<string> GetTicketPriorityNameAsync(
+        Guid userId,
+        Guid ticketId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Tickets
+            .AsNoTracking()
+            .Where(t => t.Id == ticketId
+                    && t.CreatedById == userId)
+            .Select(t => t.Priority.Name)
+            .SingleAsync(cancellationToken);
+    }
+}

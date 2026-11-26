@@ -1,0 +1,23 @@
+﻿using FluentValidation;
+
+namespace HelpDesk.Features.Auth.ChangePassword;
+
+public sealed class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
+{
+    public ChangePasswordValidator()
+    {
+        RuleFor(x => x.CurrentPassword)
+            .NotEmpty();
+
+        RuleFor(x => x.NewPassword)
+            .NotEmpty();
+
+        RuleFor(x => x.NewPassword)
+            .NotEqual(x => x.CurrentPassword)
+            .WithMessage("New password must be different from your current password.");
+
+        RuleFor(x => x.ConfirmPassword)
+            .Equal(x => x.NewPassword)
+            .WithMessage("The new password and confirmation password do not match.");
+    }
+}

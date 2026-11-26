@@ -1,0 +1,23 @@
+﻿using HelpDesk.Infrastructure.Database.Identity.Auth.Entities;
+using HelpDesk.Shared.DataAccess.Dtos;
+
+namespace HelpDesk.Shared.DataAccess.Queries;
+
+public static class SuperadminQueries
+{
+    public static IQueryable<SuperadminAccountData> SelectAdminAccount(
+        this IQueryable<ApplicationUser> query)
+    {
+        return query.Select(u => new SuperadminAccountData
+        {
+            UserId = u.Id,
+            UserName = u.UserName ?? string.Empty,
+            Email = u.Email ?? string.Empty,
+            MustResetPassword = u.MustResetPassword,
+            Roles = u.UserRoles
+                .Where(ur => ur.UserId == u.Id && ur.RemovedAt == null)
+                .Select(ur => ur.Role.Name ?? string.Empty)
+                .ToList()
+        });
+    }
+}

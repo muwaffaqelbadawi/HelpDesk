@@ -6,10 +6,11 @@
 **/*.user
 **/*.suo
 **/TestResults
+testResults/
 **/node_modules
 **/.git
 **/.gitignore
-**/Dockerfile*
+**/dockerfile*
 **/docker-compose*
 **/.dockerignore
 **/secrets.json
@@ -27,7 +28,7 @@
 **/*.key
 **/*.pfx
 dev_certificate/
-Frontend/
+frontend/
 .claude/
 .github/
 .vscode/

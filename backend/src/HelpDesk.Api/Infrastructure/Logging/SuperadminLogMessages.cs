@@ -1,0 +1,16 @@
+﻿namespace HelpDesk.Infrastructure.Logging;
+
+public static partial class SuperadminLogMessages
+{
+    [LoggerMessage(
+    Level = LogLevel.Information,
+    Message = "Message: {message} UserId: {userId} UserName: {userName} Email: {email} MustResetPassword: {mustChangePassword} Roles: {roles}")]
+    public static partial void SuperadminCreatedLog(
+        this ILogger logger,
+        string message,
+        Guid userId,
+        string userName,
+        string email,
+        bool mustChangePassword,
+        IEnumerable<string> roles);
+}

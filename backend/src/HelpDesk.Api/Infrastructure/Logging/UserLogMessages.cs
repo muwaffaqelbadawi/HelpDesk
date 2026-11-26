@@ -1,0 +1,16 @@
+﻿using HelpDesk.Shared.DataAccess.Dtos;
+
+namespace HelpDesk.Infrastructure.Logging;
+
+public static partial class UserLogMessages
+{
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Message: {message} UserAccountData: {userAccountData} Roles: {roles} TempPassword: {tempPassword}")]
+    public static partial void UserCreatedLog(
+       this ILogger logger,
+       string message,
+       UserAccountData userAccountData,
+       IReadOnlyCollection<string> roles,
+       string tempPassword);
+}

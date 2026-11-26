@@ -1,0 +1,36 @@
+﻿using HelpDesk.Infrastructure.Database.DbContext;
+using HelpDesk.Shared.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace HelpDesk.Shared.DataAccess.Readers;
+
+public sealed class PermissionsReader(AppDbContext dbContext) : IPermissionsReader
+{
+    public async Task<IReadOnlyCollection<string>> GetUserPermissionsAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await (
+            from ur in dbContext.UserRoles
+            join rpm in dbContext.RolePermissionModules
+                on ur.RoleId equals rpm.RoleId
+            join p in dbContext.Permissions
+                on rpm.PermissionId equals p.Id
+            where ur.UserId == userId
+            select p.Name)
+        .Distinct()
+        .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<string>> GetPermissionsByRolesAsync(
+        IReadOnlyCollection<string> roles,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.RolePermissionModules
+            .AsNoTracking()
+            .Where(x => roles.Contains(x.Role.Name))
+            .Select(x => $"{x.Module.Name}.{x.Permission.Name}")
+            .Distinct()
+            .ToListAsync(cancellationToken);
+    }
+}

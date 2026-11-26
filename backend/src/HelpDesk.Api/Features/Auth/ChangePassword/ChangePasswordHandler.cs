@@ -1,0 +1,109 @@
+﻿using HelpDesk.Shared.Exceptions;
+using HelpDesk.Shared.Interfaces;
+
+namespace HelpDesk.Features.Auth.ChangePassword;
+
+public sealed class ChangePasswordHandler
+    : ICommandHandler<ChangePasswordCommand, ChangePasswordResponse>
+{
+    private readonly IUserContext _userContext;
+    private readonly IChangePasswordService _changePasswordService;
+    private readonly ITokenService _tokenService;
+    private readonly IUserRepository _userRepository;
+    private readonly IUserReader _userReader;
+    private readonly IDateTimeService _dateTimeService;
+    private readonly IDomainEventDispatcher _dispatcher;
+    private readonly ILogger<ChangePasswordHandler> _logger;
+
+    public ChangePasswordHandler(
+        IUserContext userContext,
+        IChangePasswordService changePasswordService,
+        ITokenService tokenService,
+        IUserRepository userRepository,
+        IUserReader userReader,
+        IDateTimeService dateTimeService,
+        IDomainEventDispatcher dispatcher,
+        ILogger<ChangePasswordHandler> logger)
+    {
+        _userContext = userContext;
+        _changePasswordService = changePasswordService;
+        _tokenService = tokenService;
+        _userRepository = userRepository;
+        _userReader = userReader;
+        _dateTimeService = dateTimeService;
+        _dispatcher = dispatcher;
+        _logger = logger;
+    }
+
+    public async Task<ChangePasswordResponse> HandleAsync(
+        ChangePasswordCommand command,
+        CancellationToken cancellationToken)
+    {
+        var userId = _userContext.GuidUserId;
+
+        var user = await _userReader.GetUserWithTimeZoneAsync(
+            userId,
+            cancellationToken)
+                ?? throw new UserNotFoundException();
+
+        var changePasswordResult = await _changePasswordService.ChangePasswordAsync(
+            user,
+            command.CurrentPassword,
+            command.NewPassword);
+
+        // Check if the password change succeeded
+        if (!changePasswordResult.Succeeded)
+        {
+            _logger.LogWarning(
+                "Failed to change password for user: {UserId}. Errors: {Errors}",
+                userId,
+                string.Join(", ", changePasswordResult.Errors.First().Description));
+
+            throw new PasswordChangeFailedException(
+                errors: new()
+                {
+                    ["password"] =
+                    [
+                        changePasswordResult.Errors.First().Description
+                    ],
+                });
+        }
+
+        // now
+        var now = _dateTimeService.UtcNow;
+
+        var rows = await _userRepository.UpdatePasswordAsync(
+            userId,
+            now,
+            cancellationToken);
+
+        if (rows == 0)
+        {
+            throw new ConcurrencyException(
+                $"Password for user {userId} was modified or deleted by another user.");
+        }
+
+        // session ID
+        var sessionId = _userContext.SessionId;
+
+        // Issue new token
+        var token = await _tokenService.IssueAfterPasswordChangeAsync(
+            user,
+            sessionId,
+            now,
+            cancellationToken);
+
+        // Domain event
+        await _dispatcher.DispatchAsync(
+            @event: new PasswordChangedEvent(
+                User: user,
+                OccurredAt: now),
+            cancellationToken: cancellationToken);
+
+        // Success log
+        _logger.LogInformation("User {UserId} changed password and received new tokens",
+           userId);
+
+        return new ChangePasswordResponse(token);
+    }
+}

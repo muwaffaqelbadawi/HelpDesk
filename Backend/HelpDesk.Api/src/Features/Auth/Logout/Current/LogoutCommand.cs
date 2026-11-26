@@ -1,3 +1,0 @@
-﻿namespace HelpDesk.src.Features.Auth.Logout.Current;
-
-public sealed record LogoutCommand();

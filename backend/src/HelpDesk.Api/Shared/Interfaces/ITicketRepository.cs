@@ -1,0 +1,53 @@
+﻿using HelpDesk.Infrastructure.Database.Data.Business.Entities;
+using HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Dtos;
+
+namespace HelpDesk.Shared.Interfaces;
+
+public interface ITicketRepository
+{
+    Task<int> AssignAsync(
+        Guid currentUserId,
+        Guid userId,
+        Guid ticketId,
+        byte[] ticketRowVersion,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task AddAsync(
+        Ticket ticket,
+        TicketComment comment,
+        List<TicketAttachment> attachment,
+        CancellationToken cancellationToken);
+
+    Task AddToHistory(
+        Guid userId,
+        Guid ticketId,
+        TicketHistoryType type,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken = default);
+
+    Task<int> DeleteAsync(
+        Guid userId,
+        Guid ticketId,
+        byte[] ticketRowVersion,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    Task<int> UpdateAsync(
+        Guid userId,
+        Guid ticketId,
+        string ticketTitle,
+        string ticketSubject,
+        LookupSeed priority,
+        LookupSeed status,
+        byte[] ticketRowVersion,
+        DateTimeOffset now,
+        CancellationToken cancellationToken);
+
+    // TicketPriority
+    Task<int> UpdateTicketPriorityAsync(
+        Guid userId,
+        Guid ticketId,
+        Guid priorityId,
+        CancellationToken cancellationToken);
+}

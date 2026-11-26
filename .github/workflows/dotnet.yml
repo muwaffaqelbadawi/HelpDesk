@@ -23,11 +23,11 @@ jobs:
           dotnet-version: 10.0.404
 
       - name: Restore dependencies
-        working-directory: Backend
+        working-directory: backend/src
         run: dotnet restore HelpDesk.slnx
 
       - name: Build
-        working-directory: Backend
+        working-directory: backend/src
         run: dotnet build HelpDesk.slnx --no-restore --configuration Release --verbosity normal
 
       - name: Start SQL Server
@@ -71,7 +71,7 @@ jobs:
           dotnet --info
 
       - name: Test
-        working-directory: Backend
+        working-directory: backend/src
         env:
           ConnectionStrings__IntegrationTestConnection: >-
             Server=localhost,${{ env.SQLSERVER_HOST_PORT }};

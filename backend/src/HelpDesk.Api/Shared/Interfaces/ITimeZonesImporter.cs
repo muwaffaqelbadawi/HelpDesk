@@ -1,0 +1,9 @@
+﻿using HelpDesk.Infrastructure.Services.DataIngestion.Importing.Dtos;
+
+namespace HelpDesk.Shared.Interfaces;
+
+public interface ITimeZonesImporter
+{
+    Task<ImportResult> ImportAsync(
+        CancellationToken cancellationToken = default);
+}

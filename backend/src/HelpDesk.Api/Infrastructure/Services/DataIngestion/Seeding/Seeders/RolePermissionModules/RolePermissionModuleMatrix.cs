@@ -1,0 +1,37 @@
+﻿using HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Dtos;
+using HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Seeders.Modules;
+using HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Seeders.Permissions;
+using HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Seeders.Roles;
+
+namespace HelpDesk.Infrastructure.Services.DataIngestion.Seeding.Seeders.RolePermissionModules;
+
+public static class RolePermissionModuleMatrix
+{
+    public static IEnumerable<RolePermissionModuleLookupSeed> SuperAdmin =>
+        from module in ModuleIds.All
+        from permission in PermissionIds.All
+        select new RolePermissionModuleLookupSeed(
+            RoleIds.SuperAdmin,
+            permission,
+            module);
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Admin =>
+    [
+
+    ];
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Customer =>
+    [
+
+    ];
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Support =>
+    [
+
+    ];
+
+    public static IEnumerable<RolePermissionModuleLookupSeed> Agent =>
+    [
+
+    ];
+}

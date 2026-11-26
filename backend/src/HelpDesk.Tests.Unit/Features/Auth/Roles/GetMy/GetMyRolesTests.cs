@@ -1,0 +1,63 @@
+﻿using HelpDesk.Features.Settings.Admin.Roles.GetMy;
+using HelpDesk.Shared.Interfaces;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+
+namespace HelpDesk.Tests.Unit.Features.Auth.Roles.GetMy;
+
+public sealed class GetMyRolesTests
+{
+    [Fact]
+    public async Task Should_get_my_roles()
+    {
+        // Arrange
+        var userContext = new Mock<IUserContext>();
+        var rolesReader = new Mock<IRolesReader>();
+        var logger = new Mock<ILogger<GetMyRolesHandler>>();
+
+        // SUT (System Under Test)
+        var handler = new GetMyRolesHandler(
+            userContext.Object,
+            rolesReader.Object,
+            logger.Object);
+
+        // provide a concrete user id and configure the substitute
+        var userId = Guid.NewGuid();
+
+        userContext
+            .Setup(x => x.GuidUserId)
+            .Returns(userId);
+
+        // roles
+        IReadOnlyCollection<string> roles = [];
+
+        // response
+        var response = new GetMyRolesResponse(roles);
+
+        // expectedRoles
+        var expectedRoles = response.Roles;
+
+        // Mock ticket reader to return the expected ticket data
+        rolesReader
+            .Setup(x => x.GetUserRoleAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedRoles);
+
+        // Act
+        // One specific action
+        var result = await handler.HandleAsync(
+            CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(response, result);
+
+        rolesReader.Verify(
+            x => x.GetUserRoleAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+    }
+}

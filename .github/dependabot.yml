@@ -1,18 +1,18 @@
 version: 2
 
 updates:
-  # Backend/.NET
+  # .NET
   - package-ecosystem: "nuget"
-    directory: "/Backend"
+    directory: "/backend/src"
     schedule:
       interval: "weekly"
     ignore:
       - dependency-name: "Microsoft.*"
         versions: [">=11.0.0"]
 
-  # Frontend/Angular
+  # Angular
   - package-ecosystem: "npm"
-    directory: "/Frontend/HelpDesk.Client"
+    directory: "/frontend/HelpDesk.Client"
     schedule:
       interval: "weekly"
 
