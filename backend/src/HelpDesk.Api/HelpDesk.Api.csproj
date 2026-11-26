@@ -35,7 +35,7 @@
     <PackageReference Include="Scrutor" Version="7.0.0" />
     <PackageReference Include="FluentValidation" Version="12.2.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
-    <PackageReference Include="libphonenumber-csharp" Version="9.0.43" />
+    <PackageReference Include="libphonenumber-csharp" Version="9.0.44" />
     <PackageReference Include="MailKit" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
