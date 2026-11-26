@@ -4,14 +4,14 @@ Repository guidance for changes to the HelpDesk API, Angular client, tests, and 
 
 ## Repository layout
 
-- `backend/src/HelpDesk.Api/`: ASP.NET Core Web API. `Program.cs` delegates service and middleware setup to `Infrastructure/Extensions`.
-- `backend/src/HelpDesk.Api/Features/`: API use cases, grouped by `Auth`, `Tickets`, and `Users`; operation-specific code lives beneath each feature.
-- `backend/src/HelpDesk.Api/Infrastructure/`: database, middleware, behaviors, services, options, logging, and application wiring.
-- `backend/src/HelpDesk.Api/Presentation/Controllers/`: HTTP controllers, separated into `Admin` and `User` areas.
-- `backend/src/HelpDesk.Api/Shared/`: reusable API response and shared types.
-- `backend/src/HelpDesk.Api/Migrations/`: Entity Framework Core migrations. Treat these as schema history; create/update migrations through EF tooling rather than hand-editing generated migration artifacts.
-- `backend/src/HelpDesk.Tests.Unit/`: unit tests, organized under `Features/`.
-- `backend/src/HelpDesk.Tests.Integration/`: API/integration tests, with `Features/`, `Configurations/`, `Fixtures/`, and `TestData/`.
+- `src/backend/HelpDesk.Api/`: ASP.NET Core Web API. `Program.cs` delegates service and middleware setup to `Infrastructure/Extensions`.
+- `src/backend/HelpDesk.Api/Features/`: API use cases, grouped by `Auth`, `Tickets`, and `Users`; operation-specific code lives beneath each feature.
+- `src/backend/HelpDesk.Api/Infrastructure/`: database, middleware, behaviors, services, options, logging, and application wiring.
+- `src/backend/HelpDesk.Api/Presentation/Controllers/`: HTTP controllers, separated into `Admin` and `User` areas.
+- `src/backend/HelpDesk.Api/Shared/`: reusable API response and shared types.
+- `src/backend/HelpDesk.Api/Migrations/`: Entity Framework Core migrations. Treat these as schema history; create/update migrations through EF tooling rather than hand-editing generated migration artifacts.
+- `src/backend/HelpDesk.Tests.Unit/`: unit tests, organized under `Features/`.
+- `src/backend/HelpDesk.Tests.Integration/`: API/integration tests, with `Features/`, `Configurations/`, `Fixtures/`, and `TestData/`.
 - These are the primary test projects for the HelpDesk API. Put isolated logic tests in `HelpDesk.Tests.Unit` and tests that exercise API behavior or require infrastructure in `HelpDesk.Tests.Integration`; do not assume tests belong in the API project or create another test project without a clear need.
 - `frontend/HelpDesk.Client/src/app/core/`: cross-cutting client concerns such as auth, HTTP, localization, and backend availability.
 - `frontend/HelpDesk.Client/src/app/features/`: route-level application features, including auth, dashboard, tickets, and users.
@@ -33,7 +33,7 @@ Follow these existing ownership boundaries. The client uses Angular standalone r
 
 Run commands from the indicated directory, or use the equivalent project/solution path from the repository root.
 
-Backend, from `backend/src/`:
+Backend, from `src/backend/`:
 
 ```powershell
 dotnet restore HelpDesk.slnx
@@ -41,7 +41,7 @@ dotnet build HelpDesk.slnx --no-restore
 dotnet test HelpDesk.slnx
 ```
 
-Run the API locally from the repository root with `dotnet run --project backend/src/HelpDesk.Api/HelpDesk.Api.csproj`. The SDK is always targeting the latest .NET `10` available in `global.json` (with latest-feature roll-forward).
+Run the API locally from the repository root with `dotnet run --project src/backend/HelpDesk.Api/HelpDesk.Api.csproj`. The SDK is always targeting the latest .NET `10` available in `global.json` (with latest-feature roll-forward).
 
 Frontend, from `frontend/HelpDesk.Client/`:
 
@@ -65,7 +65,7 @@ npm start
 
 The GitHub Actions workflows are the validation source of truth:
 
-- `.github/workflows/dotnet.yml` restores and builds `backend/src/HelpDesk.slnx` in Release, starts SQL Server, then runs the solution tests.
+- `.github/workflows/dotnet.yml` restores and builds `src/backend/HelpDesk.slnx` in Release, starts SQL Server, then runs the solution tests.
 - `.github/workflows/angular.yml` runs `npm ci`, `npm run build`, and headless Chrome unit tests from `frontend/HelpDesk.Client/`.
 - `.github/workflows/codeql.yml` performs CodeQL analysis.
 
@@ -75,9 +75,9 @@ When changing build, test, dependency, or deployment behavior, update relevant w
 
 The integration-test project separates shared application infrastructure from reusable test data. Inspect these directories and the nearest working integration tests before adding any fixture, fake service, helper, builder, or other abstraction.
 
-- `backend/src/HelpDesk.Tests.Integration/Fixtures/` holds reusable test infrastructure. `HelpDeskApplicationFactory` is the standard entry point for tests that exercise the real API application: it extends `WebApplicationFactory<ApplicationAssemblyMarker>`, sets the host environment to `Testing`, obtains `ConnectionStrings:IntegrationTestConnection` through `IntegrationTestConfiguration`, and supplies that value as the application's `AppDBConnection`. It registers `UserContextTestData` as scoped and exposes that same scoped instance as `IUserContext`. Reuse the factory through the existing xUnit class-fixture pattern (`IClassFixture<HelpDeskApplicationFactory>`); create a service scope from `factory.Services` when resolving scoped application services or the database.
+- `src/backend/HelpDesk.Tests.Integration/Fixtures/` holds reusable test infrastructure. `HelpDeskApplicationFactory` is the standard entry point for tests that exercise the real API application: it extends `WebApplicationFactory<ApplicationAssemblyMarker>`, sets the host environment to `Testing`, obtains `ConnectionStrings:IntegrationTestConnection` through `IntegrationTestConfiguration`, and supplies that value as the application's `AppDBConnection`. It registers `UserContextTestData` as scoped and exposes that same scoped instance as `IUserContext`. Reuse the factory through the existing xUnit class-fixture pattern (`IClassFixture<HelpDeskApplicationFactory>`); create a service scope from `factory.Services` when resolving scoped application services or the database.
 - `FixedDateTimeService` is a reusable implementation of `IDateTimeService` whose time is supplied at construction. It is not registered by `HelpDeskApplicationFactory`; register it only in the test host that needs deterministic time. The focused JWT revocation tests demonstrate this in their Redis-backed minimal-host setup.
-- `backend/src/HelpDesk.Tests.Integration/TestData/` holds reusable fake contexts and scenario data, not application-host infrastructure. `UserContextTestData` implements `IUserContext` and allows tests to set `GuidUserId`; `ApiContextTestData` implements `IApiContext`; `UserTestData.CreateUserCommand` produces a user-creation command with unique test values. Prefer these existing types and their established registrations/usages over copies or feature-specific equivalents.
+- `src/backend/HelpDesk.Tests.Integration/TestData/` holds reusable fake contexts and scenario data, not application-host infrastructure. `UserContextTestData` implements `IUserContext` and allows tests to set `GuidUserId`; `ApiContextTestData` implements `IApiContext`; `UserTestData.CreateUserCommand` produces a user-creation command with unique test values. Prefer these existing types and their established registrations/usages over copies or feature-specific equivalents.
 
 For a new test, first search `Fixtures/`, `TestData/`, and existing integration tests. Use `HelpDeskApplicationFactory` for real-application behavior rather than creating another application factory or reconstructing the API service pipeline. Reuse registered test services and existing data; add distinct values only when the scenario needs them. Keep small, one-off arrangements local. Promote new shared infrastructure only for a demonstrated cross-test need that existing patterns cannot meet; avoid fixture hierarchies, generic builders, base classes, duplicate factories, or another shared infrastructure layer without that need.
 

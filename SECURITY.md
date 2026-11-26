@@ -33,7 +33,7 @@ Do not commit production credentials, signing keys, tokens, connection strings, 
 
 `.env.example` documents SQL Server, API connection, JWT, and SMTP environment variables with placeholders; replace those values for local use instead of treating them as usable credentials. Angular environment files are client-side configuration and must not contain secrets.
 
-The root `.gitignore` contains an `*.env` pattern and ignores `dev_certificate/`; it does not ignore `appsettings.Development.json`. The root `.dockerignore` excludes `.env` files, certificate/key files, `secrets.json`, development certificates, generated output, and `**/appsettings.Development.json`. This excludes `backend/src/HelpDesk.Api/appsettings.Development.json` from the API Docker build context, although the tracked file contains a development JWT signing key. Do not reuse its key.
+The root `.gitignore` contains an `*.env` pattern and ignores `dev_certificate/`; it does not ignore `appsettings.Development.json`. The root `.dockerignore` excludes `.env` files, certificate/key files, `secrets.json`, development certificates, generated output, and `**/appsettings.Development.json`. This excludes `src/backend/HelpDesk.Api/appsettings.Development.json` from the API Docker build context, although the tracked file contains a development JWT signing key. Do not reuse its key.
 
 ## Disclosure and Security Updates
 

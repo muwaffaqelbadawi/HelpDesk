@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../node_modules/@primeuix/themes/dist/aura/ripple/index.mjs"],
+  "sourcesContent": ["var a={background:\"light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.3))\"},r={root:a};export{r as default,a as root};"],
+  "mappings": ";;;AAAA,IAAI,IAAE,EAAC,YAAW,qDAAoD;AAAtE,IAAwE,IAAE,EAAC,MAAK,EAAC;",
+  "names": []
+}

@@ -1,0 +1,1 @@
+import{Fb as r,Qa as e,jb as n,kb as s}from"./chunk-HTIDVUAZ.js";var a=class t{static \u0275fac=function(o){return new(o||t)};static \u0275cmp=e({type:t,selectors:[["ng-component"]],decls:2,vars:0,template:function(o,m){o&1&&(n(0,"p"),r(1,"forgot-password works!"),s())},encapsulation:2})};export{a as ForgotPasswordComponent};

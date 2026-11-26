@@ -9,6 +9,7 @@ A living inventory of HelpDesk features, tracking planned, in-progress, and impl
 - [ ] Revoke active refresh tokens and terminate the user's session after a password change.
 - [ ] Track failed login attempts using `FailedLoginCount`.
 - [ ] Track the last failed login timestamp using `LastFailedLoginAt`.
+- [ ] Cache frequent data using `HybridCache`
 
 ### In Progress
 

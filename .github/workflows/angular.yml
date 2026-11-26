@@ -12,7 +12,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: frontend/HelpDesk.Client
+        working-directory: src/frontend/HelpDesk.Client
 
     steps:
       - name: Checkout
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 24.22.2
           cache: npm
-          cache-dependency-path: frontend/HelpDesk.Client/package-lock.json
+          cache-dependency-path: src/frontend/HelpDesk.Client/package-lock.json
 
       - name: Install Chrome dependencies
         run: |

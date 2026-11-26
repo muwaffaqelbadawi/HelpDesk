@@ -4,7 +4,7 @@ This is the repository-level starting point for coding agents working in HelpDes
 
 ## Repository Map
 
-- `backend/src/`: ASP.NET Core API and its unit and integration test projects, plus `HelpDesk.slnx`.
+- `src/backend/`: ASP.NET Core API and its unit and integration test projects, plus `HelpDesk.slnx`.
 - `frontend/`: Angular client.
 - `.github/`: GitHub Actions workflows and Dependabot configuration.
 - `docker/`: API and frontend Dockerfiles plus Nginx configuration; root `docker-compose.yml` orchestrates the local services.
